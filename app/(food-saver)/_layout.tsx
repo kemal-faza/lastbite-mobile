@@ -2,15 +2,20 @@ import { Redirect, Tabs } from 'expo-router';
 import { View } from 'react-native';
 import { useAuthStore } from '@/stores/authStore';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
+import { OfflineBanner } from '@/components/OfflineBanner';
+import { useNetworkStatus } from '@/hooks/useNetworkStatus';
 
 export default function FoodSaverLayout() {
   const { user, isAuthenticated } = useAuthStore();
+  const isConnected = useNetworkStatus();
 
   if (!isAuthenticated) return <Redirect href="/login" />;
   if (user?.role !== 'FOOD_SAVER') return <Redirect href="/(mitra)" />;
 
   return (
-    <Tabs
+    <View className="flex-1">
+      {!isConnected && <OfflineBanner />}
+      <Tabs
       screenOptions={{
         tabBarActiveTintColor: '#11676a',
         tabBarInactiveTintColor: '#666',
@@ -71,5 +76,6 @@ export default function FoodSaverLayout() {
         }}
       />
     </Tabs>
+    </View>
   );
 }
