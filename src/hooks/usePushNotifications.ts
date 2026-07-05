@@ -8,13 +8,20 @@ export function usePushNotifications() {
   const { isAuthenticated } = useAuthStore();
 
   useEffect(() => {
-    if (!isAuthenticated || !Device.isDevice) return;
+    if (!isAuthenticated) return;
 
-    Notifications.requestPermissionsAsync().then(({ status }) => {
-      if (status !== 'granted') return;
-      Notifications.getExpoPushTokenAsync().then(({ data }) => {
-        registerDeviceToken(data);
-      });
-    });
+    const setup = async () => {
+      try {
+        if (!Device.isDevice) return;
+        const { status } = await Notifications.requestPermissionsAsync();
+        if (status !== 'granted') return;
+        const { data } = await Notifications.getExpoPushTokenAsync();
+        await registerDeviceToken(data);
+      } catch {
+        // Silent fail — push notification registration is non-critical
+      }
+    };
+
+    setup();
   }, [isAuthenticated]);
 }
