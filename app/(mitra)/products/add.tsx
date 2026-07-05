@@ -4,7 +4,7 @@ import { router } from 'expo-router';
 import { Button, TextInput } from 'react-native-paper';
 import * as ImagePicker from 'expo-image-picker';
 import { apiFetch } from '@/lib/api/client';
-import { uploadImage } from '@/lib/api/uploads';
+import { prepareAndUploadImage } from '@/lib/api/uploads';
 
 export default function AddProductScreen() {
   const [name, setName] = useState('');
@@ -22,7 +22,7 @@ export default function AddProductScreen() {
   const handleSubmit = async () => {
     let imageUrl = null;
     if (image) {
-      const uploaded = await uploadImage({ uri: image, name: 'product.jpg', type: 'image/jpeg' });
+      const uploaded = await prepareAndUploadImage(image);
       imageUrl = uploaded.url;
     }
 
