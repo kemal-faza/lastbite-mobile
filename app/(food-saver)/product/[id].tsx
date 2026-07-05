@@ -2,6 +2,7 @@ import { View, Text, Image, ScrollView } from 'react-native';
 import { useLocalSearchParams } from 'expo-router';
 import { Button } from 'react-native-paper';
 import { useProduct } from '@/hooks/useProducts';
+import { MapPreview } from '@/components/MapPreview';
 import { addToCart } from '@/lib/api/cart';
 
 export default function ProductDetailScreen() {
@@ -20,6 +21,9 @@ export default function ProductDetailScreen() {
         <Text className="text-primary text-xl font-bold mt-2">Rp{product.discountedPrice.toLocaleString()}</Text>
         <Text className="text-gray-400 line-through">Rp{product.originalPrice.toLocaleString()}</Text>
         <Text className="mt-4">{product.description}</Text>
+        {product.storeLat && product.storeLng && (
+          <MapPreview lat={product.storeLat} lng={product.storeLng} storeName={product.storeName} />
+        )}
         <Button mode="contained" onPress={() => addToCart(product.id)} className="mt-6">
           Tambah ke Keranjang
         </Button>
