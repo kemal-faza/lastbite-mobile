@@ -44,5 +44,5 @@ export async function setTokens(accessToken: string, refreshToken: string) {
 }
 
 export async function clearTokens() {
-  await AsyncStorage.multiRemove(['accessToken', 'refreshToken', 'user']);
+  await AsyncStorage.removeMany(['accessToken', 'refreshToken', 'user']);
 }
