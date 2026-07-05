@@ -1,0 +1,33 @@
+{
+  "expo": {
+    "name": "LastBite",
+    "slug": "lastbite-mobile",
+    "scheme": "lastbite",
+    "plugins": ["expo-router"],
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "icon": "./assets/icon.png",
+    "userInterfaceStyle": "light",
+    "newArchEnabled": true,
+    "splash": {
+      "image": "./assets/splash.png",
+      "resizeMode": "contain",
+      "backgroundColor": "#e4dcca"
+    },
+    "ios": {
+      "supportsTablet": true,
+      "bundleIdentifier": "com.lastbite.mobile"
+    },
+    "android": {
+      "adaptiveIcon": {
+        "foregroundImage": "./assets/adaptive-icon.png",
+        "backgroundColor": "#11676a"
+      },
+      "package": "com.lastbite.mobile"
+    },
+    "web": {
+      "bundler": "metro",
+      "favicon": "./assets/favicon.png"
+    }
+  }
+}
