@@ -12,4 +12,5 @@ module.exports = {
     '^@/(.*)$': '<rootDir>/src/$1',
   },
   testMatch: ['**/__tests__/**/*.[jt]s?(x)', '**/?(*.)+(spec|test).[jt]s?(x)', 'tests/**/*.test.ts'],
+  setupFiles: ['<rootDir>/jest.setup.js'],
 };
