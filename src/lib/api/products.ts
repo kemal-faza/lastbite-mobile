@@ -1,5 +1,11 @@
 import { apiFetch } from './client';
 
+export interface ImageVariants {
+  thumb: string;
+  card: string;
+  full: string;
+}
+
 export interface Product {
   id: string;
   name: string;
@@ -8,6 +14,7 @@ export interface Product {
   discountedPrice: number;
   stock: number;
   imageUrl: string | null;
+  imageVariants: ImageVariants | null;
   category: 'meals' | 'bakery' | 'drinks';
 }
 

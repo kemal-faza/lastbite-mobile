@@ -1,4 +1,17 @@
 import { apiFetch } from './client';
+import type { ImageVariants } from './products';
+
+export interface OrderItem {
+  id: string;
+  productId: string;
+  name: string;
+  storeName: string;
+  price: number;
+  originalPrice: number;
+  quantity: number;
+  imageUrl: string | null;
+  imageVariants: ImageVariants | null;
+}
 
 export interface Order {
   id: string;
@@ -6,7 +19,8 @@ export interface Order {
   pickupCode: string;
   total: number;
   storeName: string;
-  items: any[];
+  pickupExpiresAt?: string;
+  items: OrderItem[];
 }
 
 export async function createOrder(notes?: string) {

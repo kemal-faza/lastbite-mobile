@@ -1,5 +1,5 @@
 import { apiFetch } from './client';
-import type { Product } from './products';
+import type { Product, ImageVariants } from './products';
 
 export interface CartItem {
   id: string;
@@ -10,6 +10,7 @@ export interface CartItem {
   originalPrice: number;
   quantity: number;
   imageUrl: string | null;
+  imageVariants: ImageVariants | null;
   stock: number;
 }
 
