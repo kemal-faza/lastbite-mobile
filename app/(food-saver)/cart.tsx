@@ -1,10 +1,12 @@
 import { View, Text, FlatList, Pressable } from 'react-native';
 import { router } from 'expo-router';
+import { Image } from 'expo-image';
 import { Button } from '@/components/ui/button';
 import { PrimaryButton } from '@/components/PrimaryButton';
 import { useCart } from '@/hooks/useCart';
 import { useAuthStore } from '@/stores/authStore';
 import { EmptyState } from '@/components/EmptyState';
+import { getImageVariants } from '@/lib/api/products';
 
 export default function CartScreen() {
   const { isAuthenticated } = useAuthStore();
@@ -47,10 +49,22 @@ export default function CartScreen() {
         keyExtractor={(item) => item.id}
         renderItem={({ item }) => (
           <View className="bg-white p-3 rounded-xl mb-2 flex-row justify-between items-center">
-            <View>
-              <Text className="font-bold">{item.name}</Text>
-              <Text className="text-gray-500">{item.storeName}</Text>
-              <Text>Rp{item.price.toLocaleString()} x {item.quantity}</Text>
+            <View className="flex-row items-center flex-1">
+              <Image
+                source={
+                  getImageVariants(item.imageVariants)?.thumb
+                    ? { uri: getImageVariants(item.imageVariants)!.thumb }
+                    : require('../../assets/placeholder.png')
+                }
+                style={{ width: 64, height: 64, borderRadius: 8 }}
+                contentFit="cover"
+                className="mr-3 bg-gray-200"
+              />
+              <View className="flex-1">
+                <Text className="font-bold">{item.name}</Text>
+                <Text className="text-gray-500">{item.storeName}</Text>
+                <Text>Rp{item.price.toLocaleString()} x {item.quantity}</Text>
+              </View>
             </View>
             <View className="flex-row items-center">
               <Pressable onPress={() => updateItem.mutate({ productId: item.productId, quantity: item.quantity - 1 })} className="px-3 py-1 bg-gray-200 rounded">
