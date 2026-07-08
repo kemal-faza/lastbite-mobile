@@ -1,9 +1,26 @@
 import { View, Text, FlatList, Pressable } from 'react-native';
 import { router } from 'expo-router';
-import { Button } from 'react-native-paper';
+import { Button } from '@/components/ui/button';
+import { PrimaryButton } from '@/components/PrimaryButton';
 import { useCart } from '@/hooks/useCart';
+import { useAuthStore } from '@/stores/authStore';
+import { MaterialCommunityIcons } from '@expo/vector-icons';
+import { colors } from '@/theme';
 
 export default function CartScreen() {
+  const { isAuthenticated } = useAuthStore();
+
+  if (!isAuthenticated) {
+    return (
+      <View className="flex-1 bg-background p-4 justify-center items-center">
+        <MaterialCommunityIcons name="cart-outline" size={64} color={colors.textSecondary} />
+        <Text className="text-lg font-semibold mt-4 text-center">Login untuk mengakses keranjang</Text>
+        <Text className="text-sm text-gray-500 mt-1 text-center">Masuk atau daftar untuk mulai berbelanja</Text>
+        <PrimaryButton onPress={() => router.push('/login')}>Masuk</PrimaryButton>
+      </View>
+    );
+  }
+
   const { cart, updateItem } = useCart();
   const items = cart.data?.cart.items || [];
   const total = items.reduce((sum, i) => sum + i.price * i.quantity, 0);
@@ -35,8 +52,8 @@ export default function CartScreen() {
       />
       <View className="border-t border-gray-300 pt-4 mt-4">
         <Text className="text-lg font-bold">Total: Rp{total.toLocaleString()}</Text>
-        <Button mode="contained" onPress={() => router.push('/checkout')} disabled={items.length === 0} className="mt-2">
-          Checkout
+        <Button variant="default" onPress={() => router.push('/checkout')} disabled={items.length === 0} className="mt-2">
+          <Text className="text-white font-semibold">Checkout</Text>
         </Button>
       </View>
     </View>

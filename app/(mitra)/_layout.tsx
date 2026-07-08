@@ -9,7 +9,7 @@ export default function MitraLayout() {
   const { user, isAuthenticated } = useAuthStore();
   const isConnected = useNetworkStatus();
 
-  if (!isAuthenticated) return <Redirect href="/login" />;
+  if (!isAuthenticated) return <Redirect href="/(food-saver)" />;
   if (user?.role !== 'MITRA') return <Redirect href="/(food-saver)" />;
 
   return (

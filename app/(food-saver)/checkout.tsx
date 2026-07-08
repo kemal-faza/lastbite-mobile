@@ -1,11 +1,18 @@
 import { useState } from 'react';
-import { View, Text } from 'react-native';
-import { router } from 'expo-router';
-import { Button, TextInput } from 'react-native-paper';
+import { View } from 'react-native';
+import { router, Redirect } from 'expo-router';
+import { Button } from '@/components/ui/button';
+import { Text } from '@/components/ui/text';
+import { Textarea } from '@/components/ui/textarea';
+import { Input } from '@/components/ui/input';
 import { useCart } from '@/hooks/useCart';
 import { createOrder } from '@/lib/api/orders';
+import { useAuthStore } from '@/stores/authStore';
 
 export default function CheckoutScreen() {
+  const { isAuthenticated } = useAuthStore();
+  if (!isAuthenticated) return <Redirect href="/login" />;
+
   const { cart } = useCart();
   const [notes, setNotes] = useState('');
   const [loading, setLoading] = useState(false);
@@ -27,13 +34,19 @@ export default function CheckoutScreen() {
   return (
     <View className="flex-1 bg-background p-4">
       <Text className="text-xl font-bold text-primary mb-4">Checkout</Text>
-      <Text className="mb-2">Total: Rp{total.toLocaleString()}</Text>
+      <View className="flex-row mb-2">
+        <Text className="text-base font-semibold">Total: </Text>
+        <Text className="text-base">Rp{total.toLocaleString()}</Text>
+      </View>
       <View className="bg-secondary/10 p-3 rounded-lg mb-4">
         <Text className="text-sm">Pembayaran dilakukan saat mengambil pesanan (COD). Platform tidak memproses pembayaran.</Text>
       </View>
-      <TextInput label="Catatan untuk Mitra (opsional)" value={notes} onChangeText={setNotes} multiline className="mb-4" />
-      <Button mode="contained" onPress={handleCheckout} loading={loading}>
-        Konfirmasi Pesanan
+      <View className="mb-3">
+        <Text className="text-foreground text-sm font-medium mb-1.5">Catatan untuk Mitra (opsional)</Text>
+        <Textarea value={notes} onChangeText={setNotes} />
+      </View>
+      <Button variant="default" onPress={handleCheckout} disabled={loading} className="mt-2">
+        {loading ? <Text className="text-white">Memproses...</Text> : <Text className="text-white font-semibold">Konfirmasi Pesanan</Text>}
       </Button>
     </View>
   );

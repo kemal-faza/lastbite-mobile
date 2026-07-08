@@ -1,9 +1,12 @@
 import { useState } from 'react';
-import { View, Text } from 'react-native';
+import { View, Text, Pressable } from 'react-native';
 import { router } from 'expo-router';
-import { Button, TextInput } from 'react-native-paper';
 import { login } from '@/lib/api/auth';
 import { useAuthStore } from '@/stores/authStore';
+import { AuthScreenLayout } from '@/components/AuthScreenLayout';
+import { TextField } from '@/components/TextField';
+import { PrimaryButton } from '@/components/PrimaryButton';
+import { colors } from '@/theme';
 
 export default function LoginScreen() {
   const [email, setEmail] = useState('');
@@ -25,16 +28,43 @@ export default function LoginScreen() {
   };
 
   return (
-    <View className="flex-1 justify-center p-6 bg-background">
-      <Text className="text-2xl font-bold text-primary mb-6">Masuk LastBite</Text>
-      <TextInput label="Email" value={email} onChangeText={setEmail} className="mb-3" />
-      <TextInput label="Password" value={password} onChangeText={setPassword} secureTextEntry className="mb-3" />
-      <Button mode="contained" onPress={handleLogin} loading={loading} className="mt-4">
+    <AuthScreenLayout
+      title="Masuk LastBite"
+      subtitle="Selamat datang kembali"
+      footer={
+        <Pressable onPress={() => router.push('/register')}>
+          <Text className="text-center text-sm">
+            Belum punya akun?{' '}
+            <Text className="font-semibold" style={{ color: colors.primary }}>
+              Daftar
+            </Text>
+          </Text>
+        </Pressable>
+      }
+    >
+      <TextField
+        label="Email"
+        value={email}
+        onChangeText={setEmail}
+        keyboardType="email-address"
+      />
+
+      <TextField
+        label="Password"
+        value={password}
+        onChangeText={setPassword}
+        secureTextEntry
+      />
+
+      <Pressable onPress={() => router.push('/forgot-password')} className="self-end">
+        <Text className="text-sm" style={{ color: colors.primary }}>
+          Lupa password?
+        </Text>
+      </Pressable>
+
+      <PrimaryButton onPress={handleLogin} loading={loading}>
         Masuk
-      </Button>
-      <Button onPress={() => router.push('/register')} className="mt-2">
-        Belum punya akun?
-      </Button>
-    </View>
+      </PrimaryButton>
+    </AuthScreenLayout>
   );
 }

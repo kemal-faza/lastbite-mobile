@@ -1,8 +1,11 @@
 import { useState } from 'react';
 import { View, Text } from 'react-native';
 import { router, useLocalSearchParams } from 'expo-router';
-import { Button, TextInput } from 'react-native-paper';
 import { verifyOtp } from '@/lib/api/auth';
+import { AuthScreenLayout } from '@/components/AuthScreenLayout';
+import { TextField } from '@/components/TextField';
+import { PrimaryButton } from '@/components/PrimaryButton';
+import { colors } from '@/theme';
 
 export default function VerifyOtpScreen() {
   const { email } = useLocalSearchParams<{ email: string }>();
@@ -22,13 +25,26 @@ export default function VerifyOtpScreen() {
   };
 
   return (
-    <View className="flex-1 justify-center p-6 bg-background">
-      <Text className="text-2xl font-bold text-primary mb-6">Verifikasi OTP</Text>
-      <Text className="mb-4">Masukkan kode yang dikirim ke {email}</Text>
-      <TextInput label="Kode OTP" value={code} onChangeText={setCode} keyboardType="number-pad" className="mb-4" />
-      <Button mode="contained" onPress={handleVerify} loading={loading}>
+    <AuthScreenLayout
+      title="Verifikasi OTP"
+      subtitle="Masukkan kode yang dikirim ke email"
+    >
+      <View className="mb-4">
+        {email && (
+            <Text className="text-sm text-center mb-3" style={{ color: colors.textSecondary }}>
+            Kode dikirim ke {email}
+          </Text>
+        )}
+      </View>
+      <TextField
+        label="Kode OTP"
+        value={code}
+        onChangeText={setCode}
+        keyboardType="number-pad"
+      />
+      <PrimaryButton onPress={handleVerify} loading={loading}>
         Verifikasi
-      </Button>
-    </View>
+      </PrimaryButton>
+    </AuthScreenLayout>
   );
 }

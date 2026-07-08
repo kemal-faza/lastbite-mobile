@@ -1,7 +1,8 @@
 import { useState } from 'react';
 import { View, Text, Image } from 'react-native';
 import { router } from 'expo-router';
-import { Button, TextInput } from 'react-native-paper';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
 import * as ImagePicker from 'expo-image-picker';
 import { apiFetch } from '@/lib/api/client';
 import { prepareAndUploadImage } from '@/lib/api/uploads';
@@ -46,14 +47,33 @@ export default function AddProductScreen() {
   return (
     <View className="flex-1 bg-background p-4">
       <Text className="text-xl font-bold text-primary mb-4">Tambah Produk</Text>
-      <Button onPress={pickImage} className="mb-4">Pilih Gambar</Button>
+      <Button variant="outline" onPress={pickImage} className="mb-4">
+        <Text className="font-medium">Pilih Gambar</Text>
+      </Button>
       {image && <Image source={{ uri: image }} className="w-full h-40 rounded-lg mb-4" />}
-      <TextInput label="Nama" value={name} onChangeText={setName} className="mb-3" />
-      <TextInput label="Deskripsi" value={description} onChangeText={setDescription} className="mb-3" />
-      <TextInput label="Harga Asli" value={originalPrice} onChangeText={setOriginalPrice} keyboardType="numeric" className="mb-3" />
-      <TextInput label="Harga Diskon" value={discountedPrice} onChangeText={setDiscountedPrice} keyboardType="numeric" className="mb-3" />
-      <TextInput label="Stok" value={stock} onChangeText={setStock} keyboardType="numeric" className="mb-3" />
-      <Button mode="contained" onPress={handleSubmit}>Simpan</Button>
+      <View className="mb-3">
+        <Text className="text-foreground text-sm font-medium mb-1.5">Nama</Text>
+        <Input value={name} onChangeText={setName} />
+      </View>
+      <View className="mb-3">
+        <Text className="text-foreground text-sm font-medium mb-1.5">Deskripsi</Text>
+        <Input value={description} onChangeText={setDescription} />
+      </View>
+      <View className="mb-3">
+        <Text className="text-foreground text-sm font-medium mb-1.5">Harga Asli</Text>
+        <Input value={originalPrice} onChangeText={setOriginalPrice} keyboardType="numeric" />
+      </View>
+      <View className="mb-3">
+        <Text className="text-foreground text-sm font-medium mb-1.5">Harga Diskon</Text>
+        <Input value={discountedPrice} onChangeText={setDiscountedPrice} keyboardType="numeric" />
+      </View>
+      <View className="mb-3">
+        <Text className="text-foreground text-sm font-medium mb-1.5">Stok</Text>
+        <Input value={stock} onChangeText={setStock} keyboardType="numeric" />
+      </View>
+      <Button variant="default" onPress={handleSubmit}>
+        <Text className="text-white font-semibold">Simpan</Text>
+      </Button>
     </View>
   );
 }

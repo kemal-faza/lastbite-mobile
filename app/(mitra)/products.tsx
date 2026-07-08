@@ -1,6 +1,6 @@
 import { View, Text, FlatList } from 'react-native';
 import { router } from 'expo-router';
-import { Button } from 'react-native-paper';
+import { Button } from '@/components/ui/button';
 import { useMitraProducts } from '@/hooks/useMitra';
 
 export default function MitraProductsScreen() {
@@ -8,8 +8,8 @@ export default function MitraProductsScreen() {
 
   return (
     <View className="flex-1 bg-background p-4">
-      <Button mode="contained" onPress={() => router.push('/products/add')} className="mb-4">
-        + Tambah Produk
+      <Button variant="default" onPress={() => router.push('/products/add')} className="mb-4">
+        <Text className="text-white font-semibold">+ Tambah Produk</Text>
       </Button>
       <FlatList
         data={data?.products}

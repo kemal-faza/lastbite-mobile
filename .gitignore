@@ -42,3 +42,6 @@ CONTEXT.md
 AGENTS.md
 docs/
 memory/
+
+# CodeGraph index (local cache)
+.codegraph/

@@ -1,23 +1,19 @@
-import { Redirect, Tabs } from 'expo-router';
+import { Tabs } from 'expo-router';
 import { View } from 'react-native';
-import { useAuthStore } from '@/stores/authStore';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { OfflineBanner } from '@/components/OfflineBanner';
 import { useNetworkStatus } from '@/hooks/useNetworkStatus';
+import { colors } from '@/theme';
 
 export default function FoodSaverLayout() {
-  const { user, isAuthenticated } = useAuthStore();
   const isConnected = useNetworkStatus();
-
-  if (!isAuthenticated) return <Redirect href="/login" />;
-  if (user?.role !== 'FOOD_SAVER') return <Redirect href="/(mitra)" />;
 
   return (
     <View className="flex-1">
       {!isConnected && <OfflineBanner />}
       <Tabs
       screenOptions={{
-        tabBarActiveTintColor: '#11676a',
+        tabBarActiveTintColor: colors.primary,
         tabBarInactiveTintColor: '#666',
         headerShown: false,
       }}
@@ -75,6 +71,10 @@ export default function FoodSaverLayout() {
           ),
         }}
       />
+      {/* Hidden from tab bar — accessed programmatically */}
+      <Tabs.Screen name="checkout" options={{ href: null }} />
+      <Tabs.Screen name="product/[id]" options={{ href: null }} />
+      <Tabs.Screen name="order/confirm/[id]" options={{ href: null }} />
     </Tabs>
     </View>
   );

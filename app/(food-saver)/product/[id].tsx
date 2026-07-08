@@ -1,13 +1,15 @@
 import { View, Text, Image, ScrollView } from 'react-native';
-import { useLocalSearchParams } from 'expo-router';
-import { Button } from 'react-native-paper';
+import { useLocalSearchParams, router } from 'expo-router';
+import { Button } from '@/components/ui/button';
 import { useProduct } from '@/hooks/useProducts';
 import { MapPreview } from '@/components/MapPreview';
 import { addToCart } from '@/lib/api/cart';
+import { useAuthStore } from '@/stores/authStore';
 
 export default function ProductDetailScreen() {
   const { id } = useLocalSearchParams<{ id: string }>();
   const { data } = useProduct(id);
+  const { isAuthenticated } = useAuthStore();
   const product = data?.product;
 
   if (!product) return <Text>Loading...</Text>;
@@ -24,8 +26,15 @@ export default function ProductDetailScreen() {
         {product.storeLat && product.storeLng && (
           <MapPreview lat={product.storeLat} lng={product.storeLng} storeName={product.storeName} />
         )}
-        <Button mode="contained" onPress={() => addToCart(product.id)} className="mt-6">
-          Tambah ke Keranjang
+        <Button
+          variant="default"
+          onPress={() => {
+            if (!isAuthenticated) { router.push('/login'); return; }
+            addToCart(product.id);
+          }}
+          className="mt-6"
+        >
+          <Text className="text-white font-semibold">Tambah ke Keranjang</Text>
         </Button>
       </View>
     </ScrollView>

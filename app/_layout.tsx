@@ -1,7 +1,8 @@
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { Stack } from 'expo-router';
-import { PaperProvider } from 'react-native-paper';
+import { PortalHost } from '@rn-primitives/portal';
 import { usePushNotifications } from '@/hooks/usePushNotifications';
+import '../global.css';
 
 const queryClient = new QueryClient();
 
@@ -9,9 +10,8 @@ export default function RootLayout() {
   usePushNotifications();
   return (
     <QueryClientProvider client={queryClient}>
-      <PaperProvider>
-        <Stack screenOptions={{ headerShown: false }} />
-      </PaperProvider>
+      <Stack screenOptions={{ headerShown: false }} />
+      <PortalHost />
     </QueryClientProvider>
   );
 }

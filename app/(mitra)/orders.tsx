@@ -1,5 +1,5 @@
 import { View, Text, FlatList } from 'react-native';
-import { Button } from 'react-native-paper';
+import { Button } from '@/components/ui/button';
 import { useMitraOrders } from '@/hooks/useMitra';
 import { apiFetch } from '@/lib/api/client';
 
@@ -26,8 +26,16 @@ export default function MitraOrdersScreen() {
             <Text className="font-bold">{item.buyerName}</Text>
             <Text>Total: Rp{item.total.toLocaleString()}</Text>
             <Text className="text-primary mb-2">{item.status}</Text>
-            {item.status === 'PENDING' && <Button onPress={() => updateStatus(item.id, 'PROCESSED')}>Proses</Button>}
-            {item.status === 'PROCESSED' && <Button onPress={() => updateStatus(item.id, 'READY')}>Siap Diambil</Button>}
+            {item.status === 'PENDING' && (
+              <Button variant="outline" onPress={() => updateStatus(item.id, 'PROCESSED')}>
+                <Text className="font-medium">Proses</Text>
+              </Button>
+            )}
+            {item.status === 'PROCESSED' && (
+              <Button variant="outline" onPress={() => updateStatus(item.id, 'READY')}>
+                <Text className="font-medium">Siap Diambil</Text>
+              </Button>
+            )}
           </View>
         )}
       />

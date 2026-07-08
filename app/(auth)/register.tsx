@@ -1,8 +1,11 @@
 import { useState } from 'react';
-import { View, Text } from 'react-native';
+import { View, Text, Pressable } from 'react-native';
 import { router } from 'expo-router';
-import { Button, TextInput } from 'react-native-paper';
 import { register } from '@/lib/api/auth';
+import { AuthScreenLayout } from '@/components/AuthScreenLayout';
+import { TextField } from '@/components/TextField';
+import { PrimaryButton } from '@/components/PrimaryButton';
+import { colors } from '@/theme';
 
 export default function RegisterScreen() {
   const [email, setEmail] = useState('');
@@ -25,15 +28,47 @@ export default function RegisterScreen() {
   };
 
   return (
-    <View className="flex-1 justify-center p-6 bg-background">
-      <Text className="text-2xl font-bold text-primary mb-6">Daftar LastBite</Text>
-      <TextInput label="Nama" value={name} onChangeText={setName} className="mb-3" />
-      <TextInput label="Email" value={email} onChangeText={setEmail} className="mb-3" />
-      <TextInput label="Telepon" value={phone} onChangeText={setPhone} className="mb-3" />
-      <TextInput label="Password" value={password} onChangeText={setPassword} secureTextEntry className="mb-3" />
-      <Button mode="contained" onPress={handleRegister} loading={loading} className="mt-4">
+    <AuthScreenLayout
+      title="Daftar LastBite"
+      subtitle="Bergabung menyelamatkan makanan"
+      footer={
+        <Pressable onPress={() => router.push('/login')}>
+          <Text className="text-center text-sm">
+            Sudah punya akun?{' '}
+            <Text className="font-semibold" style={{ color: colors.primary }}>
+              Masuk
+            </Text>
+          </Text>
+        </Pressable>
+      }
+    >
+      <View className="flex-row mb-3">
+        <Pressable
+          onPress={() => setRole('FOOD_SAVER')}
+          className={`flex-1 py-3 rounded-l-lg items-center ${role === 'FOOD_SAVER' ? 'bg-primary' : 'bg-white'}`}
+        >
+          <Text className={role === 'FOOD_SAVER' ? 'text-white font-semibold' : 'text-gray-700'}>
+            Food Saver
+          </Text>
+        </Pressable>
+        <Pressable
+          onPress={() => setRole('MITRA')}
+          className={`flex-1 py-3 rounded-r-lg items-center ${role === 'MITRA' ? 'bg-primary' : 'bg-white'}`}
+        >
+          <Text className={role === 'MITRA' ? 'text-white font-semibold' : 'text-gray-700'}>
+            Mitra
+          </Text>
+        </Pressable>
+      </View>
+
+      <TextField label="Nama" value={name} onChangeText={setName} />
+      <TextField label="Email" value={email} onChangeText={setEmail} keyboardType="email-address" />
+      <TextField label="Telepon" value={phone} onChangeText={setPhone} keyboardType="phone-pad" />
+      <TextField label="Password" value={password} onChangeText={setPassword} secureTextEntry />
+
+      <PrimaryButton onPress={handleRegister} loading={loading}>
         Daftar
-      </Button>
-    </View>
+      </PrimaryButton>
+    </AuthScreenLayout>
   );
 }
