@@ -1,5 +1,6 @@
-import { View, Text, Image, ScrollView, ActivityIndicator, TouchableOpacity } from 'react-native';
+import { View, Text, ScrollView, ActivityIndicator, TouchableOpacity } from 'react-native';
 import { useLocalSearchParams, router } from 'expo-router';
+import { Image } from 'expo-image';
 import { Button } from '@/components/ui/button';
 import { useProduct } from '@/hooks/useProducts';
 import { useProductReviews } from '@/hooks/useReviews';
@@ -8,6 +9,7 @@ import { TrustBadgeRow } from '@/components/TrustBadge';
 import { ReviewList } from '@/components/ReviewList';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { colors } from '@/theme';
+import { getImageVariants } from '@/lib/api/products';
 import { addToCart } from '@/lib/api/cart';
 import { useAuthStore } from '@/stores/authStore';
 
@@ -54,7 +56,16 @@ export default function ProductDetailScreen() {
 
   return (
     <ScrollView className="flex-1 bg-background">
-      <Image source={{ uri: product.imageUrl || undefined }} className="w-full h-64 bg-gray-200" />
+      <Image
+        source={
+          getImageVariants(product.imageVariants)?.full
+            ? { uri: getImageVariants(product.imageVariants)!.full }
+            : require('../../../assets/placeholder.png')
+        }
+        contentFit="cover"
+        transition={300}
+        className="w-full h-64 bg-gray-200"
+      />
       <View className="p-4">
         <Text className="text-2xl font-bold">{product.name}</Text>
         <Text className="text-gray-500">{product.storeName}</Text>
