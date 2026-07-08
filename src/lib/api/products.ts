@@ -1,4 +1,4 @@
-import { apiFetch } from './client';
+import { apiFetch, API_BASE } from './client';
 
 export interface ImageVariants {
   thumb: string;
@@ -16,6 +16,27 @@ export interface Product {
   imageUrl: string | null;
   imageVariants: ImageVariants | null;
   category: 'meals' | 'bakery' | 'drinks';
+}
+
+export function getImageVariants(variants: ImageVariants | null | undefined): ImageVariants | null {
+  if (!variants) return null;
+  const resolve = (url: string): string => {
+    if (url.startsWith('http://') || url.startsWith('https://')) return url;
+    return `${API_BASE}${url}`;
+  };
+  return {
+    thumb: resolve(variants.thumb),
+    card: resolve(variants.card),
+    full: resolve(variants.full),
+  };
+}
+
+export function getVariantUrl(
+  variants: ImageVariants | null | undefined,
+  variant: 'thumb' | 'card' | 'full'
+): string | null {
+  const resolved = getImageVariants(variants);
+  return resolved?.[variant] ?? null;
 }
 
 export async function getProducts(params?: { category?: string; search?: string }) {
