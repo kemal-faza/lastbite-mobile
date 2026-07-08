@@ -1,9 +1,11 @@
 import { View, Text, FlatList } from 'react-native';
 import { router } from 'expo-router';
+import { Image } from 'expo-image';
 import { PrimaryButton } from '@/components/PrimaryButton';
 import { useOrders } from '@/hooks/useOrders';
 import { useAuthStore } from '@/stores/authStore';
 import { EmptyState } from '@/components/EmptyState';
+import { getImageVariants } from '@/lib/api/products';
 
 export default function OrdersScreen() {
   const { isAuthenticated } = useAuthStore();
@@ -35,14 +37,31 @@ export default function OrdersScreen() {
             description="Pesananmu akan muncul setelah kamu checkout"
           />
         }
-        renderItem={({ item }) => (
-          <View className="bg-white p-3 rounded-xl mb-2">
-            <Text className="font-bold">{item.storeName}</Text>
-            <Text>Total: Rp{item.total.toLocaleString()}</Text>
-            <Text className="text-primary">{item.status}</Text>
-            <Text className="text-gray-400 text-xs">{item.pickupCode}</Text>
-          </View>
-        )}
+        renderItem={({ item }) => {
+          const firstItem = item.items?.[0];
+          return (
+            <View className="bg-white p-3 rounded-xl mb-2 flex-row items-center">
+              {firstItem && (
+                <Image
+                  source={
+                    getImageVariants(firstItem.imageVariants)?.thumb
+                      ? { uri: getImageVariants(firstItem.imageVariants)!.thumb }
+                      : require('../../assets/placeholder.png')
+                  }
+                  style={{ width: 64, height: 64, borderRadius: 8 }}
+                  contentFit="cover"
+                  className="mr-3 bg-gray-200"
+                />
+              )}
+              <View className="flex-1">
+                <Text className="font-bold">{item.storeName}</Text>
+                <Text>Total: Rp{item.total.toLocaleString()}</Text>
+                <Text className="text-primary">{item.status}</Text>
+                <Text className="text-gray-400 text-xs">{item.pickupCode}</Text>
+              </View>
+            </View>
+          );
+        }}
       />
     </View>
   );
