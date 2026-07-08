@@ -11,9 +11,9 @@ import { useAuthStore } from '@/stores/authStore';
 
 export default function CheckoutScreen() {
   const { isAuthenticated } = useAuthStore();
-  if (!isAuthenticated) return <Redirect href="/login" />;
+  const { cart } = useCart(isAuthenticated);
 
-  const { cart } = useCart();
+  if (!isAuthenticated) return <Redirect href="/login" />;
   const [notes, setNotes] = useState('');
   const [loading, setLoading] = useState(false);
   const items = cart.data?.cart.items || [];

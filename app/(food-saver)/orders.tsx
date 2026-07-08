@@ -8,6 +8,7 @@ import { colors } from '@/theme';
 
 export default function OrdersScreen() {
   const { isAuthenticated } = useAuthStore();
+  const { data } = useOrders(isAuthenticated);
 
   if (!isAuthenticated) {
     return (
@@ -19,8 +20,6 @@ export default function OrdersScreen() {
       </View>
     );
   }
-
-  const { data } = useOrders();
 
   return (
     <View className="flex-1 bg-background p-4">

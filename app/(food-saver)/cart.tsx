@@ -9,6 +9,7 @@ import { colors } from '@/theme';
 
 export default function CartScreen() {
   const { isAuthenticated } = useAuthStore();
+  const { cart, updateItem } = useCart(isAuthenticated);
 
   if (!isAuthenticated) {
     return (
@@ -20,8 +21,6 @@ export default function CartScreen() {
       </View>
     );
   }
-
-  const { cart, updateItem } = useCart();
   const items = cart.data?.cart.items || [];
   const total = items.reduce((sum, i) => sum + i.price * i.quantity, 0);
 
