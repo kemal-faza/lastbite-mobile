@@ -1,4 +1,4 @@
-import { colors, typography, radius } from '../tokens';
+import { colors, typography, radius, shadows, spacing } from '../tokens';
 
 describe('tokens', () => {
   describe('colors', () => {
@@ -41,14 +41,19 @@ describe('tokens', () => {
     it('has no additional unexpected color keys', () => {
       const expectedKeys = [
         'primary',
+        'primaryDark',
         'secondary',
+        'secondaryLight',
         'background',
         'destructive',
         'surface',
+        'card',
         'textOnPrimary',
         'textOnBackground',
         'border',
         'textSecondary',
+        'textMuted',
+        'muted',
       ].sort();
       expect(Object.keys(colors).sort()).toEqual(expectedKeys);
     });
@@ -71,16 +76,52 @@ describe('tokens', () => {
 
   describe('radius', () => {
     it('exports border radius values', () => {
-      expect(radius.sm).toBe(4);
-      expect(radius.md).toBe(8);
-      expect(radius.lg).toBe(12);
-      expect(radius.xl).toBe(16);
+      expect(radius.sm).toBe(8);
+      expect(radius.md).toBe(10);
+      expect(radius.lg).toBe(14);
+      expect(radius.xl).toBe(20);
       expect(radius.full).toBe(9999);
     });
 
     it('has no additional unexpected radius keys', () => {
       const expectedKeys = ['sm', 'md', 'lg', 'xl', 'full'].sort();
       expect(Object.keys(radius).sort()).toEqual(expectedKeys);
+    });
+  });
+
+  describe('shadows', () => {
+    it('exports shadow elevation values', () => {
+      expect(shadows.sm.elevation).toBe(1);
+      expect(shadows.md.elevation).toBe(3);
+      expect(shadows.lg.elevation).toBe(8);
+    });
+
+    it('has no additional unexpected shadow keys', () => {
+      const expectedKeys = ['sm', 'md', 'lg'].sort();
+      expect(Object.keys(shadows).sort()).toEqual(expectedKeys);
+    });
+
+    it('each shadow has required properties', () => {
+      const required = ['shadowColor', 'shadowOffset', 'shadowOpacity', 'shadowRadius', 'elevation'];
+      Object.values(shadows).forEach(entry => {
+        required.forEach(prop => expect(entry).toHaveProperty(prop));
+      });
+    });
+  });
+
+  describe('spacing', () => {
+    it('exports spacing scale values', () => {
+      expect(spacing.xs).toBe(4);
+      expect(spacing.sm).toBe(8);
+      expect(spacing.md).toBe(12);
+      expect(spacing.lg).toBe(16);
+      expect(spacing.xl).toBe(24);
+      expect(spacing['2xl']).toBe(32);
+    });
+
+    it('has no additional unexpected spacing keys', () => {
+      const expectedKeys = ['xs', 'sm', 'md', 'lg', 'xl', '2xl'].sort();
+      expect(Object.keys(spacing).sort()).toEqual(expectedKeys);
     });
   });
 });
