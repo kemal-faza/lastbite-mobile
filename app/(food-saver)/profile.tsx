@@ -5,6 +5,8 @@ import { PrimaryButton } from '@/components/PrimaryButton';
 import { useAuthStore } from '@/stores/authStore';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { colors } from '@/theme';
+import { ImpactStats } from '@/components/ImpactStats';
+import { ProfileMenuItem } from '@/components/ProfileMenuItem';
 
 export default function ProfileScreen() {
   const { user, isAuthenticated, logout } = useAuthStore();
@@ -27,7 +29,7 @@ export default function ProfileScreen() {
 
   return (
     <View className="flex-1 bg-background p-4">
-      <View className="items-center mt-8 mb-8">
+      <View className="items-center mt-8 mb-6">
         <View className="w-20 h-20 rounded-full bg-primary items-center justify-center mb-4">
           <Text className="text-white text-3xl font-bold">
             {user?.name?.charAt(0)?.toUpperCase() || '?'}
@@ -42,27 +44,46 @@ export default function ProfileScreen() {
         </View>
       </View>
 
-      <View className="bg-white rounded-xl p-4 mb-4">
-        <Text className="font-bold mb-2">Akun</Text>
-        <View className="flex-row items-center py-3 border-b border-gray-100">
-          <MaterialCommunityIcons name="email-outline" size={20} color={colors.textSecondary} />
-          <Text className="ml-3 text-gray-700">{user?.email}</Text>
-        </View>
-        {user?.phone && (
-          <View className="flex-row items-center py-3">
-            <MaterialCommunityIcons name="phone-outline" size={20} color={colors.textSecondary} />
-            <Text className="ml-3 text-gray-700">{user?.phone}</Text>
-          </View>
-        )}
+      <ImpactStats moneySaved={0} foodSaved={0} />
+
+      <View className="bg-white rounded-xl mb-4">
+        <ProfileMenuItem
+          icon="clipboard-list"
+          label="Riwayat Pesanan"
+          onPress={() => router.push('/orders')}
+        />
+        <ProfileMenuItem
+          icon="heart-outline"
+          label="Menu Favorit"
+          onPress={() => router.push('/wishlist')}
+        />
+        <ProfileMenuItem
+          icon="shield-account"
+          label="Keamanan Akun"
+          onPress={() => {}}
+        />
+        <ProfileMenuItem
+          icon="cog-outline"
+          label="Pengaturan"
+          onPress={() => {}}
+        />
+        <ProfileMenuItem
+          icon="help-circle-outline"
+          label="Pusat Bantuan"
+          onPress={() => {}}
+          showArrow={false}
+        />
       </View>
 
-      <View className="bg-white rounded-xl p-4">
-        <Text className="font-bold mb-2">Pesanan</Text>
-        <Button variant="ghost" onPress={() => router.push('/orders')} className="w-full justify-start">
-          <MaterialCommunityIcons name="clipboard-list" size={20} color={colors.primary} />
-          <Text className="ml-2 font-medium">Lihat Pesanan Saya</Text>
-        </Button>
-      </View>
+      {user?.role === 'MITRA' && (
+        <View className="bg-white rounded-xl mb-4">
+          <ProfileMenuItem
+            icon="store"
+            label="Dashboard Mitra"
+            onPress={() => router.push('/(mitra)')}
+          />
+        </View>
+      )}
 
       <View className="flex-1 justify-end pb-4">
         <Button variant="outline" onPress={logout} className="border-destructive">
