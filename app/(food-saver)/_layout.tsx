@@ -75,6 +75,8 @@ export default function FoodSaverLayout() {
       <Tabs.Screen name="checkout" options={{ href: null }} />
       <Tabs.Screen name="product/[id]" options={{ href: null }} />
       <Tabs.Screen name="order/confirm/[id]" options={{ href: null }} />
+      <Tabs.Screen name="wishlist" options={{ href: null }} />
+      <Tabs.Screen name="notifications" options={{ href: null }} />
     </Tabs>
     </View>
   );

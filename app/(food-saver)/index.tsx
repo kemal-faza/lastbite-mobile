@@ -31,15 +31,6 @@ export default function HomeScreen() {
         {isAuthenticated ? 'Rekomendasi Buat Kamu' : 'Temukan Produk Terdekat'}
       </Text>
 
-      {/* Trust Banner */}
-      <View className="mx-4 mb-4 bg-primary/5 border border-primary/10 rounded-xl p-3 flex-row items-center">
-        <MaterialCommunityIcons name="shield-check" size={20} color={colors.primary} />
-        <View className="flex-1 ml-2">
-          <Text className="text-sm font-semibold text-primary">Makanan Surplus Aman</Text>
-          <Text className="text-xs text-gray-500">Semua mitra terverifikasi. Kamu hemat hingga 70%</Text>
-        </View>
-      </View>
-
       <CategoryFilter selected={category} onSelect={setCategory} />
 
       {/* Sort & Filter */}
