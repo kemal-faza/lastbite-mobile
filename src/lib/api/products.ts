@@ -17,5 +17,5 @@ export async function getProducts(params?: { category?: string; search?: string 
 }
 
 export async function getProduct(id: string) {
-  return apiFetch<{ product: Product & { description?: string; storeAddress?: string; storeLat?: number; storeLng?: number } }>(`/products/${id}`);
+  return apiFetch<{ product: Product & { description?: string; storeAddress?: string; storeLat?: number; storeLng?: number; expiresAt?: string } }>(`/products/${id}`);
 }
