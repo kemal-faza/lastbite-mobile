@@ -3,8 +3,7 @@ import { router } from 'expo-router';
 import { PrimaryButton } from '@/components/PrimaryButton';
 import { useOrders } from '@/hooks/useOrders';
 import { useAuthStore } from '@/stores/authStore';
-import { MaterialCommunityIcons } from '@expo/vector-icons';
-import { colors } from '@/theme';
+import { EmptyState } from '@/components/EmptyState';
 
 export default function OrdersScreen() {
   const { isAuthenticated } = useAuthStore();
@@ -12,11 +11,13 @@ export default function OrdersScreen() {
 
   if (!isAuthenticated) {
     return (
-      <View className="flex-1 bg-background p-4 justify-center items-center">
-        <MaterialCommunityIcons name="clipboard-list-outline" size={64} color={colors.textSecondary} />
-        <Text className="text-lg font-semibold mt-4 text-center">Login untuk melihat pesanan</Text>
-        <Text className="text-sm text-gray-500 mt-1 text-center">Riwayat pesanan akan muncul di sini</Text>
-        <PrimaryButton onPress={() => router.push('/login')}>Masuk</PrimaryButton>
+      <View className="flex-1 bg-background p-4">
+        <EmptyState
+          icon="clipboard-list-outline"
+          title="Login untuk melihat pesanan"
+          description="Riwayat pesanan akan muncul di sini"
+          action={<PrimaryButton onPress={() => router.push('/login')}>Masuk</PrimaryButton>}
+        />
       </View>
     );
   }
@@ -27,6 +28,13 @@ export default function OrdersScreen() {
       <FlatList
         data={data?.orders}
         keyExtractor={(item) => item.id}
+        ListEmptyComponent={
+          <EmptyState
+            icon="package-variant-closed"
+            title="Belum ada pesanan"
+            description="Pesananmu akan muncul setelah kamu checkout"
+          />
+        }
         renderItem={({ item }) => (
           <View className="bg-white p-3 rounded-xl mb-2">
             <Text className="font-bold">{item.storeName}</Text>

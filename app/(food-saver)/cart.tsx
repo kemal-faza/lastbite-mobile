@@ -4,8 +4,7 @@ import { Button } from '@/components/ui/button';
 import { PrimaryButton } from '@/components/PrimaryButton';
 import { useCart } from '@/hooks/useCart';
 import { useAuthStore } from '@/stores/authStore';
-import { MaterialCommunityIcons } from '@expo/vector-icons';
-import { colors } from '@/theme';
+import { EmptyState } from '@/components/EmptyState';
 
 export default function CartScreen() {
   const { isAuthenticated } = useAuthStore();
@@ -13,16 +12,32 @@ export default function CartScreen() {
 
   if (!isAuthenticated) {
     return (
-      <View className="flex-1 bg-background p-4 justify-center items-center">
-        <MaterialCommunityIcons name="cart-outline" size={64} color={colors.textSecondary} />
-        <Text className="text-lg font-semibold mt-4 text-center">Login untuk mengakses keranjang</Text>
-        <Text className="text-sm text-gray-500 mt-1 text-center">Masuk atau daftar untuk mulai berbelanja</Text>
-        <PrimaryButton onPress={() => router.push('/login')}>Masuk</PrimaryButton>
+      <View className="flex-1 bg-background p-4">
+        <EmptyState
+          icon="cart-outline"
+          title="Login untuk mengakses keranjang"
+          description="Masuk atau daftar untuk mulai berbelanja"
+          action={<PrimaryButton onPress={() => router.push('/login')}>Masuk</PrimaryButton>}
+        />
       </View>
     );
   }
   const items = cart.data?.cart.items || [];
   const total = items.reduce((sum, i) => sum + i.price * i.quantity, 0);
+
+  if (items.length === 0) {
+    return (
+      <View className="flex-1 bg-background p-4">
+        <Text className="text-xl font-bold text-primary mb-4">Keranjang</Text>
+        <EmptyState
+          icon="cart-off"
+          title="Keranjang Kosong"
+          description="Cari makanan surplus favoritmu dan tambahkan ke keranjang"
+          action={<PrimaryButton onPress={() => router.push('/search')}>Cari Makanan</PrimaryButton>}
+        />
+      </View>
+    );
+  }
 
   return (
     <View className="flex-1 bg-background p-4">

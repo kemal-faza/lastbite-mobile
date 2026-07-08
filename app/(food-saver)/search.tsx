@@ -3,7 +3,7 @@ import { View, Text, FlatList, ActivityIndicator, TouchableOpacity, TextInput } 
 import { useProducts } from '@/hooks/useProducts';
 import type { Product } from '@/lib/api/products';
 import { ProductCard } from '@/components/ProductCard';
-import { colors } from '@/theme';
+import { EmptyState } from '@/components/EmptyState';
 
 export default function SearchScreen() {
   const [query, setQuery] = useState('');
@@ -53,17 +53,17 @@ export default function SearchScreen() {
           </TouchableOpacity>
         </View>
       ) : !debouncedQuery ? (
-        <View className="items-center justify-center py-12">
-          <Text className="text-gray-500 text-center">
-            Ketik nama produk atau toko untuk mulai mencari
-          </Text>
-        </View>
+        <EmptyState
+          icon="magnify"
+          title="Cari Makanan Surplus"
+          description="Ketik nama produk atau toko untuk mulai mencari"
+        />
       ) : !data?.products?.length ? (
-        <View className="items-center justify-center py-12">
-          <Text className="text-gray-500 text-center">
-            Tidak ada produk untuk "{debouncedQuery}"
-          </Text>
-        </View>
+        <EmptyState
+          icon="magnify-close"
+          title={`Tidak ada hasil untuk "${debouncedQuery}"`}
+          description="Coba kata kunci lain atau periksa filter"
+        />
       ) : (
         <FlatList
           data={data.products as Product[]}
