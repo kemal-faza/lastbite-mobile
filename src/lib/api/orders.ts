@@ -46,3 +46,10 @@ export async function verifyPickup(id: string, pickupCode: string) {
     body: JSON.stringify({ pickupCode }),
   });
 }
+
+export async function hasPurchaseHistory() {
+  return apiFetch<{ hasHistory: boolean }>('/orders/has-history', { auth: true });
+}
+
+// Alias untuk consistency dengan useRequireAuth flow
+export const confirmPickup = verifyPickup;
