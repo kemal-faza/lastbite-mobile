@@ -4,6 +4,7 @@ import { View } from 'react-native';
 import { useAuthStore } from '@/stores/authStore';
 import { OfflineBanner } from '@/components/OfflineBanner';
 import { useNetworkStatus } from '@/hooks/useNetworkStatus';
+import { MitraDrawerContent } from '@/components/MitraDrawerContent';
 
 export default function MitraLayout() {
   const { user, isAuthenticated } = useAuthStore();
@@ -15,19 +16,22 @@ export default function MitraLayout() {
   return (
     <View className="flex-1">
       {!isConnected && <OfflineBanner />}
-      <Drawer screenOptions={{ headerShown: true }}>
-      <Drawer.Screen name="index" options={{ title: 'Ringkasan' }} />
-      <Drawer.Screen name="products" options={{ title: 'Daftar Produk' }} />
-      <Drawer.Screen
-        name="products/add"
-        options={{ title: 'Tambah Produk', drawerItemStyle: { display: 'none' } }}
-      />
-      <Drawer.Screen
-        name="products/[id]"
-        options={{ title: 'Edit Produk', drawerItemStyle: { display: 'none' } }}
-      />
-      <Drawer.Screen name="orders" options={{ title: 'Pesanan Masuk' }} />
-    </Drawer>
+      <Drawer
+        drawerContent={(props) => <MitraDrawerContent {...props} />}
+        screenOptions={{ headerShown: true }}
+      >
+        <Drawer.Screen name="index" options={{ title: 'Ringkasan' }} />
+        <Drawer.Screen name="products" options={{ title: 'Daftar Produk' }} />
+        <Drawer.Screen
+          name="products/add"
+          options={{ title: 'Tambah Produk', drawerItemStyle: { display: 'none' } }}
+        />
+        <Drawer.Screen
+          name="products/[id]"
+          options={{ title: 'Edit Produk', drawerItemStyle: { display: 'none' } }}
+        />
+        <Drawer.Screen name="orders" options={{ title: 'Pesanan Masuk' }} />
+      </Drawer>
     </View>
   );
 }
