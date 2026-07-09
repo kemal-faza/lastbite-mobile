@@ -7,6 +7,7 @@ import { useCart } from '@/hooks/useCart';
 import { useAuthStore } from '@/stores/authStore';
 import { EmptyState } from '@/components/EmptyState';
 import { getImageVariants } from '@/lib/api/products';
+import { TopBar } from '@/components/TopBar';
 
 export default function CartScreen() {
   const { isAuthenticated } = useAuthStore();
@@ -14,13 +15,16 @@ export default function CartScreen() {
 
   if (!isAuthenticated) {
     return (
-      <View className="flex-1 bg-background p-4">
-        <EmptyState
-          icon="cart-outline"
-          title="Login untuk mengakses keranjang"
-          description="Masuk atau daftar untuk mulai berbelanja"
-          action={<PrimaryButton onPress={() => router.push('/login')}>Masuk</PrimaryButton>}
-        />
+      <View className="flex-1 bg-background">
+        <TopBar />
+        <View className="p-4">
+          <EmptyState
+            icon="cart-outline"
+            title="Login untuk mengakses keranjang"
+            description="Masuk atau daftar untuk mulai berbelanja"
+            action={<PrimaryButton onPress={() => router.push('/login')}>Masuk</PrimaryButton>}
+          />
+        </View>
       </View>
     );
   }
@@ -29,37 +33,43 @@ export default function CartScreen() {
 
   if (items.length === 0) {
     return (
-      <View className="flex-1 bg-background p-4">
-        <Text className="text-xl font-bold text-primary mb-4">Keranjang</Text>
-        <EmptyState
-          icon="cart-off"
-          title="Keranjang Kosong"
-          description="Cari makanan surplus favoritmu dan tambahkan ke keranjang"
-          action={<PrimaryButton onPress={() => router.push('/search')}>Cari Makanan</PrimaryButton>}
-        />
+      <View className="flex-1 bg-background">
+        <TopBar />
+        <View className="p-4">
+          <Text className="text-xl font-bold text-primary mb-4">Keranjang</Text>
+          <EmptyState
+            icon="cart-off"
+            title="Keranjang Kosong"
+            description="Cari makanan surplus favoritmu dan tambahkan ke keranjang"
+            action={<PrimaryButton onPress={() => router.push('/search')}>Cari Makanan</PrimaryButton>}
+          />
+        </View>
       </View>
     );
   }
 
   return (
-    <View className="flex-1 bg-background p-4">
-      <Text className="text-xl font-bold text-primary mb-4">Keranjang</Text>
-      <FlatList
+    <View className="flex-1 bg-background">
+      <TopBar />
+      <View className="flex-1 p-4">
+        <Text className="text-xl font-bold text-primary mb-4">Keranjang</Text>
+        <FlatList
         data={items}
         keyExtractor={(item) => item.id}
         renderItem={({ item }) => (
           <View className="bg-white p-3 rounded-xl mb-2 flex-row justify-between items-center">
             <View className="flex-row items-center flex-1">
-              <Image
-                source={
-                  getImageVariants(item.imageVariants)?.thumb
-                    ? { uri: getImageVariants(item.imageVariants)!.thumb }
-                    : require('../../assets/placeholder.png')
-                }
-                style={{ width: 64, height: 64, borderRadius: 8 }}
-                contentFit="cover"
-                className="mr-3 bg-gray-200"
-              />
+              <View className="mr-3">
+                <Image
+                  source={
+                    getImageVariants(item.imageVariants)?.thumb
+                      ? { uri: getImageVariants(item.imageVariants)!.thumb }
+                      : require('../../assets/placeholder.png')
+                  }
+                  contentFit="cover"
+                  style={{ width: 64, height: 64, borderRadius: 8, backgroundColor: '#e5e7eb' }}
+                />
+              </View>
               <View className="flex-1">
                 <Text className="font-bold">{item.name}</Text>
                 <Text className="text-gray-500">{item.storeName}</Text>
@@ -83,6 +93,7 @@ export default function CartScreen() {
         <Button variant="default" onPress={() => router.push('/checkout')} disabled={items.length === 0} className="mt-2">
           <Text className="text-white font-semibold">Checkout</Text>
         </Button>
+      </View>
       </View>
     </View>
   );
