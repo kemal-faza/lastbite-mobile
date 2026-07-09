@@ -17,7 +17,7 @@ export function PrimaryButton({ loading, children, disabled, ...rest }: PrimaryB
       {loading ? (
         <ActivityIndicator color="white" size="small" />
       ) : (
-        <Text className="text-white font-semibold text-center">{children}</Text>
+        <Text className="text-white font-semibold w-full text-center">{children}</Text>
       )}
     </Button>
   );
