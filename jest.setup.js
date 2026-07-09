@@ -38,3 +38,24 @@ jest.mock('react-native', () => {
 jest.mock('@expo/vector-icons', () => ({
   MaterialCommunityIcons: 'MaterialCommunityIcons',
 }));
+
+// Mock expo-location
+jest.mock('expo-location', () => ({
+  requestForegroundPermissionsAsync: jest.fn(),
+  getCurrentPositionAsync: jest.fn(),
+  Accuracy: { Balanced: 1, High: 2, Low: 0 },
+}));
+
+// Mock expo-router segments + navigation (additive to any existing expo-router mock)
+jest.mock('expo-router', () => ({
+  router: { push: jest.fn(), replace: jest.fn(), back: jest.fn() },
+  useSegments: jest.fn(() => []),
+  useRootNavigationState: jest.fn(() => ({ key: 'test' })),
+  useLocalSearchParams: jest.fn(() => ({})),
+  useRouter: jest.fn(() => ({ push: jest.fn(), replace: jest.fn(), back: jest.fn() })),
+  Stack: { Screen: () => null },
+  Tabs: { Screen: () => null },
+  Drawer: { Screen: () => null },
+  Redirect: () => null,
+  Link: () => null,
+}));
