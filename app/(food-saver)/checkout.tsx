@@ -1,6 +1,5 @@
 import { useState } from 'react';
 import { View } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
 import { router, Redirect } from 'expo-router';
 import { Button } from '@/components/ui/button';
 import { Text } from '@/components/ui/text';
@@ -33,24 +32,22 @@ export default function CheckoutScreen() {
   };
 
   return (
-    <SafeAreaView edges={['top']} className="flex-1 bg-background">
-      <View className="flex-1 p-4">
-        <Text className="text-xl font-bold text-primary mb-4">Checkout</Text>
-        <View className="flex-row mb-2">
-          <Text className="text-base font-semibold">Total: </Text>
-          <Text className="text-base">Rp{total.toLocaleString()}</Text>
-        </View>
-        <View className="bg-secondary/10 p-3 rounded-lg mb-4">
-          <Text className="text-sm">Pembayaran dilakukan saat mengambil pesanan (COD). Platform tidak memproses pembayaran.</Text>
-        </View>
-        <View className="mb-3">
-          <Text className="text-foreground text-sm font-medium mb-1.5">Catatan untuk Mitra (opsional)</Text>
-          <Textarea value={notes} onChangeText={setNotes} />
-        </View>
-        <Button variant="default" onPress={handleCheckout} disabled={loading} className="mt-2">
-          {loading ? <Text className="text-white">Memproses...</Text> : <Text className="text-white font-semibold">Konfirmasi Pesanan</Text>}
-        </Button>
+    <View className="flex-1 bg-background p-4">
+      <Text className="text-xl font-bold text-primary mb-4">Checkout</Text>
+      <View className="flex-row mb-2">
+        <Text className="text-base font-semibold">Total: </Text>
+        <Text className="text-base">Rp{total.toLocaleString()}</Text>
       </View>
-    </SafeAreaView>
+      <View className="bg-secondary/10 p-3 rounded-lg mb-4">
+        <Text className="text-sm">Pembayaran dilakukan saat mengambil pesanan (COD). Platform tidak memproses pembayaran.</Text>
+      </View>
+      <View className="mb-3">
+        <Text className="text-foreground text-sm font-medium mb-1.5">Catatan untuk Mitra (opsional)</Text>
+        <Textarea value={notes} onChangeText={setNotes} />
+      </View>
+      <Button variant="default" onPress={handleCheckout} disabled={loading} className="mt-2">
+        {loading ? <Text className="text-white">Memproses...</Text> : <Text className="text-white font-semibold">Konfirmasi Pesanan</Text>}
+      </Button>
+    </View>
   );
 }

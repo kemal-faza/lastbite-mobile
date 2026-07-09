@@ -1,5 +1,4 @@
 import { View, Text, ScrollView, TouchableOpacity, ActivityIndicator } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
 import { useLocalSearchParams } from 'expo-router';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { useOrder } from '@/hooks/useOrders';
@@ -13,23 +12,19 @@ export default function OrderConfirmScreen() {
 
   if (isLoading) {
     return (
-      <SafeAreaView edges={['top']} className="flex-1 bg-background">
-        <View className="flex-1 items-center justify-center">
-          <ActivityIndicator size="large" />
-          <Text className="text-gray-500 mt-2">Memuat pesanan...</Text>
-        </View>
-      </SafeAreaView>
+      <View className="flex-1 bg-background items-center justify-center">
+        <ActivityIndicator size="large" />
+        <Text className="text-gray-500 mt-2">Memuat pesanan...</Text>
+      </View>
     );
   }
 
   if (isError || !orderData?.order) {
     return (
-      <SafeAreaView edges={['top']} className="flex-1 bg-background">
-        <View className="flex-1 items-center justify-center p-4">
-          <MaterialCommunityIcons name="alert-circle-outline" size={48} color={colors.destructive} />
-          <Text className="text-red-500 text-center mt-2">Gagal memuat pesanan</Text>
-        </View>
-      </SafeAreaView>
+      <View className="flex-1 bg-background items-center justify-center p-4">
+        <MaterialCommunityIcons name="alert-circle-outline" size={48} color={colors.destructive} />
+        <Text className="text-red-500 text-center mt-2">Gagal memuat pesanan</Text>
+      </View>
     );
   }
 
@@ -37,8 +32,7 @@ export default function OrderConfirmScreen() {
   const pickupExpiresAt = order.pickupExpiresAt || new Date(Date.now() + 30 * 60 * 1000).toISOString();
 
   return (
-    <SafeAreaView edges={['top']} className="flex-1 bg-background">
-      <ScrollView className="flex-1">
+    <ScrollView className="flex-1 bg-background">
         <View className="bg-primary p-6 items-center">
           <MaterialCommunityIcons name="check-circle" size={64} color="white" />
           <Text className="text-white text-lg font-bold mt-2">Pesanan Berhasil!</Text>
@@ -88,6 +82,5 @@ export default function OrderConfirmScreen() {
           </TouchableOpacity>
         </View>
       </ScrollView>
-    </SafeAreaView>
   );
 }

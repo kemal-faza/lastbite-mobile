@@ -1,5 +1,4 @@
 import { View, Text, ScrollView, ActivityIndicator, TouchableOpacity, Linking } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
 import { useLocalSearchParams, router } from 'expo-router';
 import { Image } from 'expo-image';
 import { Button } from '@/components/ui/button';
@@ -22,47 +21,40 @@ export default function ProductDetailScreen() {
 
   if (isLoading) {
     return (
-      <SafeAreaView edges={['top']} className="flex-1 bg-background">
-        <View className="flex-1 items-center justify-center">
-          <ActivityIndicator size="large" />
-          <Text className="text-gray-500 mt-2">Memuat detail produk...</Text>
-        </View>
-      </SafeAreaView>
+      <View className="flex-1 bg-background items-center justify-center">
+        <ActivityIndicator size="large" />
+        <Text className="text-gray-500 mt-2">Memuat detail produk...</Text>
+      </View>
     );
   }
 
   if (isError) {
     return (
-      <SafeAreaView edges={['top']} className="flex-1 bg-background">
-        <View className="flex-1 items-center justify-center p-4">
-          <Text className="text-red-500 text-center mb-2">Gagal memuat detail produk</Text>
-          <Text className="text-gray-400 text-sm text-center mb-4">
-            {error?.message || 'Terjadi kesalahan koneksi'}
-          </Text>
-          <TouchableOpacity
-            onPress={() => refetch()}
-            className="bg-primary px-6 py-2 rounded-lg"
-          >
-            <Text className="text-white font-semibold">Coba Lagi</Text>
-          </TouchableOpacity>
-        </View>
-      </SafeAreaView>
+      <View className="flex-1 bg-background items-center justify-center p-4">
+        <Text className="text-red-500 text-center mb-2">Gagal memuat detail produk</Text>
+        <Text className="text-gray-400 text-sm text-center mb-4">
+          {error?.message || 'Terjadi kesalahan koneksi'}
+        </Text>
+        <TouchableOpacity
+          onPress={() => refetch()}
+          className="bg-primary px-6 py-2 rounded-lg"
+        >
+          <Text className="text-white font-semibold">Coba Lagi</Text>
+        </TouchableOpacity>
+      </View>
     );
   }
 
   if (!product) {
     return (
-      <SafeAreaView edges={['top']} className="flex-1 bg-background">
-        <View className="flex-1 items-center justify-center">
-          <Text className="text-gray-500 text-center">Produk tidak ditemukan</Text>
-        </View>
-      </SafeAreaView>
+      <View className="flex-1 bg-background items-center justify-center">
+        <Text className="text-gray-500 text-center">Produk tidak ditemukan</Text>
+      </View>
     );
   }
 
   return (
-    <SafeAreaView edges={['top']} className="flex-1 bg-background">
-      <ScrollView className="flex-1">
+    <ScrollView className="flex-1 bg-background">
       <View className="w-full h-64 bg-gray-200 overflow-hidden">
         <Image
           source={
@@ -163,6 +155,5 @@ export default function ProductDetailScreen() {
         </Button>
       </View>
     </ScrollView>
-    </SafeAreaView>
   );
 }
