@@ -4,6 +4,7 @@ import { useProducts } from '@/hooks/useProducts';
 import type { Product } from '@/lib/api/products';
 import { ProductCard } from '@/components/ProductCard';
 import { EmptyState } from '@/components/EmptyState';
+import { TopBar } from '@/components/TopBar';
 
 export default function SearchScreen() {
   const [query, setQuery] = useState('');
@@ -22,6 +23,7 @@ export default function SearchScreen() {
 
   return (
     <View className="flex-1 bg-background p-4">
+      <TopBar />
       <TextInput
         className="bg-white border border-gray-300 rounded-xl px-4 py-3 text-base mb-4"
         placeholder="Cari produk, toko, atau kategori..."
