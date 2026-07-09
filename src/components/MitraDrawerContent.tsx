@@ -19,7 +19,7 @@ const DRAWER_ITEMS: DrawerItem[] = [
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 export function MitraDrawerContent(_props: Record<string, unknown>) {
   const { logout } = useAuthStore();
-  const currentPath = usePathname();
+  const currentPath = usePathname() ?? '';
 
   const handleLogout = () => {
     logout();
@@ -27,6 +27,7 @@ export function MitraDrawerContent(_props: Record<string, unknown>) {
   };
 
   const isActive = (route: string) => {
+    if (!currentPath) return false;
     // Match current path against drawer route
     const normalizedRoute = route.replace('/(mitra)', '');
     const normalizedPath = currentPath.replace('/(mitra)', '');
