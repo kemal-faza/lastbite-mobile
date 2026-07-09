@@ -1,10 +1,10 @@
-import { View, Text, ScrollView, ActivityIndicator, TouchableOpacity } from 'react-native';
+import { View, Text, ScrollView, ActivityIndicator, TouchableOpacity, Linking } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 import { useLocalSearchParams, router } from 'expo-router';
 import { Image } from 'expo-image';
 import { Button } from '@/components/ui/button';
 import { useProduct } from '@/hooks/useProducts';
 import { useProductReviews } from '@/hooks/useReviews';
-import { MapPreview } from '@/components/MapPreview';
 import { TrustBadgeRow } from '@/components/TrustBadge';
 import { ReviewList } from '@/components/ReviewList';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
@@ -22,50 +22,59 @@ export default function ProductDetailScreen() {
 
   if (isLoading) {
     return (
-      <View className="flex-1 bg-background items-center justify-center">
-        <ActivityIndicator size="large" />
-        <Text className="text-gray-500 mt-2">Memuat detail produk...</Text>
-      </View>
+      <SafeAreaView edges={['top']} className="flex-1 bg-background">
+        <View className="flex-1 items-center justify-center">
+          <ActivityIndicator size="large" />
+          <Text className="text-gray-500 mt-2">Memuat detail produk...</Text>
+        </View>
+      </SafeAreaView>
     );
   }
 
   if (isError) {
     return (
-      <View className="flex-1 bg-background items-center justify-center p-4">
-        <Text className="text-red-500 text-center mb-2">Gagal memuat detail produk</Text>
-        <Text className="text-gray-400 text-sm text-center mb-4">
-          {error?.message || 'Terjadi kesalahan koneksi'}
-        </Text>
-        <TouchableOpacity
-          onPress={() => refetch()}
-          className="bg-primary px-6 py-2 rounded-lg"
-        >
-          <Text className="text-white font-semibold">Coba Lagi</Text>
-        </TouchableOpacity>
-      </View>
+      <SafeAreaView edges={['top']} className="flex-1 bg-background">
+        <View className="flex-1 items-center justify-center p-4">
+          <Text className="text-red-500 text-center mb-2">Gagal memuat detail produk</Text>
+          <Text className="text-gray-400 text-sm text-center mb-4">
+            {error?.message || 'Terjadi kesalahan koneksi'}
+          </Text>
+          <TouchableOpacity
+            onPress={() => refetch()}
+            className="bg-primary px-6 py-2 rounded-lg"
+          >
+            <Text className="text-white font-semibold">Coba Lagi</Text>
+          </TouchableOpacity>
+        </View>
+      </SafeAreaView>
     );
   }
 
   if (!product) {
     return (
-      <View className="flex-1 bg-background items-center justify-center">
-        <Text className="text-gray-500 text-center">Produk tidak ditemukan</Text>
-      </View>
+      <SafeAreaView edges={['top']} className="flex-1 bg-background">
+        <View className="flex-1 items-center justify-center">
+          <Text className="text-gray-500 text-center">Produk tidak ditemukan</Text>
+        </View>
+      </SafeAreaView>
     );
   }
 
   return (
-    <ScrollView className="flex-1 bg-background">
-      <Image
-        source={
-          getImageVariants(product.imageVariants)?.full
-            ? { uri: getImageVariants(product.imageVariants)!.full }
-            : require('../../../assets/placeholder.png')
-        }
-        contentFit="cover"
-        transition={300}
-        className="w-full h-64 bg-gray-200"
-      />
+    <SafeAreaView edges={['top']} className="flex-1 bg-background">
+      <ScrollView className="flex-1">
+      <View className="w-full h-64 bg-gray-200 overflow-hidden">
+        <Image
+          source={
+            getImageVariants(product.imageVariants)?.full
+              ? { uri: getImageVariants(product.imageVariants)!.full }
+              : require('../../../assets/placeholder.png')
+          }
+          contentFit="cover"
+          transition={300}
+          style={{ width: '100%', height: '100%' }}
+        />
+      </View>
       <View className="p-4">
         <Text className="text-2xl font-bold">{product.name}</Text>
         <Text className="text-gray-500">{product.storeName}</Text>
@@ -104,8 +113,27 @@ export default function ProductDetailScreen() {
             </Text>
           </View>
         )}
-        {product.storeLat && product.storeLng && (
-          <MapPreview lat={product.storeLat} lng={product.storeLng} storeName={product.storeName} />
+        {product.storeAddress && (
+          <View className="bg-white rounded-lg p-3 mt-4 border border-gray-200">
+            <View className="flex-row items-center mb-2">
+              <MaterialCommunityIcons name="map-marker" size={20} color={colors.primary} />
+              <Text className="font-semibold ml-2">Lokasi Toko</Text>
+            </View>
+            <Text className="text-gray-500 text-sm mb-3">{product.storeAddress}</Text>
+            {product.storeLat && product.storeLng && (
+              <TouchableOpacity
+                onPress={() => {
+                  Linking.openURL(
+                    `https://www.google.com/maps/dir/?api=1&destination=${product.storeLat},${product.storeLng}`
+                  ).catch(() => {});
+                }}
+                className="flex-row items-center justify-center bg-primary/10 py-2 rounded-lg"
+              >
+                <MaterialCommunityIcons name="directions" size={16} color={colors.primary} />
+                <Text className="text-primary font-medium text-sm ml-1">Petunjuk Arah</Text>
+              </TouchableOpacity>
+            )}
+          </View>
         )}
 
         {/* Reviews */}
@@ -135,5 +163,6 @@ export default function ProductDetailScreen() {
         </Button>
       </View>
     </ScrollView>
+    </SafeAreaView>
   );
 }
