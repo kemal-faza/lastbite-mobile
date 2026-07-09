@@ -22,63 +22,65 @@ export default function SearchScreen() {
   );
 
   return (
-    <View className="flex-1 bg-background p-4">
+    <View className="flex-1 bg-background">
       <TopBar />
-      <TextInput
-        className="bg-white border border-gray-300 rounded-xl px-4 py-3 text-base mb-4"
-        placeholder="Cari produk, toko, atau kategori..."
-        value={query}
-        onChangeText={handleChangeText}
-        clearButtonMode="while-editing"
-        autoCapitalize="none"
-        autoCorrect={false}
-      />
+      <View className="flex-1 p-4">
+        <TextInput
+          className="bg-white border border-gray-300 rounded-xl px-4 py-3 text-base mb-4"
+          placeholder="Cari produk, toko, atau kategori..."
+          value={query}
+          onChangeText={handleChangeText}
+          clearButtonMode="while-editing"
+          autoCapitalize="none"
+          autoCorrect={false}
+        />
 
-      {isLoading ? (
-        <View className="items-center justify-center py-12">
-          <ActivityIndicator size="large" />
-          <Text className="text-gray-500 mt-2">Mencari produk...</Text>
-        </View>
-      ) : isError ? (
-        <View className="items-center justify-center py-12">
-          <Text className="text-red-500 text-center mb-2">
-            Gagal mencari produk
-          </Text>
-          <Text className="text-gray-400 text-sm text-center mb-4">
-            {error?.message || 'Terjadi kesalahan koneksi'}
-          </Text>
-          <TouchableOpacity
-            onPress={() => refetch()}
-            className="bg-primary px-6 py-2 rounded-lg"
-          >
-            <Text className="text-white font-semibold">Coba Lagi</Text>
-          </TouchableOpacity>
-        </View>
-      ) : !debouncedQuery ? (
-        <EmptyState
-          icon="magnify"
-          title="Cari Makanan Surplus"
-          description="Ketik nama produk atau toko untuk mulai mencari"
-        />
-      ) : !data?.products?.length ? (
-        <EmptyState
-          icon="magnify-close"
-          title={`Tidak ada hasil untuk "${debouncedQuery}"`}
-          description="Coba kata kunci lain atau periksa filter"
-        />
-      ) : (
-        <FlatList
-          data={data.products as Product[]}
-          keyExtractor={(item) => item.id}
-          renderItem={({ item }) => <ProductCard product={item} />}
-          showsVerticalScrollIndicator={false}
-          ListHeaderComponent={
-            <Text className="text-sm text-gray-400 mb-2">
-              {data.products.length} produk ditemukan
+        {isLoading ? (
+          <View className="items-center justify-center py-12">
+            <ActivityIndicator size="large" />
+            <Text className="text-gray-500 mt-2">Mencari produk...</Text>
+          </View>
+        ) : isError ? (
+          <View className="items-center justify-center py-12">
+            <Text className="text-red-500 text-center mb-2">
+              Gagal mencari produk
             </Text>
-          }
-        />
-      )}
+            <Text className="text-gray-400 text-sm text-center mb-4">
+              {error?.message || 'Terjadi kesalahan koneksi'}
+            </Text>
+            <TouchableOpacity
+              onPress={() => refetch()}
+              className="bg-primary px-6 py-2 rounded-lg"
+            >
+              <Text className="text-white font-semibold">Coba Lagi</Text>
+            </TouchableOpacity>
+          </View>
+        ) : !debouncedQuery ? (
+          <EmptyState
+            icon="magnify"
+            title="Cari Makanan Surplus"
+            description="Ketik nama produk atau toko untuk mulai mencari"
+          />
+        ) : !data?.products?.length ? (
+          <EmptyState
+            icon="magnify-close"
+            title={`Tidak ada hasil untuk "${debouncedQuery}"`}
+            description="Coba kata kunci lain atau periksa filter"
+          />
+        ) : (
+          <FlatList
+            data={data.products as Product[]}
+            keyExtractor={(item) => item.id}
+            renderItem={({ item }) => <ProductCard product={item} />}
+            showsVerticalScrollIndicator={false}
+            ListHeaderComponent={
+              <Text className="text-sm text-gray-400 mb-2">
+                {data.products.length} produk ditemukan
+              </Text>
+            }
+          />
+        )}
+      </View>
     </View>
   );
 }
