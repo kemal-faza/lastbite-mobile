@@ -6,6 +6,17 @@ export interface ImageVariants {
   full: string;
 }
 
+export interface ProductFilters {
+  category?: string;
+  search?: string;
+  sort?: 'price_asc' | 'price_desc' | 'distance_asc' | 'stock_asc';
+  lat?: number;
+  lng?: number;
+  radius?: number;
+  page?: number;
+  limit?: number;
+}
+
 export interface Product {
   id: string;
   name: string;
@@ -16,6 +27,16 @@ export interface Product {
   imageUrl: string | null;
   imageVariants: ImageVariants | null;
   category: 'meals' | 'bakery' | 'drinks';
+  // Optional fields (dari backend, mungkin undefined)
+  description?: string;
+  discountPercent?: number;
+  storeAddress?: string;
+  storeLat?: number;
+  storeLng?: number;
+  expiresAt?: string;
+  distanceKm?: number;
+  averageRating?: number;
+  reviewCount?: number;
 }
 
 export function getImageVariants(variants: ImageVariants | null | undefined): ImageVariants | null {
@@ -39,9 +60,18 @@ export function getVariantUrl(
   return resolved?.[variant] ?? null;
 }
 
-export async function getProducts(params?: { category?: string; search?: string }) {
-  const query = new URLSearchParams(params as Record<string, string>).toString();
-  return apiFetch<{ products: Product[] }>(`/products?${query}`);
+export async function getProducts(params?: ProductFilters) {
+  const query = new URLSearchParams();
+  if (params?.category) query.append('category', params.category);
+  if (params?.search) query.append('search', params.search);
+  if (params?.sort) query.append('sort', params.sort);
+  if (params?.lat !== undefined) query.append('lat', String(params.lat));
+  if (params?.lng !== undefined) query.append('lng', String(params.lng));
+  if (params?.radius !== undefined) query.append('radius', String(params.radius));
+  if (params?.page !== undefined) query.append('page', String(params.page));
+  if (params?.limit !== undefined) query.append('limit', String(params.limit));
+  const qs = query.toString();
+  return apiFetch<{ products: Product[] }>(`/products${qs ? `?${qs}` : ''}`);
 }
 
 export async function getProduct(id: string) {
