@@ -8,7 +8,8 @@ Mobile application for LastBite, a food surplus marketplace connecting merchants
 - **Routing:** Expo Router (file-based)
 - **Navigation:** Bottom tabs (customer) + Drawer (merchant)
 - **State Management:** TanStack Query v5 (server) + Zustand v5 (client)
-- **Styling:** Nativewind v4 + TailwindCSS v3
+- **Styling:** Nativewind v4
+- **UI Primitives:** React Native Reusables (@rn-primitives)
 - **Icons:** @expo/vector-icons (MaterialCommunityIcons)
 - **API:** Custom fetch wrapper with AsyncStorage token management
 - **Testing:** Jest + ts-jest + @testing-library/react-native
@@ -80,9 +81,4 @@ lasbite-mobile/
 └── jest.config.js           # Test configuration
 ```
 
-## Key Conventions
 
-- Path alias `@/` maps to `src/`
-- All tests must pass before committing
-- Server state uses TanStack Query; only auth is client-side via Zustand
-- Maps use `Linking.openURL` redirect; `react-native-maps` is present but not rendered
