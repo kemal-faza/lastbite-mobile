@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { View, Text, ScrollView, ActivityIndicator, TouchableOpacity } from 'react-native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useProducts } from '@/hooks/useProducts';
 import { useGeolocation } from '@/hooks/useGeolocation';
 import type { Product } from '@/lib/api/products';
@@ -24,6 +25,7 @@ export default function HomeScreen() {
   });
   const { isAuthenticated } = useAuthStore();
   const { lat, lng } = useGeolocation();
+  const insets = useSafeAreaInsets();
 
   // Map frontend sort to backend sort param (mirrors Next.js pattern)
   const sortParam: 'price_asc' | 'distance_asc' | 'stock_asc' | undefined =
@@ -53,21 +55,9 @@ export default function HomeScreen() {
 
         <CategoryFilter selected={category} onSelect={setCategory} />
 
-        {/* Sort & Filter */}
-        <View className="flex-row items-center px-4 mb-3">
-          <View className="flex-1">
-            <SortPills selected={sort} onSelect={setSort} />
-          </View>
-          <TouchableOpacity
-            onPress={() => setShowFilter(true)}
-            className="flex-shrink-0 flex-row items-center ml-2 px-3 py-1.5 rounded-full border border-gray-300 bg-white"
-          >
-            <MaterialCommunityIcons name="tune" size={16} color={colors.textSecondary} />
-            <Text className="text-sm text-gray-600 ml-1">Filter</Text>
-            {(filters.maxDistance > 0 || filters.maxPrice > 0 || filters.expiry !== 'Hari Ini') && (
-              <View className="w-2 h-2 rounded-full ml-1" style={{ backgroundColor: colors.destructive }} />
-            )}
-          </TouchableOpacity>
+        {/* Sort pills */}
+        <View className="px-4 mb-3">
+          <SortPills selected={sort} onSelect={setSort} />
         </View>
 
         <FilterModal
@@ -135,6 +125,23 @@ export default function HomeScreen() {
           )}
         </View>
       </ScrollView>
+
+      {/* Sticky Filter bar — always visible at bottom */}
+      <View
+        className="bg-white border-t border-gray-200 px-4 pt-2"
+        style={{ paddingBottom: Math.max(insets.bottom, 8) }}
+      >
+        <TouchableOpacity
+          onPress={() => setShowFilter(true)}
+          className="flex-row items-center justify-center py-3 rounded-full bg-primary active:opacity-80"
+        >
+          <MaterialCommunityIcons name="tune" size={18} color="#ffffff" />
+          <Text className="text-white text-sm font-semibold ml-2">Filter</Text>
+          {(filters.maxDistance > 0 || filters.maxPrice > 0 || filters.expiry !== 'Hari Ini') && (
+            <View className="w-2 h-2 rounded-full ml-2 bg-white" />
+          )}
+        </TouchableOpacity>
+      </View>
     </View>
   );
 }
