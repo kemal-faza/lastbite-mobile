@@ -26,9 +26,8 @@ export default function HomeScreen() {
   const { lat, lng } = useGeolocation();
 
   // Map frontend sort to backend sort param (mirrors Next.js pattern)
-  const sortParam: 'price_asc' | 'price_desc' | 'distance_asc' | 'stock_asc' | undefined =
+  const sortParam: 'price_asc' | 'distance_asc' | 'stock_asc' | undefined =
     sort === 'price-asc' ? 'price_asc' :
-    sort === 'price-desc' ? 'price_desc' :
     sort === 'distance-asc' ? 'distance_asc' :
     sort === 'remaining-asc' ? 'stock_asc' :
     undefined;
