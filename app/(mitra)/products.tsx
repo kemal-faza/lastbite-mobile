@@ -18,16 +18,17 @@ export default function MitraProductsScreen() {
         keyExtractor={(item) => item.id}
         renderItem={({ item }) => (
           <View className="bg-white p-3 rounded-xl mb-2 flex-row items-center">
-            <Image
-              source={
-                getImageVariants(item.imageVariants)?.thumb
-                  ? { uri: getImageVariants(item.imageVariants)!.thumb }
-                  : require('../../assets/placeholder.png')
-              }
-              style={{ width: 64, height: 64, borderRadius: 8 }}
-              contentFit="cover"
-              className="mr-3 bg-gray-200"
-            />
+            <View className="mr-3">
+              <Image
+                source={
+                  getImageVariants(item.imageVariants)?.thumb
+                    ? { uri: getImageVariants(item.imageVariants)!.thumb }
+                    : require('../../assets/placeholder.png')
+                }
+                contentFit="cover"
+                style={{ width: 64, height: 64, borderRadius: 8, backgroundColor: '#e5e7eb' }}
+              />
+            </View>
             <View className="flex-1">
               <Text className="font-bold">{item.name}</Text>
               <Text>Stok: {item.stock}</Text>

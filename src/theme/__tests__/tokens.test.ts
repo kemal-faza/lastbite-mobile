@@ -10,8 +10,8 @@ describe('tokens', () => {
       expect(colors.secondary).toBe('#dda63a');
     });
 
-    it('exports background as exact creme hex from brand', () => {
-      expect(colors.background).toBe('#e4dcca');
+    it('exports background as #f5f0e4 matching tailwind.config.js mobile visual', () => {
+      expect(colors.background).toBe('#f5f0e4');
     });
 
     it('exports destructive as exact red hex from brand', () => {

@@ -3,7 +3,7 @@ export const colors = {
   primaryDark: '#0d5254',
   secondary: '#dda63a',
   secondaryLight: '#f0c96a',
-  background: '#e4dcca',
+  background: '#f5f0e4',      // Mobile visual (matches tailwind.config.js)
   destructive: '#c2382e',
   surface: '#ffffff',
   card: '#ffffff',
