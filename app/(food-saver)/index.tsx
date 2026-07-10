@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { View, Text, ScrollView, ActivityIndicator, TouchableOpacity } from 'react-native';
 import { useProducts } from '@/hooks/useProducts';
+import { useGeolocation } from '@/hooks/useGeolocation';
 import type { Product } from '@/lib/api/products';
 import { ProductCard } from '@/components/ProductCard';
 import { CategoryFilter } from '@/components/CategoryFilter';
@@ -14,17 +15,34 @@ import { TopBar } from '@/components/TopBar';
 
 export default function HomeScreen() {
   const [category, setCategory] = useState('');
-  const [sort, setSort] = useState<SortOption>('terdekat');
+  const [sort, setSort] = useState<SortOption>('default');
   const [showFilter, setShowFilter] = useState(false);
   const [filters, setFilters] = useState<FilterState>({
     maxDistance: 0,
     maxPrice: 0,
-    expiry: 'all',
+    expiry: 'Hari Ini',
   });
   const { isAuthenticated } = useAuthStore();
-  const { data, isLoading, isError, error, refetch, isRefetching } = useProducts(
-    category ? { category } : undefined
-  );
+  const { lat, lng } = useGeolocation();
+
+  // Map frontend sort to backend sort param (mirrors Next.js pattern)
+  const sortParam: 'price_asc' | 'price_desc' | 'distance_asc' | 'stock_asc' | undefined =
+    sort === 'price-asc' ? 'price_asc' :
+    sort === 'price-desc' ? 'price_desc' :
+    sort === 'distance-asc' ? 'distance_asc' :
+    sort === 'remaining-asc' ? 'stock_asc' :
+    undefined;
+
+  // Only send radius when user set a finite distance (< 10 means limited, >= 10 or 0 = no limit)
+  const radiusParam = filters.maxDistance > 0 && filters.maxDistance < 10 ? filters.maxDistance : undefined;
+
+  const { data, isLoading, isError, error, refetch, isRefetching } = useProducts({
+    category: category || undefined,
+    sort: sortParam,
+    lat: lat ?? undefined,
+    lng: lng ?? undefined,
+    radius: radiusParam,
+  });
 
   return (
     <View className="flex-1 bg-background">
@@ -45,7 +63,7 @@ export default function HomeScreen() {
           >
             <MaterialCommunityIcons name="tune" size={16} color={colors.textSecondary} />
             <Text className="text-sm text-gray-600 ml-1">Filter</Text>
-            {(filters.maxDistance > 0 || filters.maxPrice > 0 || filters.expiry !== 'all') && (
+            {(filters.maxDistance > 0 || filters.maxPrice > 0 || filters.expiry !== 'Hari Ini') && (
               <View className="w-2 h-2 rounded-full ml-1" style={{ backgroundColor: colors.destructive }} />
             )}
           </TouchableOpacity>
