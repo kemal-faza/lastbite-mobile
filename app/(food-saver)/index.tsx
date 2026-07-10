@@ -55,10 +55,12 @@ export default function HomeScreen() {
 
         {/* Sort & Filter */}
         <View className="flex-row items-center px-4 mb-3">
-          <SortPills selected={sort} onSelect={setSort} />
+          <View className="flex-1">
+            <SortPills selected={sort} onSelect={setSort} />
+          </View>
           <TouchableOpacity
             onPress={() => setShowFilter(true)}
-            className="flex-row items-center ml-2 px-3 py-1.5 rounded-full border border-gray-300 bg-white"
+            className="flex-shrink-0 flex-row items-center ml-2 px-3 py-1.5 rounded-full border border-gray-300 bg-white"
           >
             <MaterialCommunityIcons name="tune" size={16} color={colors.textSecondary} />
             <Text className="text-sm text-gray-600 ml-1">Filter</Text>
