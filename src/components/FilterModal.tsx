@@ -6,7 +6,7 @@ import { colors } from '@/theme';
 export interface FilterState {
   maxDistance: number;
   maxPrice: number;
-  expiry: 'all' | '1h' | '3h' | '6h';
+  expiry: 'Hari Ini' | '< 1 Jam' | '< 3 Jam' | '< 6 Jam';
 }
 
 interface FilterModalProps {
@@ -19,10 +19,10 @@ interface FilterModalProps {
 const DISTANCE_OPTIONS = [1, 3, 5, 10, 0];
 const PRICE_OPTIONS = [10000, 15000, 25000, 50000, 0];
 const EXPIRY_OPTIONS: { key: FilterState['expiry']; label: string }[] = [
-  { key: 'all', label: 'Semua' },
-  { key: '1h', label: '< 1 jam' },
-  { key: '3h', label: '< 3 jam' },
-  { key: '6h', label: '< 6 jam' },
+  { key: 'Hari Ini', label: 'Hari Ini' },
+  { key: '< 1 Jam', label: '< 1 Jam' },
+  { key: '< 3 Jam', label: '< 3 Jam' },
+  { key: '< 6 Jam', label: '< 6 Jam' },
 ];
 
 function OptionPills({
@@ -73,7 +73,7 @@ export function FilterModal({ visible, onClose, filters, onApply }: FilterModalP
   };
 
   const handleReset = () => {
-    const reset: FilterState = { maxDistance: 0, maxPrice: 0, expiry: 'all' };
+    const reset: FilterState = { maxDistance: 0, maxPrice: 0, expiry: 'Hari Ini' };
     setDraft(reset);
     onApply(reset);
     sheetRef.current?.close();
