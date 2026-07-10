@@ -1,6 +1,6 @@
 import { ScrollView, TouchableOpacity, Text } from 'react-native';
 
-export type SortOption = 'terdekat' | 'termurah' | 'terpopuler';
+export type SortOption = 'default' | 'price-asc' | 'price-desc' | 'distance-asc' | 'remaining-asc';
 
 interface SortPillsProps {
   selected: SortOption;
@@ -9,9 +9,11 @@ interface SortPillsProps {
 }
 
 const sortOptions: { key: SortOption; label: string }[] = [
-  { key: 'terdekat', label: 'Terdekat' },
-  { key: 'termurah', label: 'Termurah' },
-  { key: 'terpopuler', label: 'Terpopuler' },
+  { key: 'default', label: 'Default' },
+  { key: 'price-asc', label: 'Termurah' },
+  { key: 'price-desc', label: 'Termahal' },
+  { key: 'distance-asc', label: 'Terdekat' },
+  { key: 'remaining-asc', label: 'Segera Habis' },
 ];
 
 export function SortPills({ selected, onSelect, testID }: SortPillsProps) {
