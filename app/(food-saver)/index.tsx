@@ -1,8 +1,9 @@
-import { useState } from 'react';
+import { useState, useMemo } from 'react';
 import { View, Text, ScrollView, ActivityIndicator, TouchableOpacity } from 'react-native';
 
 import { useProducts } from '@/hooks/useProducts';
 import { useGeolocation } from '@/hooks/useGeolocation';
+import { haversineDistance } from '@/lib/utils/haversine';
 import type { Product } from '@/lib/api/products';
 import { ProductCard } from '@/components/ProductCard';
 import { CategoryFilter } from '@/components/CategoryFilter';
@@ -36,13 +37,27 @@ export default function HomeScreen() {
   // Only send radius when user set a finite distance (< 10 means limited, >= 10 or 0 = no limit)
   const radiusParam = filters.maxDistance > 0 && filters.maxDistance < 10 ? filters.maxDistance : undefined;
 
-  const { data, isLoading, isError, error, refetch, isRefetching } = useProducts({
+  const { data, isLoading, isError, error, refetch, isRefetching, isPlaceholderData, isFetching } = useProducts({
     category: category || undefined,
     sort: sortParam,
     lat: lat ?? undefined,
     lng: lng ?? undefined,
     radius: radiusParam,
   });
+
+  // Normalize distance client-side using haversine with user's current GPS
+  // This ensures distanceKm is consistent regardless of backend sort mode
+  const productsWithDistance = useMemo(() => {
+    if (!data?.products) return data?.products ?? [];
+    if (lat == null || lng == null) return data.products;
+    return data.products.map((p) => ({
+      ...p,
+      distanceKm:
+        p.storeLat != null && p.storeLng != null
+          ? haversineDistance(lat, lng, p.storeLat, p.storeLng)
+          : p.distanceKm,
+    }));
+  }, [data?.products, lat, lng]);
 
   return (
     <View className="flex-1 bg-background">
@@ -111,8 +126,8 @@ export default function HomeScreen() {
                   </Text>
                 </View>
               )}
-              <View className="flex-row flex-wrap justify-between">
-                {data.products.map((p: Product) => (
+              <View className={`flex-row flex-wrap justify-between ${isPlaceholderData && isFetching ? 'opacity-50' : ''}`}>
+                {productsWithDistance.map((p: Product) => (
                   <ProductCard key={p.id} product={p} className="w-[48%] mb-4" />
                 ))}
               </View>
