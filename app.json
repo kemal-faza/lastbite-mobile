@@ -3,7 +3,11 @@
     "name": "LastBite",
     "slug": "lastbite-mobile",
     "scheme": "lastbite",
-    "plugins": ["expo-router", "expo-dev-client"],
+    "plugins": [
+      "expo-router",
+      "expo-dev-client",
+      "expo-image"
+    ],
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
