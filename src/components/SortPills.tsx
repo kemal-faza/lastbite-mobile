@@ -9,7 +9,7 @@ interface SortPillsProps {
 }
 
 const sortOptions: { key: SortOption; label: string }[] = [
-  { key: 'default', label: 'Default' },
+  { key: 'default', label: 'Relevansi' },
   { key: 'price-asc', label: 'Termurah' },
   { key: 'distance-asc', label: 'Terdekat' },
   { key: 'remaining-asc', label: 'Segera Habis' },
