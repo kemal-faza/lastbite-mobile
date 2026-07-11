@@ -1,6 +1,6 @@
 import { useEffect, useRef, useCallback, useState } from 'react';
 import { View, Text, TouchableOpacity } from 'react-native';
-import { BottomSheetModal, BottomSheetView } from '@gorhom/bottom-sheet';
+import { BottomSheetModal, BottomSheetView } from '@expo/ui/community/bottom-sheet';
 
 export interface FilterState {
   maxDistance: number;
@@ -95,7 +95,7 @@ export function FilterModal({ visible, onClose, filters, onApply }: FilterModalP
       enablePanDownToClose
       onDismiss={onClose}
     >
-      <BottomSheetView className="px-4 pb-8">
+      <BottomSheetView style={{ paddingHorizontal: 16, paddingBottom: 32 }}>
         <View className="flex-row justify-between items-center mb-4">
           <Text className="text-lg font-bold">Filter</Text>
           <TouchableOpacity onPress={handleReset}>
