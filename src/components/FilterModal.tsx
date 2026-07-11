@@ -1,7 +1,6 @@
-import { useRef, useCallback, useState } from 'react';
+import { useEffect, useRef, useCallback, useState } from 'react';
 import { View, Text, TouchableOpacity } from 'react-native';
-import BottomSheet, { BottomSheetView } from '@gorhom/bottom-sheet';
-import { colors } from '@/theme';
+import { BottomSheetModal, BottomSheetView } from '@gorhom/bottom-sheet';
 
 export interface FilterState {
   maxDistance: number;
@@ -60,34 +59,41 @@ function OptionPills({
 }
 
 export function FilterModal({ visible, onClose, filters, onApply }: FilterModalProps) {
-  const sheetRef = useRef<BottomSheet>(null);
+  const sheetRef = useRef<BottomSheetModal>(null);
   const [draft, setDraft] = useState<FilterState>(filters);
 
-  const handleSheetChanges = useCallback((index: number) => {
-    if (index === -1) onClose();
-  }, [onClose]);
+  // Sync visible prop with BottomSheetModal imperative API
+  useEffect(() => {
+    if (visible) {
+      sheetRef.current?.present();
+    } else {
+      sheetRef.current?.dismiss();
+    }
+  }, [visible]);
+
+  // Sync draft filters when parent changes them externally
+  useEffect(() => {
+    setDraft(filters);
+  }, [filters]);
 
   const handleApply = () => {
     onApply(draft);
-    sheetRef.current?.close();
+    sheetRef.current?.dismiss();
   };
 
   const handleReset = () => {
     const reset: FilterState = { maxDistance: 0, maxPrice: 0, expiry: 'Hari Ini' };
     setDraft(reset);
     onApply(reset);
-    sheetRef.current?.close();
+    sheetRef.current?.dismiss();
   };
 
-  if (!visible) return null;
-
   return (
-    <BottomSheet
+    <BottomSheetModal
       ref={sheetRef}
-      index={0}
       snapPoints={['65%']}
       enablePanDownToClose
-      onChange={handleSheetChanges}
+      onDismiss={onClose}
     >
       <BottomSheetView className="px-4 pb-8">
         <View className="flex-row justify-between items-center mb-4">
@@ -145,6 +151,6 @@ export function FilterModal({ visible, onClose, filters, onApply }: FilterModalP
           <Text className="text-white text-center font-semibold">Terapkan</Text>
         </TouchableOpacity>
       </BottomSheetView>
-    </BottomSheet>
+    </BottomSheetModal>
   );
 }
