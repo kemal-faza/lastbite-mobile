@@ -51,3 +51,6 @@ memory/
 
 .vscode/
 AGENTS.md
+
+# Firebase config (public identifiers, but env-specific)
+google-services.json
