@@ -3,7 +3,6 @@ import { apiFetch } from '../client';
 
 jest.mock('../client', () => ({
   apiFetch: jest.fn(),
-  API_BASE: 'http://localhost:3000',
 }));
 
 describe('Mitra Product API — FormData mutations', () => {
