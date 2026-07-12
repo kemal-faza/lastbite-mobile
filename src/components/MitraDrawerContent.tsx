@@ -12,6 +12,7 @@ interface DrawerItem {
 
 const DRAWER_ITEMS: DrawerItem[] = [
   { label: 'Dashboard', icon: 'view-dashboard', route: '/(mitra)' },
+  { label: 'Analisis', icon: 'chart-line', route: '/(mitra)/analytics' },
   { label: 'Daftar Produk', icon: 'package-variant-closed', route: '/(mitra)/products' },
   { label: 'Pesanan Masuk', icon: 'clipboard-list', route: '/(mitra)/orders' },
 ];
