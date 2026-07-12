@@ -16,7 +16,7 @@ export default function OrdersScreen() {
 		return (
 			<View className="flex-1 bg-background">
 				<TopBar />
-				<View className="flex-1">
+				<View className="flex-1 justify-center">
 					<EmptyState
 						icon="clipboard-list-outline"
 						title="Login untuk melihat pesanan"
