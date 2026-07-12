@@ -82,8 +82,8 @@ export default function MitraDashboardScreen() {
           <Button className="w-full mb-2">
             <Text className="text-white font-semibold">Tambah Produk</Text>
           </Button>
-          <Button variant="outline" className="w-full">
-            <Text className="text-gray-600 font-semibold">Lihat Pesanan</Text>
+          <Button variant="secondary" className="w-full">
+            <Text className="text-foreground font-semibold">Lihat Pesanan</Text>
           </Button>
         </View>
       </View>
