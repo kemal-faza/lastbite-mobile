@@ -1,79 +1,56 @@
+import { View, Alert } from 'react-native';
+import { Stack, router } from 'expo-router';
 import { useState } from 'react';
-import { View, Text, Image } from 'react-native';
-import { router } from 'expo-router';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import * as ImagePicker from 'expo-image-picker';
-import { apiFetch } from '@/lib/api/client';
-import { prepareAndUploadImage } from '@/lib/api/uploads';
+import { ProductForm } from '@/components/ProductForm';
+import { createMitraProduct } from '@/lib/api/mitra';
+import { useQueryClient } from '@tanstack/react-query';
 
-export default function AddProductScreen() {
-  const [name, setName] = useState('');
-  const [description, setDescription] = useState('');
-  const [originalPrice, setOriginalPrice] = useState('');
-  const [discountedPrice, setDiscountedPrice] = useState('');
-  const [stock, setStock] = useState('');
-  const [image, setImage] = useState<string | null>(null);
+export default function NewProductScreen() {
+  const [loading, setLoading] = useState(false);
+  const queryClient = useQueryClient();
 
-  const pickImage = async () => {
-    const result = await ImagePicker.launchImageLibraryAsync({ mediaTypes: ImagePicker.MediaTypeOptions.Images });
-    if (!result.canceled) setImage(result.assets[0].uri);
-  };
-
-  const handleSubmit = async () => {
-    let imageUrl = null;
-    if (image) {
-      const uploaded = await prepareAndUploadImage(image);
-      imageUrl = uploaded.url;
+  const handleSubmit = async (data: any, imageUri: string | null) => {
+    if (!imageUri) {
+      Alert.alert('Gambar Diperlukan', 'Silakan pilih foto produk terlebih dahulu.');
+      return;
     }
 
-    await apiFetch('/products', {
-      auth: true,
-      method: 'POST',
-      body: JSON.stringify({
-        name,
-        description,
-        originalPrice: Number(originalPrice),
-        discountedPrice: Number(discountedPrice),
-        stock: Number(stock),
-        category: 'meals',
-        expiresAt: new Date(Date.now() + 4 * 60 * 60 * 1000).toISOString(),
-        imageUrl,
-      }),
-    });
-    router.back();
+    try {
+      setLoading(true);
+      const formData = new FormData();
+      formData.append('name', data.name);
+      formData.append('description', data.description);
+      formData.append('category', data.category);
+      formData.append('originalPrice', String(data.originalPrice));
+      formData.append('discountedPrice', String(data.discountedPrice));
+      formData.append('stock', String(data.stock));
+      formData.append('expiry', data.expiry);
+
+      // Append image as file
+      const filename = imageUri.split('/').pop() || 'photo.jpg';
+      const ext = filename.split('.').pop() || 'jpg';
+      formData.append('image', {
+        uri: imageUri,
+        name: filename,
+        type: `image/${ext}`,
+      } as any);
+
+      await createMitraProduct(formData);
+      queryClient.invalidateQueries({ queryKey: ['mitra-products'] });
+      Alert.alert('Berhasil', 'Produk berhasil ditambahkan', [
+        { text: 'OK', onPress: () => router.back() },
+      ]);
+    } catch (err: any) {
+      Alert.alert('Gagal', err.message || 'Terjadi kesalahan saat menyimpan produk.');
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
-    <View className="flex-1 bg-background p-4">
-      <Text className="text-xl font-bold text-primary mb-4">Tambah Produk</Text>
-      <Button variant="outline" onPress={pickImage} className="mb-4">
-        <Text className="font-medium">Pilih Gambar</Text>
-      </Button>
-      {image && <Image source={{ uri: image }} className="w-full h-40 rounded-lg mb-4" />}
-      <View className="mb-3">
-        <Text className="text-foreground text-sm font-medium mb-1.5">Nama</Text>
-        <Input value={name} onChangeText={setName} />
-      </View>
-      <View className="mb-3">
-        <Text className="text-foreground text-sm font-medium mb-1.5">Deskripsi</Text>
-        <Input value={description} onChangeText={setDescription} />
-      </View>
-      <View className="mb-3">
-        <Text className="text-foreground text-sm font-medium mb-1.5">Harga Asli</Text>
-        <Input value={originalPrice} onChangeText={setOriginalPrice} keyboardType="numeric" />
-      </View>
-      <View className="mb-3">
-        <Text className="text-foreground text-sm font-medium mb-1.5">Harga Diskon</Text>
-        <Input value={discountedPrice} onChangeText={setDiscountedPrice} keyboardType="numeric" />
-      </View>
-      <View className="mb-3">
-        <Text className="text-foreground text-sm font-medium mb-1.5">Stok</Text>
-        <Input value={stock} onChangeText={setStock} keyboardType="numeric" />
-      </View>
-      <Button variant="default" onPress={handleSubmit}>
-        <Text className="text-white font-semibold">Simpan</Text>
-      </Button>
+    <View className="flex-1">
+      <Stack.Screen options={{ title: 'Tambah Produk', headerBackTitle: 'Batal' }} />
+      <ProductForm onSubmit={handleSubmit} isLoading={loading} />
     </View>
   );
 }
