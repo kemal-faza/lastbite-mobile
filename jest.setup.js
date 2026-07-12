@@ -35,6 +35,10 @@ jest.mock('react-native', () => {
     BackHandler: {
       addEventListener: jest.fn(() => ({ remove: jest.fn() })),
     },
+    AppState: {
+      currentState: 'active',
+      addEventListener: jest.fn(() => ({ remove: jest.fn() })),
+    },
     processColor: jest.fn((color) => color),
   };
 });
@@ -42,6 +46,7 @@ jest.mock('react-native', () => {
 // Mock @expo/vector-icons
 jest.mock('@expo/vector-icons', () => ({
   MaterialCommunityIcons: 'MaterialCommunityIcons',
+  MaterialIcons: 'MaterialIcons',
 }));
 
 // Mock expo-location
@@ -50,6 +55,24 @@ jest.mock('expo-location', () => ({
   getCurrentPositionAsync: jest.fn(),
   Accuracy: { Balanced: 1, High: 2, Low: 0 },
 }));
+
+// Mock react-native-maps
+jest.mock('react-native-maps', () => {
+  const MockMapView = jest.fn(function MockMapView(props) {
+    // Render the children directly for testing
+    return props.children || null;
+  });
+  return {
+    __esModule: true,
+    default: MockMapView,
+    MapView: MockMapView,
+    Marker: jest.fn(function MockMarker(props) {
+      return props.children || null;
+    }),
+    Region: {},
+    PROVIDER_GOOGLE: 'google',
+  };
+});
 
 // Mock expo-router segments + navigation (additive to any existing expo-router mock)
 jest.mock('expo-router', () => ({

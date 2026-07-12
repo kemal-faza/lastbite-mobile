@@ -31,6 +31,9 @@ yarn-error.*
 .env*.local
 .env
 
+# Firebase service account keys (sensitive — contains private keys)
+lastbite-79dea-firebase-adminsdk-*.json
+
 # TypeScript
 *.tsbuildinfo
 

@@ -1,7 +1,7 @@
 {
   "expo": {
     "name": "LastBite",
-    "slug": "lastbite-mobile",
+    "slug": "kemal",
     "scheme": "lastbite",
     "plugins": [
       "expo-router",

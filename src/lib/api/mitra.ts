@@ -87,3 +87,17 @@ export async function deleteMitraProduct(id: string) {
 export async function getMitraStats() {
   return apiFetch<{ stats: MitraStats }>('/mitra/stats', { auth: true });
 }
+
+export async function registerMitra(data: {
+  name: string;
+  description?: string;
+  lat: number;
+  lng: number;
+  imageUrl?: string;
+}) {
+  return apiFetch('/mitra/register', {
+    auth: true,
+    method: 'POST',
+    body: JSON.stringify(data),
+  });
+}
