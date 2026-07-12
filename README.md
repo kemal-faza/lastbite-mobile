@@ -14,6 +14,14 @@ Mobile application for LastBite, a food surplus marketplace connecting merchants
 - **API:** Custom fetch wrapper with AsyncStorage token management
 - **Testing:** Jest + ts-jest + @testing-library/react-native
 
+## Related Repositories
+
+This mobile app is part of the LastBite ecosystem. Other repositories:
+
+- **[lastbite-nextjs](https://github.com/kemal-faza/lastbite-nextjs)** — Web frontend (Next.js), admin panel for platform management
+- **[lastbite-backend](https://github.com/kemal-faza/lastbite-backend)** — Backend API (Node.js + Express + Prisma + PostgreSQL)
+- **[lastbite-prototype](https://github.com/kemal-faza/lastbite-prototype)** — Design prototype, mockups, and early-stage wireframes
+
 ## Prerequisites
 
 - Node.js 20+
