@@ -52,7 +52,7 @@ export default function MitraDashboardScreen() {
         </Text>
         <Text className="text-gray-500 mb-6">{profile.storeDescription}</Text>
 
-        <View className="flex-row flex-wrap -mx-1 mb-6">
+        <View className="flex-row flex-wrap -mx-1 mb-3">
           <DashboardStatsCard
             title="Active Orders"
             value={stats?.activeOrders ?? '-'}
@@ -61,6 +61,8 @@ export default function MitraDashboardScreen() {
             title="Products"
             value={stats?.productCount ?? '-'}
           />
+        </View>
+        <View className="flex-row flex-wrap -mx-1 mb-6">
           <DashboardStatsCard
             title="Total Sold"
             value={stats?.totalSold ?? '-'}
@@ -78,10 +80,10 @@ export default function MitraDashboardScreen() {
         <View className="bg-white p-4 rounded-xl shadow-sm border border-gray-100">
           <Text className="font-bold mb-4">Aksi Cepat</Text>
           <Button className="w-full mb-2">
-            <Text>Tambah Produk</Text>
+            <Text className="text-white font-semibold">Tambah Produk</Text>
           </Button>
           <Button variant="outline" className="w-full">
-            <Text>Lihat Pesanan</Text>
+            <Text className="text-gray-600 font-semibold">Lihat Pesanan</Text>
           </Button>
         </View>
       </View>

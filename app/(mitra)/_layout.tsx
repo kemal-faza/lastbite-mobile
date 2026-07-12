@@ -23,7 +23,7 @@ export default function MitraLayout() {
         drawerContent={(props) => <MitraDrawerContent {...props} />}
         screenOptions={{ headerShown: true }}
       >
-        <Drawer.Screen name="index" options={{ title: 'Ringkasan' }} />
+        <Drawer.Screen name="index" options={{ title: 'Dashboard' }} />
         <Drawer.Screen name="analytics" options={{ title: 'Analisis' }} />
         <Drawer.Screen name="products" options={{ title: 'Daftar Produk' }} />
         <Drawer.Screen

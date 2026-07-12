@@ -11,7 +11,7 @@ interface DrawerItem {
 }
 
 const DRAWER_ITEMS: DrawerItem[] = [
-  { label: 'Ringkasan', icon: 'view-dashboard', route: '/(mitra)' },
+  { label: 'Dashboard', icon: 'view-dashboard', route: '/(mitra)' },
   { label: 'Daftar Produk', icon: 'package-variant-closed', route: '/(mitra)/products' },
   { label: 'Pesanan Masuk', icon: 'clipboard-list', route: '/(mitra)/orders' },
 ];
@@ -31,7 +31,11 @@ export function MitraDrawerContent(_props: Record<string, unknown>) {
     // Match current path against drawer route
     const normalizedRoute = route.replace('/(mitra)', '');
     const normalizedPath = currentPath.replace('/(mitra)', '');
-    if (normalizedRoute === '' && (normalizedPath === '' || normalizedPath === '/')) return true;
+    // Root route: only active when on the exact root path
+    if (normalizedRoute === '') {
+      return normalizedPath === '' || normalizedPath === '/' || normalizedPath === '/index';
+    }
+    // Non-root routes: exact match OR nested sub-page
     return normalizedPath === normalizedRoute || normalizedPath.startsWith(normalizedRoute + '/');
   };
 
