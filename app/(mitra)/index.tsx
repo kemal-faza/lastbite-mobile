@@ -79,7 +79,7 @@ export default function MitraDashboardScreen() {
 
         <View className="bg-white p-4 rounded-xl shadow-sm border border-gray-100">
           <Text className="font-bold mb-4">Aksi Cepat</Text>
-          <Button className="w-full mb-2">
+          <Button className="w-full mb-2" onPress={() => router.push('/(mitra)/products/add')}>
             <Text className="text-white font-semibold">Tambah Produk</Text>
           </Button>
           <Button variant="secondary" className="w-full">

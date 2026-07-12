@@ -1,8 +1,8 @@
 import { View, Text, TouchableOpacity } from 'react-native';
 import clsx from 'clsx';
 
-export type ExpiryOption = 'Hari Ini' | '< 1 Jam' | '< 3 Jam' | '< 6 Jam';
-const OPTIONS: ExpiryOption[] = ['Hari Ini', '< 1 Jam', '< 3 Jam', '< 6 Jam'];
+export type ExpiryOption = 'Tutup Toko' | '< 1 Jam' | '< 3 Jam' | '< 6 Jam';
+const OPTIONS: ExpiryOption[] = ['Tutup Toko', '< 1 Jam', '< 3 Jam', '< 6 Jam'];
 
 interface Props {
   value: string;

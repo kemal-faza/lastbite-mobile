@@ -5,6 +5,7 @@ import * as z from 'zod';
 import * as ImagePicker from 'expo-image-picker';
 import { Image } from 'expo-image';
 import { Button } from '@/components/ui/button';
+import CurrencyInput from 'react-native-currency-input';
 import { ExpiryPicker } from './ExpiryPicker';
 import { useState } from 'react';
 
@@ -38,7 +39,7 @@ export function ProductForm({ initialData, onSubmit, isLoading }: Props) {
       originalPrice: initialData?.originalPrice || 0,
       discountedPrice: initialData?.discountedPrice || 0,
       stock: initialData?.stock || 1,
-      expiry: initialData?.expiry || 'Hari Ini',
+      expiry: initialData?.expiry || 'Tutup Toko',
     },
   });
 
@@ -86,7 +87,7 @@ export function ProductForm({ initialData, onSubmit, isLoading }: Props) {
             <TextInput
               value={value}
               onChangeText={onChange}
-              className="bg-background border border-border p-3 rounded-xl text-foreground"
+              className="bg-white border border-border p-3 rounded-xl text-foreground"
               placeholder="Nasi Goreng Surplus"
               placeholderTextColor="#9ca3af"
             />
@@ -109,7 +110,7 @@ export function ProductForm({ initialData, onSubmit, isLoading }: Props) {
               onChangeText={onChange}
               multiline
               numberOfLines={3}
-              className="bg-background border border-border p-3 rounded-xl text-foreground"
+              className="bg-white border border-border p-3 rounded-xl text-foreground"
               textAlignVertical="top"
               placeholder="Deskripsikan produk surplus ini..."
               placeholderTextColor="#9ca3af"
@@ -156,11 +157,15 @@ export function ProductForm({ initialData, onSubmit, isLoading }: Props) {
           render={({ field: { onChange, value } }) => (
             <View className="flex-1">
               <Text className="mb-1 font-medium text-foreground">Harga Normal</Text>
-              <TextInput
-                value={value ? String(value) : ''}
-                onChangeText={onChange}
-                keyboardType="numeric"
-                className="bg-background border border-border p-3 rounded-xl text-foreground"
+              <CurrencyInput
+                value={value}
+                onChangeValue={(val) => onChange(val ?? 0)}
+                prefix="Rp "
+                delimiter="."
+                separator=","
+                precision={0}
+                minValue={0}
+                className="bg-white border border-border p-3 rounded-xl text-foreground"
                 placeholder="Rp"
                 placeholderTextColor="#9ca3af"
               />
@@ -176,11 +181,15 @@ export function ProductForm({ initialData, onSubmit, isLoading }: Props) {
           render={({ field: { onChange, value } }) => (
             <View className="flex-1">
               <Text className="mb-1 font-medium text-foreground">Harga Diskon</Text>
-              <TextInput
-                value={value ? String(value) : ''}
-                onChangeText={onChange}
-                keyboardType="numeric"
-                className="bg-background border border-border p-3 rounded-xl text-foreground"
+              <CurrencyInput
+                value={value}
+                onChangeValue={(val) => onChange(val ?? 0)}
+                prefix="Rp "
+                delimiter="."
+                separator=","
+                precision={0}
+                minValue={0}
+                className="bg-white border border-border p-3 rounded-xl text-foreground"
                 placeholder="Rp"
                 placeholderTextColor="#9ca3af"
               />
@@ -203,7 +212,7 @@ export function ProductForm({ initialData, onSubmit, isLoading }: Props) {
               value={value ? String(value) : ''}
               onChangeText={onChange}
               keyboardType="numeric"
-              className="bg-background border border-border p-3 rounded-xl text-foreground"
+              className="bg-white border border-border p-3 rounded-xl text-foreground"
               placeholder="1"
               placeholderTextColor="#9ca3af"
             />

@@ -7,14 +7,14 @@ import { updateMitraProduct } from '@/lib/api/mitra';
 import { getProduct, getImageVariants } from '@/lib/api/products';
 
 function mapExpiresAt(iso?: string): string {
-  if (!iso) return 'Hari Ini';
+  if (!iso) return 'Tutup Toko';
   const diff = new Date(iso).getTime() - Date.now();
-  if (diff <= 0) return 'Hari Ini';
+  if (diff <= 0) return 'Tutup Toko';
   const hours = diff / (1000 * 60 * 60);
   if (hours <= 1) return '< 1 Jam';
   if (hours <= 3) return '< 3 Jam';
   if (hours <= 6) return '< 6 Jam';
-  return 'Hari Ini';
+  return 'Tutup Toko';
 }
 
 export default function EditProductScreen() {
@@ -89,8 +89,8 @@ export default function EditProductScreen() {
     originalPrice: product.originalPrice,
     discountedPrice: product.discountedPrice,
     stock: product.stock,
-    expiry: mapExpiresAt((product as any).expiresAt) || 'Hari Ini',
-    imageUri: resolvedImage?.full || resolvedImage?.card || undefined,
+    expiry: mapExpiresAt((product as any).expiresAt || (product as any).expiry) || 'Tutup Toko',
+    imageUri: resolvedImage?.full || resolvedImage?.card || (product as any).imageUrl || undefined,
   };
 
   return (

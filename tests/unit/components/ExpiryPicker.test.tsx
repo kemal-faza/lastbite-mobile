@@ -4,15 +4,15 @@ import { ExpiryPicker } from '@/components/ExpiryPicker';
 describe('ExpiryPicker', () => {
   it('renders all expiry options', async () => {
     const { getByText } = await render(<ExpiryPicker value="" onChange={jest.fn()} />);
-    expect(getByText('Hari Ini')).toBeTruthy();
+    expect(getByText('Tutup Toko')).toBeTruthy();
     expect(getByText('< 1 Jam')).toBeTruthy();
     expect(getByText('< 3 Jam')).toBeTruthy();
     expect(getByText('< 6 Jam')).toBeTruthy();
   });
 
   it('highlights selected option', async () => {
-    const { getByText } = await render(<ExpiryPicker value="Hari Ini" onChange={jest.fn()} />);
-    const selected = getByText('Hari Ini');
+    const { getByText } = await render(<ExpiryPicker value="Tutup Toko" onChange={jest.fn()} />);
+    const selected = getByText('Tutup Toko');
     expect(selected.props.className).toContain('text-white');
   });
 
