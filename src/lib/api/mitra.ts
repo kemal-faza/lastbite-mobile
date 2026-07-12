@@ -61,24 +61,26 @@ export interface CreateProductInput {
 
 export interface UpdateProductInput extends Partial<CreateProductInput> {}
 
-export async function createMitraProduct(input: CreateProductInput) {
-  return apiFetch('/mitra/products', {
+export async function createMitraProduct(body: FormData | CreateProductInput) {
+  const isFormData = body instanceof FormData;
+  return apiFetch<{ id: string }>('/mitra/products', {
     auth: true,
     method: 'POST',
-    body: JSON.stringify(input),
+    body: isFormData ? body : JSON.stringify(body),
   });
 }
 
-export async function updateMitraProduct(id: string, input: UpdateProductInput) {
-  return apiFetch(`/mitra/products/${id}`, {
+export async function updateMitraProduct(id: string, body: FormData | UpdateProductInput) {
+  const isFormData = body instanceof FormData;
+  return apiFetch<{ success: boolean }>(`/mitra/products/${id}`, {
     auth: true,
-    method: 'PATCH',
-    body: JSON.stringify(input),
+    method: isFormData ? 'PUT' : 'PATCH',
+    body: isFormData ? body : JSON.stringify(body),
   });
 }
 
 export async function deleteMitraProduct(id: string) {
-  return apiFetch(`/mitra/products/${id}`, {
+  return apiFetch<{ success: boolean }>(`/mitra/products/${id}`, {
     auth: true,
     method: 'DELETE',
   });

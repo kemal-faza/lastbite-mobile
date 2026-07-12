@@ -14,9 +14,13 @@ export async function apiFetch<T>(
   options: RequestInit & { auth?: boolean } = {},
 ): Promise<T> {
   const headers: Record<string, string> = {
-    'Content-Type': 'application/json',
     ...((options.headers as Record<string, string>) || {}),
   };
+
+  // Only set Content-Type for non-FormData bodies (browser/RN sets multipart boundary automatically)
+  if (!(options.body instanceof FormData)) {
+    headers['Content-Type'] = 'application/json';
+  }
 
   if (options.auth) {
     const token = await AsyncStorage.getItem('accessToken');
