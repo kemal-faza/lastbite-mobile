@@ -2,9 +2,20 @@ import { View, ActivityIndicator, Alert, Text } from 'react-native';
 import { Stack, router, useLocalSearchParams } from 'expo-router';
 import { useState } from 'react';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
-import { ProductForm } from '@/components/ProductForm';
+import { ProductForm, ProductFormData } from '@/components/ProductForm';
 import { updateMitraProduct } from '@/lib/api/mitra';
 import { getProduct, getImageVariants } from '@/lib/api/products';
+
+function mapExpiresAt(iso?: string): string {
+  if (!iso) return 'Hari Ini';
+  const diff = new Date(iso).getTime() - Date.now();
+  if (diff <= 0) return 'Hari Ini';
+  const hours = diff / (1000 * 60 * 60);
+  if (hours <= 1) return '< 1 Jam';
+  if (hours <= 3) return '< 3 Jam';
+  if (hours <= 6) return '< 6 Jam';
+  return 'Hari Ini';
+}
 
 export default function EditProductScreen() {
   const { id } = useLocalSearchParams<{ id: string }>();
@@ -16,7 +27,7 @@ export default function EditProductScreen() {
     queryFn: () => getProduct(id as string),
   });
 
-  const handleSubmit = async (formState: any, imageUri: string | null) => {
+  const handleSubmit = async (formState: ProductFormData, imageUri: string | null) => {
     try {
       setLoading(true);
       const formData = new FormData();
@@ -78,14 +89,14 @@ export default function EditProductScreen() {
     originalPrice: product.originalPrice,
     discountedPrice: product.discountedPrice,
     stock: product.stock,
-    expiry: (product as any).expiry || 'Hari Ini',
+    expiry: mapExpiresAt((product as any).expiresAt) || 'Hari Ini',
     imageUri: resolvedImage?.full || resolvedImage?.card || undefined,
   };
 
   return (
     <View className="flex-1">
       <Stack.Screen options={{ title: 'Edit Produk' }} />
-      <ProductForm initialData={initialData as any} onSubmit={handleSubmit} isLoading={loading} />
+      <ProductForm initialData={initialData} onSubmit={handleSubmit} isLoading={loading} />
     </View>
   );
 }

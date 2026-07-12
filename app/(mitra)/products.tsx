@@ -39,12 +39,16 @@ export default function MitraProductsScreen() {
     <View className="flex-row items-center mb-2">
       <TouchableOpacity
         onPress={() => router.push(`/(mitra)/products/${id}/edit`)}
+        accessibilityLabel="Edit produk"
+        accessibilityRole="button"
         className="bg-blue-500 justify-center items-center w-16 h-full rounded-l-xl"
       >
         <FontAwesome name="pencil" size={22} color="white" />
       </TouchableOpacity>
       <TouchableOpacity
         onPress={() => handleDelete(id)}
+        accessibilityLabel="Hapus produk"
+        accessibilityRole="button"
         className="bg-red-500 justify-center items-center w-16 h-full rounded-r-xl"
       >
         <FontAwesome name="trash" size={22} color="white" />
@@ -64,32 +68,35 @@ export default function MitraProductsScreen() {
       <FlatList
         data={data?.products}
         keyExtractor={(item) => item.id}
-        renderItem={({ item }) => (
-          <Swipeable renderRightActions={() => renderRightActions(item.id)}>
-            <TouchableOpacity
-              activeOpacity={0.7}
-              onPress={() => router.push(`/(mitra)/products/${item.id}`)}
-              className="bg-white p-3 rounded-xl mb-2 flex-row items-center"
-            >
-              <View className="mr-3">
-                <Image
-                  source={
-                    getImageVariants(item.imageVariants)?.thumb
-                      ? { uri: getImageVariants(item.imageVariants)!.thumb }
-                      : require('../../assets/placeholder.png')
-                  }
-                  contentFit="cover"
-                  style={{ width: 64, height: 64, borderRadius: 8, backgroundColor: '#e5e7eb' }}
-                />
-              </View>
-              <View className="flex-1">
-                <Text className="font-bold text-foreground">{item.name}</Text>
-                <Text className="text-muted-foreground">Stok: {item.stock}</Text>
-                <Text className="text-primary">Rp{item.discountedPrice.toLocaleString()}</Text>
-              </View>
-            </TouchableOpacity>
-          </Swipeable>
-        )}
+        renderItem={({ item }) => {
+          const thumbUrl = getImageVariants(item.imageVariants)?.thumb;
+          return (
+            <Swipeable renderRightActions={() => renderRightActions(item.id)}>
+              <TouchableOpacity
+                activeOpacity={0.7}
+                onPress={() => router.push(`/(mitra)/products/${item.id}`)}
+                className="bg-white p-3 rounded-xl mb-2 flex-row items-center"
+              >
+                <View className="mr-3">
+                  <Image
+                    source={
+                      thumbUrl
+                        ? { uri: thumbUrl }
+                        : require('../../assets/placeholder.png')
+                    }
+                    contentFit="cover"
+                    style={{ width: 64, height: 64, borderRadius: 8, backgroundColor: '#e5e7eb' }}
+                  />
+                </View>
+                <View className="flex-1">
+                  <Text className="font-bold text-foreground">{item.name}</Text>
+                  <Text className="text-muted-foreground">Stok: {item.stock}</Text>
+                  <Text className="text-primary">Rp{item.discountedPrice.toLocaleString()}</Text>
+                </View>
+              </TouchableOpacity>
+            </Swipeable>
+          );
+        }}
       />
     </View>
   );

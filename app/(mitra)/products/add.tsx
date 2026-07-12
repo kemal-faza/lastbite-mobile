@@ -1,7 +1,7 @@
 import { View, Alert } from 'react-native';
 import { Stack, router } from 'expo-router';
 import { useState } from 'react';
-import { ProductForm } from '@/components/ProductForm';
+import { ProductForm, ProductFormData } from '@/components/ProductForm';
 import { createMitraProduct } from '@/lib/api/mitra';
 import { useQueryClient } from '@tanstack/react-query';
 
@@ -9,7 +9,7 @@ export default function NewProductScreen() {
   const [loading, setLoading] = useState(false);
   const queryClient = useQueryClient();
 
-  const handleSubmit = async (data: any, imageUri: string | null) => {
+  const handleSubmit = async (data: ProductFormData, imageUri: string | null) => {
     if (!imageUri) {
       Alert.alert('Gambar Diperlukan', 'Silakan pilih foto produk terlebih dahulu.');
       return;

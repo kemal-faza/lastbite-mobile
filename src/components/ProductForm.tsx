@@ -18,7 +18,7 @@ const productSchema = z.object({
   expiry: z.string().min(1, { message: 'Pilih batas waktu' }),
 });
 
-type ProductFormData = z.infer<typeof productSchema>;
+export type ProductFormData = z.infer<typeof productSchema>;
 
 interface Props {
   initialData?: Partial<ProductFormData> & { id?: string; imageUri?: string };
@@ -30,7 +30,7 @@ export function ProductForm({ initialData, onSubmit, isLoading }: Props) {
   const [imageUri, setImageUri] = useState<string | null>(initialData?.imageUri || null);
 
   const { control, handleSubmit, formState: { errors } } = useForm<ProductFormData>({
-    resolver: zodResolver(productSchema),
+    resolver: zodResolver(productSchema) as any,
     defaultValues: {
       name: initialData?.name || '',
       description: initialData?.description || '',
