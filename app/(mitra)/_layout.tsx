@@ -34,6 +34,10 @@ export default function MitraLayout() {
           name="products/[id]"
           options={{ title: 'Edit Produk', drawerItemStyle: { display: 'none' } }}
         />
+        <Drawer.Screen
+          name="products/[id]/edit"
+          options={{ title: 'Edit Produk', drawerItemStyle: { display: 'none' } }}
+        />
         <Drawer.Screen name="orders" options={{ title: 'Pesanan Masuk' }} />
       </Drawer>
     </View>
