@@ -17,7 +17,7 @@ export default function CartScreen() {
     return (
       <View className="flex-1 bg-background">
         <TopBar />
-        <View className="p-4">
+        <View className="flex-1">
           <EmptyState
             icon="cart-outline"
             title="Login untuk mengakses keranjang"
