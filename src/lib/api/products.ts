@@ -15,6 +15,8 @@ export interface ProductFilters {
   radius?: number;
   page?: number;
   limit?: number;
+  maxPrice?: number;
+  expiry?: 'Hari Ini' | '< 1 Jam' | '< 3 Jam' | '< 6 Jam';
 }
 
 export interface Product {
@@ -70,6 +72,8 @@ export async function getProducts(params?: ProductFilters) {
   if (params?.radius !== undefined) query.append('radius', String(params.radius));
   if (params?.page !== undefined) query.append('page', String(params.page));
   if (params?.limit !== undefined) query.append('limit', String(params.limit));
+  if (params?.maxPrice !== undefined && params.maxPrice > 0) query.append('maxPrice', String(params.maxPrice));
+  if (params?.expiry && params.expiry !== 'Hari Ini') query.append('expiry', params.expiry);
   const qs = query.toString();
   return apiFetch<{ products: Product[] }>(`/products${qs ? `?${qs}` : ''}`);
 }

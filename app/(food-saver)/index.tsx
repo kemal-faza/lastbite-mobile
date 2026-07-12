@@ -4,6 +4,7 @@ import { View, Text, ScrollView, ActivityIndicator, TouchableOpacity } from 'rea
 import { useProducts } from '@/hooks/useProducts';
 import { useGeolocation } from '@/hooks/useGeolocation';
 import { haversineDistance } from '@/lib/utils/haversine';
+import { filterByDistance } from '@/lib/utils/filterByDistance';
 import type { Product } from '@/lib/api/products';
 import { ProductCard } from '@/components/ProductCard';
 import { CategoryFilter } from '@/components/CategoryFilter';
@@ -34,15 +35,11 @@ export default function HomeScreen() {
     sort === 'remaining-asc' ? 'stock_asc' :
     undefined;
 
-  // Only send radius when user set a finite distance (< 10 means limited, >= 10 or 0 = no limit)
-  const radiusParam = filters.maxDistance > 0 && filters.maxDistance < 10 ? filters.maxDistance : undefined;
-
   const { data, isLoading, isError, error, refetch, isRefetching, isPlaceholderData, isFetching } = useProducts({
     category: category || undefined,
     sort: sortParam,
-    lat: lat ?? undefined,
-    lng: lng ?? undefined,
-    radius: radiusParam,
+    maxPrice: filters.maxPrice > 0 ? filters.maxPrice : undefined,
+    expiry: filters.expiry !== 'Hari Ini' ? filters.expiry : undefined,
   });
 
   // Normalize distance client-side using haversine with user's current GPS
@@ -58,6 +55,13 @@ export default function HomeScreen() {
           : p.distanceKm,
     }));
   }, [data?.products, lat, lng]);
+
+  // Client-side distance filter (applied after server fetch + haversine computation)
+  // Uses pre-computed distanceKm (from backend or haversine), no GPS dependency needed
+  const filteredProducts = useMemo(
+    () => filterByDistance(productsWithDistance, filters.maxDistance),
+    [productsWithDistance, filters.maxDistance],
+  );
 
   return (
     <View className="flex-1 bg-background">
@@ -86,13 +90,6 @@ export default function HomeScreen() {
           </TouchableOpacity>
         </View>
 
-        <FilterModal
-          visible={showFilter}
-          onClose={() => setShowFilter(false)}
-          filters={filters}
-          onApply={setFilters}
-        />
-
         <View className="px-4">
           {isLoading ? (
             <SkeletonList count={4} />
@@ -117,17 +114,23 @@ export default function HomeScreen() {
                 Belum ada produk tersedia saat ini
               </Text>
             </View>
+          ) : filteredProducts.length === 0 ? (
+            <View className="items-center justify-center py-12">
+              <Text className="text-gray-500 text-center">
+                Tidak ada produk dalam jarak {filters.maxDistance} km
+              </Text>
+            </View>
           ) : (
             <>
-              {data?.products?.length !== undefined && (
+              {filteredProducts.length !== undefined && (
                 <View className="flex-row justify-between items-center mb-2">
                   <Text className="text-sm text-gray-500">
-                    {data.products.length} produk tersedia
+                    {filteredProducts.length} produk tersedia
                   </Text>
                 </View>
               )}
               <View className={`flex-row flex-wrap justify-between ${isPlaceholderData && isFetching ? 'opacity-50' : ''}`}>
-                {productsWithDistance.map((p: Product) => (
+                {filteredProducts.map((p) => (
                   <ProductCard key={p.id} product={p} className="w-[48%] mb-4" />
                 ))}
               </View>
@@ -151,6 +154,13 @@ export default function HomeScreen() {
           )}
         </View>
       </ScrollView>
+
+      <FilterModal
+        visible={showFilter}
+        onClose={() => setShowFilter(false)}
+        filters={filters}
+        onApply={setFilters}
+      />
     </View>
   );
 }

@@ -6,7 +6,8 @@ jest.mock('react-native', () => {
       interpolate: jest.fn(),
       setValue: jest.fn(),
     })),
-    timing: jest.fn(() => ({ start: jest.fn(), stop: jest.fn() })),
+    timing: jest.fn(() => ({ start: jest.fn((cb) => cb?.()), stop: jest.fn() })),
+    parallel: jest.fn(() => ({ start: jest.fn((cb) => cb?.()), stop: jest.fn() })),
     loop: jest.fn(() => ({ start: jest.fn(), stop: jest.fn() })),
     sequence: jest.fn(() => ({ start: jest.fn(), stop: jest.fn() })),
   };
@@ -20,6 +21,7 @@ jest.mock('react-native', () => {
     StyleSheet: {
       create: jest.fn((styles) => styles),
       flatten: jest.fn(),
+      absoluteFill: { position: 'absolute', top: 0, left: 0, right: 0, bottom: 0 },
     },
     Platform: { OS: 'ios', select: jest.fn((obj) => obj.ios) },
     Dimensions: {
@@ -30,6 +32,9 @@ jest.mock('react-native', () => {
     FlatList: 'FlatList',
     TouchableOpacity: 'TouchableOpacity',
     Modal: 'Modal',
+    BackHandler: {
+      addEventListener: jest.fn(() => ({ remove: jest.fn() })),
+    },
     processColor: jest.fn((color) => color),
   };
 });

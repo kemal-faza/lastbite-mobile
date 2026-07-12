@@ -1,12 +1,14 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import {
-	Modal,
+	Animated,
 	Pressable,
 	ScrollView,
 	View,
 	Text,
 	TouchableOpacity,
-	Platform,
+	BackHandler,
+	StyleSheet,
+	Dimensions,
 } from 'react-native';
 
 export interface FilterState {
@@ -70,11 +72,66 @@ export function FilterModal({
 	onApply,
 }: FilterModalProps) {
 	const [draft, setDraft] = useState<FilterState>(filters);
+	const [mounted, setMounted] = useState(visible);
+	const opacity = useRef(new Animated.Value(visible ? 1 : 0)).current;
+	const sheetTranslateY = useRef(
+		new Animated.Value(visible ? 0 : Dimensions.get('window').height * 0.5),
+	).current;
+
+	// Animate fade in + slide up (parallel)
+	useEffect(() => {
+		if (visible) {
+			setMounted(true);
+			Animated.parallel([
+				Animated.timing(opacity, {
+					toValue: 1,
+					duration: 200,
+					useNativeDriver: true,
+				}),
+				Animated.timing(sheetTranslateY, {
+					toValue: 0,
+					duration: 300,
+					useNativeDriver: true,
+				}),
+			]).start();
+		} else {
+			Animated.parallel([
+				Animated.timing(opacity, {
+					toValue: 0,
+					duration: 200,
+					useNativeDriver: true,
+				}),
+				Animated.timing(sheetTranslateY, {
+					toValue: Dimensions.get('window').height * 0.5,
+					duration: 300,
+					useNativeDriver: true,
+				}),
+			]).start(() => setMounted(false));
+		}
+	}, [visible, opacity, sheetTranslateY]);
 
 	// Sync draft filters when parent changes them externally
 	useEffect(() => {
 		setDraft(filters);
 	}, [filters]);
+
+	// Android back button closes the modal
+	useEffect(() => {
+		if (!visible) return;
+		const onBackPress = () => {
+			onClose();
+			return true;
+		};
+		const subscription = BackHandler.addEventListener(
+			'hardwareBackPress',
+			onBackPress,
+		);
+		return () => {
+			if (subscription && typeof subscription.remove === 'function') {
+				subscription.remove();
+			}
+		};
+	}, [visible, onClose]);
 
 	const handleApply = () => {
 		onApply(draft);
@@ -92,25 +149,41 @@ export function FilterModal({
 		onClose();
 	};
 
+	if (!mounted) return null;
+
 	return (
-		<Modal
-			visible={visible}
-			animationType="slide"
-			transparent
-			onRequestClose={onClose}
-			className="z-20"
-			{...(Platform.OS === 'android'
-				? { statusBarTranslucent: true }
-				: {})}>
-			{/* Backdrop scrim — tap to dismiss */}
-			<Pressable
-				onPress={onClose}
-				className="flex-1 bg-black/50 justify-end">
-				{/* Sheet content — stopPropagation so taps don't reach backdrop */}
-				<Pressable onPress={() => {}}>
-					<View
-						className="bg-white rounded-t-3xl px-4 pt-4 pb-8"
-						style={{ maxHeight: '85%' }}>
+		<Animated.View
+			pointerEvents={visible ? 'auto' : 'none'}
+			testID="filter-overlay"
+			style={[
+				StyleSheet.absoluteFill,
+				{ zIndex: 50, justifyContent: 'flex-end' },
+			]}>
+			{/* Backdrop with fade animation (independent of sheet) */}
+			<Animated.View
+				testID="filter-backdrop-animated"
+				style={[
+					StyleSheet.absoluteFill,
+					{ opacity, backgroundColor: 'rgba(0,0,0,0.5)' },
+				]}>
+				<Pressable
+					testID="filter-backdrop"
+					onPress={onClose}
+					style={StyleSheet.absoluteFill}
+				/>
+			</Animated.View>
+			{/* Sheet with slide animation (independent of backdrop) */}
+			<Animated.View
+				testID="filter-sheet-animated"
+				style={[
+					{ height: '50%' },
+					{ transform: [{ translateY: sheetTranslateY }] },
+				]}>
+				<Pressable
+					onPress={() => {}}
+					testID="filter-sheet"
+					className="bg-white rounded-t-3xl px-4 pt-4 pb-4"
+					style={{ flex: 1 }}>
 						{/* Header */}
 						<View className="flex-row justify-between items-center mb-4">
 							<Text className="text-lg font-bold">Filter</Text>
@@ -123,7 +196,8 @@ export function FilterModal({
 
 						<ScrollView
 							bounces={false}
-							showsVerticalScrollIndicator={false}>
+							showsVerticalScrollIndicator={false}
+							className="flex-1">
 							<Text className="text-sm font-semibold mb-2">
 								Jarak Maksimal
 							</Text>
@@ -187,18 +261,20 @@ export function FilterModal({
 									</TouchableOpacity>
 								))}
 							</View>
+						</ScrollView>
 
+						{/* Sticky footer with Terapkan button */}
+						<View className="pt-3 border-t border-gray-200">
 							<TouchableOpacity
 								onPress={handleApply}
-								className="bg-primary py-3 rounded-xl mt-6">
+								className="bg-primary py-3 rounded-xl">
 								<Text className="text-white text-center font-semibold">
 									Terapkan
 								</Text>
 							</TouchableOpacity>
-						</ScrollView>
-					</View>
+						</View>
 				</Pressable>
-			</Pressable>
-		</Modal>
+		</Animated.View>
+		</Animated.View>
 	);
 }

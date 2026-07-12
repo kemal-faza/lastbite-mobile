@@ -45,3 +45,5 @@ memory/
 
 # CodeGraph index (local cache)
 .codegraph/
+
+.vscode/

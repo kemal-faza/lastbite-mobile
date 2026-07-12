@@ -85,6 +85,32 @@ describe('useProducts', () => {
     unmount();
   });
 
+  it('passes maxPrice filter to getProducts', async () => {
+    const { unmount } = await renderHook(
+      () => useProducts({ maxPrice: 15000 }),
+      { wrapper: wrapper(queryClient) },
+    );
+    await waitFor(() => {
+      expect(mockGetProducts).toHaveBeenCalledWith(
+        expect.objectContaining({ maxPrice: 15000 }),
+      );
+    });
+    unmount();
+  });
+
+  it('passes expiry filter to getProducts', async () => {
+    const { unmount } = await renderHook(
+      () => useProducts({ expiry: '< 1 Jam' }),
+      { wrapper: wrapper(queryClient) },
+    );
+    await waitFor(() => {
+      expect(mockGetProducts).toHaveBeenCalledWith(
+        expect.objectContaining({ expiry: '< 1 Jam' }),
+      );
+    });
+    unmount();
+  });
+
   it('preserves previous data as placeholder when filters change', async () => {
     const productA = { id: '1', name: 'Product A', storeName: 'Store', originalPrice: 10000, discountedPrice: 5000, stock: 10, imageUrl: null, imageVariants: null, category: 'meals' as const };
     const productB = { id: '1', name: 'Product B', storeName: 'Store', originalPrice: 10000, discountedPrice: 5000, stock: 10, imageUrl: null, imageVariants: null, category: 'bakery' as const };
