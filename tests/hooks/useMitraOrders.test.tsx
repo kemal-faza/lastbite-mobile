@@ -16,6 +16,8 @@ describe('useUpdateOrderStatus', () => {
   it('calls PATCH /mitra/orders/:id/status and invalidates queries', async () => {
     (apiFetch as jest.Mock).mockResolvedValueOnce({ success: true });
 
+    const invalidateSpy = jest.spyOn(queryClient, 'invalidateQueries');
+
     const { result } = await renderHook(() => useUpdateOrderStatus(), { wrapper });
 
     act(() => {
@@ -28,5 +30,7 @@ describe('useUpdateOrderStatus', () => {
       method: 'PATCH',
       body: JSON.stringify({ status: 'PROCESSED' }),
     });
+    expect(invalidateSpy).toHaveBeenCalledWith({ queryKey: ['mitra-orders'] });
+    expect(invalidateSpy).toHaveBeenCalledWith({ queryKey: ['mitra-stats'] });
   });
 });
