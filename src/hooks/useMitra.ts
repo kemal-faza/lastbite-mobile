@@ -29,6 +29,7 @@ export function useUpdateOrderStatus() {
       updateMitraOrderStatus(id, status),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['mitra-orders'] });
+      queryClient.invalidateQueries({ queryKey: ['mitra-stats'] });
     },
   });
 }
