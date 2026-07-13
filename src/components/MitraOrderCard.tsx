@@ -1,4 +1,4 @@
-import { View, Text, TouchableOpacity } from 'react-native';
+import { View, Text, TouchableOpacity, Alert } from 'react-native';
 import { useUpdateOrderStatus } from '@/hooks/useMitra';
 import type { MitraOrder } from '@/lib/api/mitra';
 
@@ -7,7 +7,7 @@ type Props = {
   onPress: () => void;
 };
 
-const STATUS_BADGE_COLORS: Record<string, { bg: string; text: string }> = {
+const STATUS_BADGE_COLORS: Record<MitraOrder['status'], { bg: string; text: string }> = {
   PENDING: { bg: 'bg-yellow-100', text: 'text-yellow-800' },
   PROCESSED: { bg: 'bg-blue-100', text: 'text-blue-800' },
   READY: { bg: 'bg-green-100', text: 'text-green-800' },
@@ -15,7 +15,7 @@ const STATUS_BADGE_COLORS: Record<string, { bg: string; text: string }> = {
   PICKED_UP: { bg: 'bg-gray-100', text: 'text-gray-800' },
 };
 
-export default function MitraOrderCard({ order, onPress }: Props) {
+export function MitraOrderCard({ order, onPress }: Props) {
   const { mutate, isPending } = useUpdateOrderStatus();
 
   const badgeColor = STATUS_BADGE_COLORS[order.status] ?? STATUS_BADGE_COLORS.PENDING;
@@ -23,6 +23,18 @@ export default function MitraOrderCard({ order, onPress }: Props) {
   const showActionButton = order.status === 'PENDING' || order.status === 'PROCESSED';
   const actionLabel = order.status === 'PENDING' ? 'Proses Pesanan' : 'Siap Diambil';
   const nextStatus = order.status === 'PENDING' ? 'PROCESSED' : 'READY';
+
+  const handleAction = () => {
+    if (isPending) return;
+    mutate(
+      { id: order.id, status: nextStatus as 'PROCESSED' | 'READY' },
+      {
+        onError: (error: Error) => {
+          Alert.alert('Gagal', error?.message || 'Gagal memperbarui status pesanan');
+        },
+      }
+    );
+  };
 
   return (
     <TouchableOpacity
@@ -51,7 +63,7 @@ export default function MitraOrderCard({ order, onPress }: Props) {
       {/* Action button */}
       {showActionButton && (
         <TouchableOpacity
-          onPress={() => mutate({ id: order.id, status: nextStatus as 'PROCESSED' | 'READY' })}
+          onPress={handleAction}
           disabled={isPending}
           className="mt-3 bg-primary px-4 py-2 rounded-lg items-center"
         >

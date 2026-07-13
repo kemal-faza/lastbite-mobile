@@ -1,5 +1,5 @@
 import { render, fireEvent } from '@testing-library/react-native';
-import MitraOrderCard from '@/components/MitraOrderCard';
+import { MitraOrderCard } from '@/components/MitraOrderCard';
 import { useUpdateOrderStatus } from '@/hooks/useMitra';
 import type { MitraOrder } from '@/lib/api/mitra';
 
@@ -64,7 +64,10 @@ describe('MitraOrderCard', () => {
       <MitraOrderCard order={mockOrder} onPress={jest.fn()} />
     );
     fireEvent.press(getByText('Proses Pesanan'));
-    expect(mockMutate).toHaveBeenCalledWith({ id: 'ORD-001', status: 'PROCESSED' });
+    expect(mockMutate).toHaveBeenCalledWith(
+      { id: 'ORD-001', status: 'PROCESSED' },
+      expect.objectContaining({ onError: expect.any(Function) })
+    );
   });
 
   it('calls mutate with READY when PROCESSED action button pressed', async () => {
@@ -73,7 +76,22 @@ describe('MitraOrderCard', () => {
       <MitraOrderCard order={processedOrder} onPress={jest.fn()} />
     );
     fireEvent.press(getByText('Siap Diambil'));
-    expect(mockMutate).toHaveBeenCalledWith({ id: 'ORD-001', status: 'READY' });
+    expect(mockMutate).toHaveBeenCalledWith(
+      { id: 'ORD-001', status: 'READY' },
+      expect.objectContaining({ onError: expect.any(Function) })
+    );
+  });
+
+  it('disables action button while mutation is pending', async () => {
+    (useUpdateOrderStatus as jest.Mock).mockReturnValue({
+      mutate: mockMutate,
+      isPending: true,
+    });
+    const { getByText } = await render(
+      <MitraOrderCard order={mockOrder} onPress={jest.fn()} />
+    );
+    fireEvent.press(getByText('Proses Pesanan'));
+    expect(mockMutate).not.toHaveBeenCalled();
   });
 
   it('does not render action button for READY, PICKED_UP, CANCELLED statuses', async () => {
