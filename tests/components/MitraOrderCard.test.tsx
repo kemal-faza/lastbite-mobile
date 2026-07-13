@@ -46,7 +46,7 @@ describe('MitraOrderCard', () => {
     const { getByText } = await render(
       <MitraOrderCard order={mockOrder} onPress={jest.fn()} />
     );
-    expect(getByText('LAST-1234')).toBeTruthy();
+    expect(getByText('ORD-001')).toBeTruthy();
     expect(getByText('PENDING')).toBeTruthy();
   });
 

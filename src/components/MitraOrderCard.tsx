@@ -31,7 +31,7 @@ export default function MitraOrderCard({ order, onPress }: Props) {
     >
       {/* Header row: Order ID + Status badge */}
       <View className="flex-row justify-between items-center mb-3">
-        <Text className="font-bold text-gray-900">{order.pickupCode}</Text>
+        <Text className="font-bold text-gray-900">{order.id}</Text>
         <View className={`${badgeColor.bg} px-2 py-1 rounded-full`}>
           <Text className={`${badgeColor.text} text-xs font-medium`}>{order.status}</Text>
         </View>
