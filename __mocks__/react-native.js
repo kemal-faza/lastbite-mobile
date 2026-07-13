@@ -1,4 +1,6 @@
 // Mock react-native for all tests - prevents Flow syntax parsing errors in bun
+const React = require('react');
+
 const Animated = {
   View: 'Animated.View',
   Value: jest.fn(() => ({
@@ -9,6 +11,22 @@ const Animated = {
   parallel: jest.fn(() => ({ start: jest.fn((cb) => cb?.()), stop: jest.fn() })),
   loop: jest.fn(() => ({ start: jest.fn(), stop: jest.fn() })),
   sequence: jest.fn(() => ({ start: jest.fn(), stop: jest.fn() })),
+};
+
+// Functional FlatList that renders data items or ListEmptyComponent
+// Required so RNTL tests can verify rendered list content
+const FlatList = (props) => {
+  const data = props.data || [];
+  const children = data.length > 0
+    ? data.map((item, index) => {
+        const key = props.keyExtractor?.(item, index) ?? String(index);
+        const rendered = props.renderItem?.({ item, index, separators: { highlight: () => {}, unhighlight: () => {}, updateProps: () => {} } });
+        return React.createElement('View', { key }, rendered);
+      })
+    : (typeof props.ListEmptyComponent === 'function'
+        ? React.createElement(props.ListEmptyComponent, props.ListEmptyComponent.props || {})
+        : props.ListEmptyComponent || null);
+  return React.createElement('View', null, children);
 };
 
 module.exports = {
@@ -28,10 +46,11 @@ module.exports = {
   },
   ActivityIndicator: 'ActivityIndicator',
   ScrollView: 'ScrollView',
-  FlatList: 'FlatList',
+  FlatList,
   TextInput: 'TextInput',
   TouchableOpacity: 'TouchableOpacity',
   Modal: 'Modal',
+  RefreshControl: 'RefreshControl',
   BackHandler: {
     addEventListener: jest.fn(() => ({ remove: jest.fn() })),
   },
