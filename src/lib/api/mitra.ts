@@ -90,6 +90,14 @@ export async function getMitraStats() {
   return apiFetch<{ stats: MitraStats }>('/mitra/stats', { auth: true });
 }
 
+export async function updateMitraOrderStatus(id: string, status: 'PROCESSED' | 'READY') {
+  return apiFetch<{ success: boolean }>(`/mitra/orders/${id}/status`, {
+    auth: true,
+    method: 'PATCH',
+    body: JSON.stringify({ status }),
+  });
+}
+
 export async function registerMitra(data: {
   name: string;
   description?: string;
