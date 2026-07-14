@@ -7,6 +7,7 @@ import { useOrder } from '@/hooks/useOrders';
 import { getImageVariants } from '@/lib/api/products';
 import { ReviewModal } from '@/components/ReviewModal';
 import { colors } from '@/theme';
+import { OrderStatusBadge } from '@/components/OrderStatusBadge';
 import type { OrderItem } from '@/lib/api/orders';
 
 export default function OrderDetailScreen() {
@@ -41,7 +42,6 @@ export default function OrderDetailScreen() {
 
   const order = orderData.order;
   const isPickedUp = order.status === 'PICKED_UP';
-  const isCancelled = order.status === 'CANCELLED';
 
   const formatDate = (dateStr?: string) => {
     if (!dateStr) return '-';
@@ -64,19 +64,7 @@ export default function OrderDetailScreen() {
       <View className="bg-white mx-4 mt-4 p-4 rounded-xl">
         <View className="flex-row items-center justify-between mb-3">
           <Text className="text-lg font-bold">Status Pesanan</Text>
-          <View
-            className={`px-3 py-1 rounded-full ${
-              isPickedUp ? 'bg-green-100' : 'bg-red-100'
-            }`}
-          >
-            <Text
-              className={`text-sm font-semibold ${
-                isPickedUp ? 'text-green-700' : 'text-red-700'
-              }`}
-            >
-              {isPickedUp ? 'Selesai' : 'Dibatalkan'}
-            </Text>
-          </View>
+          <OrderStatusBadge status={order.status} />
         </View>
 
         {/* Pickup Code */}

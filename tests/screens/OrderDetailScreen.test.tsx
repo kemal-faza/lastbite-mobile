@@ -102,6 +102,36 @@ describe('OrderDetailScreen', () => {
     expect(queryByText('Tulis Ulasan')).toBeNull();
   });
 
+  it('renders correct status badge for PENDING', async () => {
+    (useOrder as jest.Mock).mockReturnValue({
+      data: { order: { ...baseOrder, status: 'PENDING' } },
+      isLoading: false,
+      isError: false,
+    });
+    const { getByText } = await render(<OrderDetailScreen />);
+    expect(getByText('Menunggu')).toBeTruthy();
+  });
+
+  it('renders correct status badge for PROCESSED', async () => {
+    (useOrder as jest.Mock).mockReturnValue({
+      data: { order: { ...baseOrder, status: 'PROCESSED' } },
+      isLoading: false,
+      isError: false,
+    });
+    const { getByText } = await render(<OrderDetailScreen />);
+    expect(getByText('Diproses')).toBeTruthy();
+  });
+
+  it('renders correct status badge for READY', async () => {
+    (useOrder as jest.Mock).mockReturnValue({
+      data: { order: { ...baseOrder, status: 'READY' } },
+      isLoading: false,
+      isError: false,
+    });
+    const { getByText } = await render(<OrderDetailScreen />);
+    expect(getByText('Siap Diambil')).toBeTruthy();
+  });
+
   it('shows loading indicator when loading', async () => {
     (useOrder as jest.Mock).mockReturnValue({
       data: null,
