@@ -1,14 +1,21 @@
+import { useState } from 'react';
 import { View, Text, ScrollView, TouchableOpacity, ActivityIndicator } from 'react-native';
 import { useLocalSearchParams } from 'expo-router';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { useOrder } from '@/hooks/useOrders';
+import { useConfirmPickup } from '@/hooks/useOrders';
 import { CountdownTimer } from '@/components/CountdownTimer';
-import { QueueIndicator } from '@/components/QueueIndicator';
+import { ConfirmDialog } from '@/components/ConfirmDialog';
+import { useToast } from '@/contexts/ToastContext';
 import { colors } from '@/theme';
 
 export default function OrderConfirmScreen() {
   const { id } = useLocalSearchParams<{ id: string }>();
   const { data: orderData, isLoading, isError } = useOrder(id);
+  const { mutate: doConfirmPickup, isPending } = useConfirmPickup();
+  const { showToast } = useToast();
+  const [showConfirm, setShowConfirm] = useState(false);
+  const [showSuccessScreen, setShowSuccessScreen] = useState(false);
 
   if (isLoading) {
     return (
@@ -31,8 +38,25 @@ export default function OrderConfirmScreen() {
   const order = orderData.order;
   const pickupExpiresAt = order.pickupExpiresAt || new Date(Date.now() + 30 * 60 * 1000).toISOString();
 
+  const handlePickupCompleted = () => {
+    setShowConfirm(false);
+    doConfirmPickup(
+      { id: order.id, pickupCode: order.pickupCode },
+      {
+        onSuccess: () => setShowSuccessScreen(true),
+        onError: (err: any) => {
+          const code = err?.code;
+          if (code === 'INVALID_PICKUP_CODE') showToast('Kode pickup tidak sesuai');
+          else if (code === 'PICKUP_EXPIRED') showToast('Kode pickup sudah kadaluarsa');
+          else showToast('Gagal memverifikasi pickup');
+        },
+      }
+    );
+  };
+
   return (
-    <ScrollView className="flex-1 bg-background">
+    <View className="flex-1 bg-background">
+    <ScrollView className="flex-1">
         <View className="bg-primary p-6 items-center">
           <MaterialCommunityIcons name="check-circle" size={64} color="white" />
           <Text className="text-white text-lg font-bold mt-2">Pesanan Berhasil!</Text>
@@ -67,13 +91,9 @@ export default function OrderConfirmScreen() {
           </View>
         </View>
 
-        <View className="mx-4 mt-4">
-          <QueueIndicator queueCount={3} position={0} label="Antrian Pengambilan" />
-        </View>
-
         <View className="px-4 mt-6 mb-8">
           <TouchableOpacity
-            onPress={() => alert('Pesanan berhasil diambil!')}
+            onPress={() => setShowConfirm(true)}
             className="bg-primary py-4 rounded-xl"
           >
             <Text className="text-white text-center font-semibold text-lg">
@@ -82,5 +102,16 @@ export default function OrderConfirmScreen() {
           </TouchableOpacity>
         </View>
       </ScrollView>
+
+      <ConfirmDialog
+        visible={showConfirm}
+        onClose={() => setShowConfirm(false)}
+        title="Konfirmasi Pengambilan"
+        description={`Apakah kamu sudah menerima pesanan dari ${order.storeName}?`}
+        confirmLabel="Ya, Saya Sudah Ambil"
+        onConfirm={handlePickupCompleted}
+        loading={isPending}
+      />
+    </View>
   );
 }
