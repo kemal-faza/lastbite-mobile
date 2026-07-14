@@ -49,7 +49,7 @@ jest.mock('@/components/ui/text', () => ({
   },
 }));
 
-import CartScreen from '../../app/(food-saver)/cart';
+import CartScreen from '../../app/(food-saver)/(tabs)/cart';
 
 describe('CartScreen', () => {
   beforeEach(() => {

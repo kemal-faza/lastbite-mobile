@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { View, Text, ScrollView, TextInput } from 'react-native';
-import { router, Redirect } from 'expo-router';
+import { router, Redirect, useLocalSearchParams } from 'expo-router';
+import { useQueryClient } from '@tanstack/react-query';
 import { Button } from '@/components/ui/button';
 import { useCart } from '@/hooks/useCart';
 import { createOrder } from '@/lib/api/orders';
@@ -8,6 +9,7 @@ import { useAuthStore } from '@/stores/authStore';
 import { PaymentSummary } from '@/components/PaymentSummary';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { colors } from '@/theme';
+import { useToast } from '@/contexts/ToastContext';
 import type { CartItem } from '@/lib/api/cart';
 
 const NOTES_MAX = 500;
@@ -15,18 +17,26 @@ const NOTES_MAX = 500;
 export default function CheckoutScreen() {
   const { isAuthenticated, user } = useAuthStore();
   const { cart } = useCart(isAuthenticated);
+  const { storeName } = useLocalSearchParams<{ storeName?: string }>();
+  const queryClient = useQueryClient();
+  const { showToast } = useToast();
 
   if (!isAuthenticated) return <Redirect href="/login" />;
 
   const [notes, setNotes] = useState('');
   const [loading, setLoading] = useState(false);
-  const items: CartItem[] = cart.data?.cart.items || [];
+  const allItems: CartItem[] = cart.data?.cart.items || [];
+  const items = storeName
+    ? allItems.filter((item) => item.storeName === storeName)
+    : allItems;
 
   const handleCheckout = async () => {
     if (items.length === 0 || !user?.name || !user?.phone) return;
     setLoading(true);
     try {
-      const res = await createOrder(user.name, user.phone, notes || undefined);
+      const res = await createOrder(user.name, user.phone, notes || undefined, storeName);
+      queryClient.invalidateQueries({ queryKey: ['cart'] });
+      showToast('Pesanan berhasil dibuat!');
       router.replace(`/order/confirm/${res.order.id}`);
     } catch (e: any) {
       alert(e.message || 'Gagal membuat pesanan. Silakan coba lagi.');
@@ -38,7 +48,9 @@ export default function CheckoutScreen() {
   return (
     <View className="flex-1 bg-background">
       <ScrollView className="flex-1 p-4" contentContainerStyle={{ paddingBottom: 24 }}>
-        <Text className="text-xl font-bold text-primary mb-4">Checkout</Text>
+        <Text className="text-xl font-bold text-primary mb-4">
+          {storeName ? `Checkout - ${storeName}` : 'Checkout'}
+        </Text>
 
         {/* Section 1: Ringkasan Pesanan */}
         <Text className="text-base font-semibold mb-3">Ringkasan Pesanan</Text>
