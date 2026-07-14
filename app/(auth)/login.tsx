@@ -70,32 +70,36 @@ export default function LoginScreen() {
         <View className="mt-6 pt-4 border-t border-gray-200">
           <Text className="text-xs text-gray-400 text-center mb-2">Mode Development</Text>
           <PrimaryButton
-            onPress={() => {
-              setUser({
-                id: 'dev-foodsaver-001',
-                email: 'foodsaver@lastbite.id',
-                name: 'Food Saver LastBite',
-                phone: '081111111111',
-                role: 'FOOD_SAVER',
-                isVerified: true,
-              });
-              router.replace('/(food-saver)');
+            loading={loading}
+            onPress={async () => {
+              setLoading(true);
+              try {
+                const res = await login('foodsaver@lastbite.id', 'foodsaver123');
+                setUser(res.user);
+                router.replace('/(food-saver)');
+              } catch (e: any) {
+                alert(e.message);
+              } finally {
+                setLoading(false);
+              }
             }}
           >
             Masuk sebagai Food Saver (Dev)
           </PrimaryButton>
           <View className="h-2" />
           <PrimaryButton
-            onPress={() => {
-              setUser({
-                id: 'dev-mitra-001',
-                email: 'warung-makmur@lastbite.app',
-                name: 'Warung Makmur',
-                phone: '081234567890',
-                role: 'MITRA',
-                isVerified: true,
-              });
-              router.replace('/(mitra)');
+            loading={loading}
+            onPress={async () => {
+              setLoading(true);
+              try {
+                const res = await login('dapurbuani@lastbite.id', 'password123');
+                setUser(res.user);
+                router.replace('/(mitra)');
+              } catch (e: any) {
+                alert(e.message);
+              } finally {
+                setLoading(false);
+              }
             }}
           >
             Masuk sebagai Mitra (Dev)
