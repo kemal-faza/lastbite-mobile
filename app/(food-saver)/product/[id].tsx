@@ -2,6 +2,7 @@ import { View, Text, ScrollView, ActivityIndicator, TouchableOpacity, Linking } 
 import { useLocalSearchParams, router } from 'expo-router';
 import { Image } from 'expo-image';
 import { Button } from '@/components/ui/button';
+import { useQueryClient } from '@tanstack/react-query';
 import { useProduct } from '@/hooks/useProducts';
 import { useProductReviews } from '@/hooks/useReviews';
 import { TrustBadgeRow } from '@/components/TrustBadge';
@@ -27,6 +28,7 @@ export default function ProductDetailScreen() {
   const { isAuthenticated } = useAuthStore();
   const product = data?.product;
   const { data: reviewData, isLoading: isLoadingReviews } = useProductReviews(id);
+  const queryClient = useQueryClient();
 
   if (isLoading) {
     return (
@@ -183,9 +185,14 @@ export default function ProductDetailScreen() {
         <Button
           testID="add-to-cart-button"
           variant="default"
-          onPress={() => {
+          onPress={async () => {
             if (!isAuthenticated) { router.push('/login'); return; }
-            addToCart(product.id);
+            try {
+              await addToCart(product.id);
+              queryClient.invalidateQueries({ queryKey: ['cart'] });
+            } catch (e: any) {
+              alert(e.message || 'Gagal menambahkan ke keranjang');
+            }
           }}
         >
           <Text className="text-white font-semibold">Tambah ke Keranjang</Text>

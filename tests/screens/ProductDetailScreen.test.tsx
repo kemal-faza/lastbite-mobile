@@ -1,5 +1,6 @@
 import { render } from '@testing-library/react-native';
 import React from 'react';
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import ProductDetailScreen from '../../app/(food-saver)/product/[id]';
 import { useProduct } from '@/hooks/useProducts';
 import { useProductReviews } from '@/hooks/useReviews';
@@ -74,6 +75,10 @@ jest.mock('expo-router', () => ({
 }));
 
 // --- Helpers ---
+const queryClient = new QueryClient({
+  defaultOptions: { queries: { retry: false } },
+});
+
 async function renderScreen(productOverrides?: Partial<Product>, reviewsOverrides?: { isLoading?: boolean; data?: any }) {
   (useProduct as jest.Mock).mockReturnValue({
     data: { product: createMockProduct(productOverrides) },
@@ -89,7 +94,11 @@ async function renderScreen(productOverrides?: Partial<Product>, reviewsOverride
     ...reviewsOverrides,
   });
 
-  return render(<ProductDetailScreen />);
+  return render(
+    <QueryClientProvider client={queryClient}>
+      <ProductDetailScreen />
+    </QueryClientProvider>
+  );
 }
 
 function setReviews(overrides: { isLoading?: boolean; data?: any } = {}) {
