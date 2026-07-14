@@ -60,6 +60,7 @@ jest.mock('react-native', () => {
     TextInput,
     TouchableOpacity: 'TouchableOpacity',
     Modal: 'Modal',
+    KeyboardAvoidingView: 'KeyboardAvoidingView',
     RefreshControl: 'RefreshControl',
     BackHandler: {
       addEventListener: jest.fn(() => ({ remove: jest.fn() })),
@@ -72,10 +73,15 @@ jest.mock('react-native', () => {
   };
 });
 
-// Mock @expo/vector-icons
-jest.mock('@expo/vector-icons', () => ({
-  MaterialCommunityIcons: 'MaterialCommunityIcons',
-  MaterialIcons: 'MaterialIcons',
+// Mock @expo/vector-icons — uses manual mock in __mocks__/@expo/vector-icons.js
+jest.mock('@expo/vector-icons');
+
+// Mock AsyncStorage used by API client
+jest.mock('@react-native-async-storage/async-storage', () => ({
+  getItem: jest.fn(() => Promise.resolve(null)),
+  setItem: jest.fn(() => Promise.resolve()),
+  removeItem: jest.fn(() => Promise.resolve()),
+  clear: jest.fn(() => Promise.resolve()),
 }));
 
 // Mock expo-location
