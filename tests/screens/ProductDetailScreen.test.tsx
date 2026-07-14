@@ -1,26 +1,70 @@
-import { render, waitFor } from '@testing-library/react-native';
-import { View, Text } from 'react-native';
+import { render } from '@testing-library/react-native';
+import React from 'react';
+import ProductDetailScreen from '../../app/(food-saver)/product/[id]';
+import { useProduct } from '@/hooks/useProducts';
+import type { Product } from '@/lib/api/products';
 
-// Mock all dependencies
-jest.mock('@tanstack/react-query', () => ({
-  useQuery: jest.fn(),
-  keepPreviousData: (data: unknown) => data,
+// --- Mock external dependencies ---
+jest.mock('@/lib/api/cart', () => ({
+  addToCart: jest.fn(),
 }));
 
-jest.mock('@/hooks/useProducts', () => ({
-  useProduct: jest.fn(),
+jest.mock('@/components/ui/button', () => ({
+  Button: ({ children, onPress, disabled }: any) => {
+    const React = require('react');
+    const { Pressable, Text } = require('react-native');
+    return React.createElement(
+      Pressable,
+      { onPress, disabled, testID: 'add-to-cart-button' },
+      typeof children === 'string'
+        ? React.createElement(Text, null, children)
+        : children
+    );
+  },
 }));
 
-jest.mock('@/hooks/useReviews', () => ({
-  useProductReviews: jest.fn(),
-}));
-
-jest.mock('@/stores/authStore', () => ({
-  useAuthStore: jest.fn(() => ({ isAuthenticated: true })),
+jest.mock('@/components/ReviewList', () => ({
+  ReviewList: ({ summary, reviews }: any) => {
+    const React = require('react');
+    const { Text } = require('react-native');
+    return React.createElement(Text, null, `Ulasan: ${summary.totalReviews}`);
+  },
 }));
 
 jest.mock('expo-image', () => ({
   Image: 'Image',
+}));
+
+// --- Create mock product factory ---
+const baseProduct: Product = {
+  id: 'prod-1',
+  name: 'Nasi Goreng Spesial',
+  storeName: 'Warung Makan',
+  originalPrice: 50000,
+  discountedPrice: 35000,
+  stock: 5,
+  imageUrl: null,
+  imageVariants: null,
+  category: 'meals',
+  description: 'Nasi goreng dengan telur dan ayam',
+};
+
+function createMockProduct(overrides?: Partial<Product>): Product {
+  return { ...baseProduct, ...overrides };
+}
+
+// --- Setup mocks ---
+jest.mock('@/hooks/useProducts', () => ({
+  useProduct: jest.fn(),
+  useProducts: jest.fn(() => ({ data: undefined, isLoading: true })),
+}));
+
+jest.mock('@/hooks/useReviews', () => ({
+  useProductReviews: jest.fn(() => ({ data: undefined })),
+}));
+
+jest.mock('@/stores/authStore', () => ({
+  useAuthStore: jest.fn(() => ({ isAuthenticated: true })),
 }));
 
 jest.mock('expo-router', () => ({
@@ -28,121 +72,64 @@ jest.mock('expo-router', () => ({
   router: { push: jest.fn() },
 }));
 
-jest.mock('@/lib/api/cart', () => ({
-  addToCart: jest.fn(),
-}));
+// --- Helpers ---
+async function renderScreen(productOverrides?: Partial<Product>) {
+  (useProduct as jest.Mock).mockReturnValue({
+    data: { product: createMockProduct(productOverrides) },
+    isLoading: false,
+    isError: false,
+    error: null,
+    refetch: jest.fn(),
+  });
 
-// For the TrustBadge change: verify only 'popular' badge
-import { TrustBadgeRow } from '@/components/TrustBadge';
+  return render(<ProductDetailScreen />);
+}
+
+// --- Tests ---
+describe('ProductDetailScreen - Discount Badge', () => {
+  it('shows discount badge when discountedPrice < originalPrice', async () => {
+    const view = await renderScreen();
+    expect(view.getByText('-30%')).toBeTruthy();
+  });
+
+  it('shows discount badge using explicit discountPercent when available', async () => {
+    const view = await renderScreen({ discountPercent: 25, discountedPrice: 37500 });
+    expect(view.getByText('-25%')).toBeTruthy();
+  });
+
+  it('hides discount badge when prices are equal', async () => {
+    const view = await renderScreen({ discountedPrice: 50000, originalPrice: 50000 });
+    expect(view.queryByText(/-?\d+%/)).toBeNull();
+  });
+
+  it('does not crash when originalPrice is 0', async () => {
+    const view = await renderScreen({ originalPrice: 0, discountedPrice: 0 });
+    // Should render without error, no discount badge
+    expect(view.queryByText(/-?\d+%/)).toBeNull();
+  });
+});
 
 describe('ProductDetailScreen - Trust Badge', () => {
-  it('renders only popular badge (no verified, no hygiene)', async () => {
-    const view = await render(
-      <View>
-        <TrustBadgeRow badges={['popular']} />
-      </View>
-    );
-    await waitFor(() => {
-      expect(view.getByText('Populer')).toBeTruthy();
-    });
+  it('shows only the Populer badge', async () => {
+    const view = await renderScreen();
+    expect(view.getByText('Populer')).toBeTruthy();
+  });
+
+  it('does not show Terverifikasi or Higienis badges', async () => {
+    const view = await renderScreen();
     expect(view.queryByText('Terverifikasi')).toBeNull();
     expect(view.queryByText('Higienis')).toBeNull();
   });
 });
 
-// For the discount badge: verify the calculation logic
-function calcDiscountPercent(discounted: number, original: number): number {
-  return Math.round((1 - discounted / original) * 100);
-}
-
-describe('ProductDetailScreen - Discount Badge', () => {
-  it('calculates correct discount percentage', () => {
-    expect(calcDiscountPercent(35000, 50000)).toBe(30);
-    expect(calcDiscountPercent(7500, 10000)).toBe(25);
-    expect(calcDiscountPercent(10000, 10000)).toBe(0);
-  });
-
-  it('renders discount badge next to discounted price', async () => {
-    const DiscountSection = ({
-      discountedPrice,
-      originalPrice,
-    }: {
-      discountedPrice: number;
-      originalPrice: number;
-    }) => {
-      const pct = calcDiscountPercent(discountedPrice, originalPrice);
-      return (
-        <View>
-          <Text testID="discounted">Rp{discountedPrice.toLocaleString()}</Text>
-          {pct > 0 && (
-            <View testID="discount-badge">
-              <Text>-{pct}%</Text>
-            </View>
-          )}
-          <Text testID="original">Rp{originalPrice.toLocaleString()}</Text>
-        </View>
-      );
-    };
-
-    const view = await render(
-      <DiscountSection discountedPrice={35000} originalPrice={50000} />
-    );
-
-    await waitFor(() => {
-      expect(view.getByTestId('discounted')).toBeTruthy();
-      expect(view.getByTestId('discount-badge')).toBeTruthy();
-      expect(view.getByText('-30%')).toBeTruthy();
-      expect(view.getByTestId('original')).toBeTruthy();
-    });
-  });
-
-  it('does not render discount badge when no discount', async () => {
-    const DiscountSection = ({
-      discountedPrice,
-      originalPrice,
-    }: {
-      discountedPrice: number;
-      originalPrice: number;
-    }) => {
-      const pct = calcDiscountPercent(discountedPrice, originalPrice);
-      return (
-        <View>
-          <Text>Rp{discountedPrice.toLocaleString()}</Text>
-          {pct > 0 && (
-            <View testID="discount-badge">
-              <Text>-{pct}%</Text>
-            </View>
-          )}
-        </View>
-      );
-    };
-
-    const view = await render(
-      <DiscountSection discountedPrice={10000} originalPrice={10000} />
-    );
-    expect(view.queryByTestId('discount-badge')).toBeNull();
-  });
-});
-
-// For stock text enlargement
 describe('ProductDetailScreen - Stock Text', () => {
-  it('renders stock with text-sm and font-semibold when stock <= 3', async () => {
-    const view = await render(
-      <Text testID="stock-label">Sisa 2</Text>
-    );
-
-    const el = view.getByTestId('stock-label');
-    expect(el.props.children).toBe('Sisa 2');
-    // Verify the component uses correct classes by checking the content
-    expect(el.props.testID).toBe('stock-label');
+  it('shows "Sisa N" when stock <= 3', async () => {
+    const view = await renderScreen({ stock: 2 });
+    expect(view.getByText('Sisa 2')).toBeTruthy();
   });
 
-  it('renders stock with text-sm font-semibold when stock > 3', async () => {
-    const view = await render(
-      <Text testID="stock-label">Stok: 10</Text>
-    );
-
-    const el = view.getByTestId('stock-label');
-    expect(el.props.children).toBe('Stok: 10');
+  it('shows "Stok: N" when stock > 3', async () => {
+    const view = await renderScreen({ stock: 10 });
+    expect(view.getByText('Stok: 10')).toBeTruthy();
   });
 });

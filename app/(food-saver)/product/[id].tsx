@@ -12,6 +12,13 @@ import { getImageVariants } from '@/lib/api/products';
 import { addToCart } from '@/lib/api/cart';
 import { useAuthStore } from '@/stores/authStore';
 
+/** Calculate discount percentage, returns 0 if prices are equal or invalid. */
+function calcDiscountPct(original: number, discounted: number, explicit?: number): number {
+  if (explicit != null) return explicit;
+  if (original <= 0) return 0;
+  return Math.round((1 - discounted / original) * 100);
+}
+
 export default function ProductDetailScreen() {
   const { id } = useLocalSearchParams<{ id: string }>();
   const { data, isLoading, isError, error, refetch } = useProduct(id);
@@ -76,8 +83,11 @@ export default function ProductDetailScreen() {
             Rp{product.discountedPrice.toLocaleString()}
           </Text>
           {(() => {
-            const pct = product.discountPercent
-              ?? Math.round((1 - product.discountedPrice / product.originalPrice) * 100);
+            const pct = calcDiscountPct(
+              product.originalPrice,
+              product.discountedPrice,
+              product.discountPercent,
+            );
             return pct > 0 ? (
               <View
                 className="px-2 py-0.5 rounded-full"
