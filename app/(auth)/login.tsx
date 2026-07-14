@@ -72,6 +72,22 @@ export default function LoginScreen() {
           <PrimaryButton
             onPress={() => {
               setUser({
+                id: 'dev-foodsaver-001',
+                email: 'process.env.EXPO_PUBLIC_DEV_FOODSAVER_EMAIL',
+                name: 'Food Saver LastBite',
+                phone: '081111111111',
+                role: 'FOOD_SAVER',
+                isVerified: true,
+              });
+              router.replace('/(food-saver)');
+            }}
+          >
+            Masuk sebagai Food Saver (Dev)
+          </PrimaryButton>
+          <View className="h-2" />
+          <PrimaryButton
+            onPress={() => {
+              setUser({
                 id: 'dev-mitra-001',
                 email: 'warung-makmur@lastbite.app',
                 name: 'Warung Makmur',
