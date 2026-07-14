@@ -54,7 +54,6 @@ export default function MitraOrderDetailScreen() {
   if (!order || !orderId) {
     return (
       <View className="flex-1 bg-background items-center justify-center p-4">
-        <Stack.Screen options={{ title: 'Detail Pesanan' }} />
         <Text className="text-gray-500 text-lg">Pesanan tidak ditemukan</Text>
       </View>
     );

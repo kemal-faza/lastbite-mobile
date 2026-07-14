@@ -63,7 +63,7 @@ export default function MitraLayout() {
             ),
           }}
         />
-        <Drawer.Screen name="orders" options={{ title: 'Pesanan Masuk' }} />
+        <Drawer.Screen name="orders" options={{ title: 'Pesanan Masuk', headerShown: false }} />
       </Drawer>
     </View>
   );
