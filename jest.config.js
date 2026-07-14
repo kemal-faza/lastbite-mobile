@@ -9,9 +9,12 @@ module.exports = {
     ],
   },
   moduleNameMapper: {
+    // Image assets via @/ alias — must come before catch-all
+    '^@/(.*)\\.(png|jpg|jpeg|gif|svg|webp)$': '<rootDir>/__mocks__/fileMock.js',
+    // TypeScript modules via @/ alias
     '^@/(.*)$': '<rootDir>/src/$1',
+    // Other mocks
     '^react-native$': '<rootDir>/__mocks__/react-native.js',
-    '\\.(png|jpg|jpeg|gif|svg|webp)$': '<rootDir>/__mocks__/fileMock.js',
   },
   testMatch: ['**/__tests__/**/*.[jt]s?(x)', '**/?(*.)+(spec|test).[jt]s?(x)', 'tests/**/*.test.ts'],
   setupFiles: ['<rootDir>/jest.setup.js'],

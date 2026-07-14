@@ -38,7 +38,7 @@ export default function MitraProductDetailScreen() {
 
       {/* Hero Image */}
       <Image
-        source={imageUrl ? { uri: imageUrl } : require('../../../assets/placeholder.png')}
+        source={imageUrl ? { uri: imageUrl } : require('@/assets/placeholder.png')}
         style={{ width: '100%', height: 300, backgroundColor: '#e5e7eb' }}
         contentFit="cover"
       />

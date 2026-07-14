@@ -74,7 +74,7 @@ export default function ProductDetailScreen() {
             source={
               getImageVariants(product.imageVariants)?.full
                 ? { uri: getImageVariants(product.imageVariants)!.full }
-                : require('../../../assets/placeholder.png')
+                : require('@/assets/placeholder.png')
             }
             contentFit="cover"
             transition={300}

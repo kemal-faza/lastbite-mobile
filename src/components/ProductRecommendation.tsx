@@ -8,7 +8,7 @@ function RecommendationCard({ product }: { product: Product }) {
   const variants = getImageVariants(product.imageVariants);
   const imageSource = variants?.thumb
     ? { uri: variants.thumb }
-    : require('../../assets/placeholder.png');
+    : require('@/assets/placeholder.png');
 
   return (
     <Pressable

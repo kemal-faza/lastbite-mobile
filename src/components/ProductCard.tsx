@@ -11,7 +11,7 @@ export function ProductCard({ product, className = '' }: { product: Product; cla
   const variants = getImageVariants(product.imageVariants);
   const imageSource = variants?.card
     ? { uri: variants.card }
-    : require('../../assets/placeholder.png');
+    : require('@/assets/placeholder.png');
 
   const { expiresAt, discountPercent, distanceKm, stock } = product;
   const expiryLabel = expiresAt ? formatExpiry(expiresAt) : null;
