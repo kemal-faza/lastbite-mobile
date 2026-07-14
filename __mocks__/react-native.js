@@ -50,6 +50,7 @@ module.exports = {
   TextInput: 'TextInput',
   TouchableOpacity: 'TouchableOpacity',
   Modal: 'Modal',
+  KeyboardAvoidingView: 'KeyboardAvoidingView',
   RefreshControl: 'RefreshControl',
   BackHandler: {
     addEventListener: jest.fn(() => ({ remove: jest.fn() })),
