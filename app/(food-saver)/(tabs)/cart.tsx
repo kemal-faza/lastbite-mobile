@@ -11,8 +11,6 @@ import { useAuthStore } from '@/stores/authStore';
 import type { CartItem } from '@/lib/api/cart';
 import { EmptyState } from '@/components/EmptyState';
 import { getImageVariants } from '@/lib/api/products';
-import { TopBar } from '@/components/TopBar';
-
 // --- Cart item row with swipe-to-delete ---
 function CartItemRow({
   item,
@@ -102,7 +100,6 @@ export default function CartScreen() {
   if (!isAuthenticated) {
     return (
       <View className="flex-1 bg-background">
-        <TopBar />
         <View className="flex-1 justify-center">
           <EmptyState
             icon="cart-outline"
@@ -119,7 +116,6 @@ export default function CartScreen() {
   if (items.length === 0) {
     return (
       <View className="flex-1 bg-background">
-        <TopBar />
         <View className="flex-1 p-4">
           <Text className="text-xl font-bold text-primary mb-4">Keranjang</Text>
           <View className="flex-1 items-center justify-center">
@@ -147,7 +143,6 @@ export default function CartScreen() {
 
   return (
     <View className="flex-1 bg-background">
-      <TopBar />
       <ScrollView className="flex-1 p-4" contentContainerStyle={{ paddingBottom: 24 }}>
         <Text className="text-xl font-bold text-primary mb-4">Keranjang</Text>
 

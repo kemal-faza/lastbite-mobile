@@ -7,7 +7,7 @@ import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { colors } from '@/theme';
 import { ImpactStats } from '@/components/ImpactStats';
 import { ProfileMenuItem } from '@/components/ProfileMenuItem';
-import { TopBar } from '@/components/TopBar';
+
 
 export default function ProfileScreen() {
   const { user, isAuthenticated, logout } = useAuthStore();
@@ -15,7 +15,7 @@ export default function ProfileScreen() {
   if (!isAuthenticated) {
     return (
       <View className="flex-1 bg-background">
-        <TopBar />
+
         <View className="flex-1 p-4 justify-center items-center">
           <MaterialCommunityIcons name="account-circle-outline" size={80} color={colors.textSecondary} />
           <Text className="text-xl font-bold mt-4">Masuk LastBite</Text>
@@ -33,7 +33,8 @@ export default function ProfileScreen() {
 
   return (
     <View className="flex-1 bg-background">
-      <TopBar />
+
+
       <View className="flex-1 p-4">
         <View className="items-center mt-8 mb-6">
         <View className="w-20 h-20 rounded-full bg-primary items-center justify-center mb-4">

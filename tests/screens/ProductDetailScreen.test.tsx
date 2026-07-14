@@ -2,7 +2,7 @@ import { render } from '@testing-library/react-native';
 import React from 'react';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { ToastProvider } from '@/contexts/ToastContext';
-import ProductDetailScreen from '../../app/(food-saver)/product/[id]';
+import ProductDetailScreen from '../../app/(food-saver)/(tabs)/product/[id]';
 import { useProduct } from '@/hooks/useProducts';
 import { useProductReviews } from '@/hooks/useReviews';
 import type { Product } from '@/lib/api/products';
