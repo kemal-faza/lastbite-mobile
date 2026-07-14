@@ -23,11 +23,11 @@ export interface Order {
   items: OrderItem[];
 }
 
-export async function createOrder(notes?: string) {
+export async function createOrder(buyerName: string, buyerPhone: string, notes?: string) {
   return apiFetch<{ order: Order }>('/orders', {
     auth: true,
     method: 'POST',
-    body: JSON.stringify({ notes }),
+    body: JSON.stringify({ buyerName, buyerPhone, notes }),
   });
 }
 

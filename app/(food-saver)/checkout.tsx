@@ -10,7 +10,7 @@ import { createOrder } from '@/lib/api/orders';
 import { useAuthStore } from '@/stores/authStore';
 
 export default function CheckoutScreen() {
-  const { isAuthenticated } = useAuthStore();
+  const { isAuthenticated, user } = useAuthStore();
   const { cart } = useCart(isAuthenticated);
 
   if (!isAuthenticated) return <Redirect href="/login" />;
@@ -20,9 +20,14 @@ export default function CheckoutScreen() {
   const total = items.reduce((sum, i) => sum + i.price * i.quantity, 0);
 
   const handleCheckout = async () => {
+    if (!user) return;
+    if (!user.name || !user.phone) {
+      alert('Lengkapi nama dan nomor telepon di profil sebelum checkout.');
+      return;
+    }
     setLoading(true);
     try {
-      const res = await createOrder(notes);
+      const res = await createOrder(user.name, user.phone, notes);
       router.replace(`/order/confirm/${res.order.id}`);
     } catch (e: any) {
       alert(e.message);
