@@ -5,6 +5,7 @@ import { PrimaryButton } from '@/components/PrimaryButton';
 import { useOrders } from '@/hooks/useOrders';
 import { useAuthStore } from '@/stores/authStore';
 import { EmptyState } from '@/components/EmptyState';
+import { OrderStatusBadge } from '@/components/OrderStatusBadge';
 import { getImageVariants } from '@/lib/api/products';
 import { TopBar } from '@/components/TopBar';
 
@@ -92,9 +93,7 @@ export default function OrdersScreen() {
 									<Text>
 										Total: Rp{item.total.toLocaleString()}
 									</Text>
-									<Text className="text-primary">
-										{item.status}
-									</Text>
+									<OrderStatusBadge status={item.status} size="sm" />
 									<Text className="text-gray-400 text-xs">
 										{item.pickupCode}
 									</Text>
