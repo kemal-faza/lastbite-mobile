@@ -63,129 +63,134 @@ export default function ProductDetailScreen() {
   }
 
   return (
-    <ScrollView className="flex-1 bg-background">
-      <View className="w-full h-64 bg-gray-200 overflow-hidden">
-        <Image
-          source={
-            getImageVariants(product.imageVariants)?.full
-              ? { uri: getImageVariants(product.imageVariants)!.full }
-              : require('../../../assets/placeholder.png')
-          }
-          contentFit="cover"
-          transition={300}
-          style={{ width: '100%', height: '100%' }}
-        />
-      </View>
-      <View className="p-4">
-        <Text className="text-2xl font-bold">{product.name}</Text>
-        <Text className="text-gray-500">{product.storeName}</Text>
-        {/* Price + discount badge */}
-        <View className="flex-row items-center gap-2 mt-2">
-          <Text className="text-primary text-xl font-bold">
-            Rp{product.discountedPrice.toLocaleString()}
-          </Text>
-          {(() => {
-            const pct = calcDiscountPct(
-              product.originalPrice,
-              product.discountedPrice,
-              product.discountPercent,
-            );
-            return pct > 0 ? (
-              <View
-                className="px-2 py-0.5 rounded-full"
-                style={{ backgroundColor: colors.destructive }}
-              >
-                <Text className="text-white text-xs font-bold">-{pct}%</Text>
-              </View>
-            ) : null;
-          })()}
+    <View className="flex-1 bg-background">
+      <ScrollView className="flex-1" contentContainerStyle={{ paddingBottom: 16 }}>
+        <View className="w-full h-64 bg-gray-200 overflow-hidden">
+          <Image
+            source={
+              getImageVariants(product.imageVariants)?.full
+                ? { uri: getImageVariants(product.imageVariants)!.full }
+                : require('../../../assets/placeholder.png')
+            }
+            contentFit="cover"
+            transition={300}
+            style={{ width: '100%', height: '100%' }}
+          />
         </View>
-        <Text className="text-gray-400 line-through">
-          Rp{product.originalPrice.toLocaleString()}
-        </Text>
-
-        {/* Trust badges */}
-        <View className="flex-row items-center justify-between mt-3 mb-4">
-          <TrustBadgeRow badges={['popular']} />
-          <Text
-            className={`text-sm font-semibold ${
-              product.stock <= 3 ? 'text-destructive' : 'text-gray-500'
-            }`}
-          >
-            {product.stock <= 3
-              ? `Sisa ${product.stock}`
-              : `Stok: ${product.stock}`}
+        <View className="p-4 pb-0">
+          <Text className="text-2xl font-bold">{product.name}</Text>
+          <Text className="text-gray-500">{product.storeName}</Text>
+          {/* Price + discount badge */}
+          <View className="flex-row items-center gap-2 mt-2">
+            <Text className="text-primary text-xl font-bold">
+              Rp{product.discountedPrice.toLocaleString()}
+            </Text>
+            {(() => {
+              const pct = calcDiscountPct(
+                product.originalPrice,
+                product.discountedPrice,
+                product.discountPercent,
+              );
+              return pct > 0 ? (
+                <View
+                  className="px-2 py-0.5 rounded-full"
+                  style={{ backgroundColor: colors.destructive }}
+                >
+                  <Text className="text-white text-xs font-bold">-{pct}%</Text>
+                </View>
+              ) : null;
+            })()}
+          </View>
+          <Text className="text-gray-400 line-through">
+            Rp{product.originalPrice.toLocaleString()}
           </Text>
-        </View>
 
-        <Text className="mt-4">{product.description}</Text>
-
-        {product.expiresAt && (
-          <View className="bg-secondary/10 rounded-lg p-3 mt-4 flex-row items-center">
-            <MaterialCommunityIcons name="clock-outline" size={18} color={colors.secondary} />
-            <Text className="text-sm text-secondary font-medium ml-2">
-              Berlaku hingga: {new Date(product.expiresAt).toLocaleTimeString('id-ID', {
-                hour: '2-digit', minute: '2-digit',
-              })}
+          {/* Trust badges */}
+          <View className="flex-row items-center justify-between mt-3 mb-4">
+            <TrustBadgeRow badges={['popular']} />
+            <Text
+              className={`text-sm font-semibold ${
+                product.stock <= 3 ? 'text-destructive' : 'text-gray-500'
+              }`}
+            >
+              {product.stock <= 3
+                ? `Sisa ${product.stock}`
+                : `Stok: ${product.stock}`}
             </Text>
           </View>
-        )}
-        {product.storeAddress && (
-          <View className="bg-white rounded-lg p-3 mt-4 border border-gray-200">
-            <View className="flex-row items-center mb-2">
-              <MaterialCommunityIcons name="map-marker" size={20} color={colors.primary} />
-              <Text className="font-semibold ml-2">Lokasi Toko</Text>
+
+          <Text className="mt-4">{product.description}</Text>
+
+          {product.expiresAt && (
+            <View className="bg-secondary/10 rounded-lg p-3 mt-4 flex-row items-center">
+              <MaterialCommunityIcons name="clock-outline" size={18} color={colors.secondary} />
+              <Text className="text-sm text-secondary font-medium ml-2">
+                Berlaku hingga: {new Date(product.expiresAt).toLocaleTimeString('id-ID', {
+                  hour: '2-digit', minute: '2-digit',
+                })}
+              </Text>
             </View>
-            <Text className="text-gray-500 text-sm mb-3">{product.storeAddress}</Text>
-            {product.storeLat && product.storeLng && (
-              <TouchableOpacity
-                onPress={() => {
-                  Linking.openURL(
-                    `https://www.google.com/maps/dir/?api=1&destination=${product.storeLat},${product.storeLng}`
-                  ).catch(() => {});
+          )}
+          {product.storeAddress && (
+            <View className="bg-white rounded-lg p-3 mt-4 border border-gray-200">
+              <View className="flex-row items-center mb-2">
+                <MaterialCommunityIcons name="map-marker" size={20} color={colors.primary} />
+                <Text className="font-semibold ml-2">Lokasi Toko</Text>
+              </View>
+              <Text className="text-gray-500 text-sm mb-3">{product.storeAddress}</Text>
+              {product.storeLat && product.storeLng && (
+                <TouchableOpacity
+                  onPress={() => {
+                    Linking.openURL(
+                      `https://www.google.com/maps/dir/?api=1&destination=${product.storeLat},${product.storeLng}`
+                    ).catch(() => {});
+                  }}
+                  className="flex-row items-center justify-center bg-primary/10 py-2 rounded-lg"
+                >
+                  <MaterialCommunityIcons name="directions" size={16} color={colors.primary} />
+                  <Text className="text-primary font-medium text-sm ml-1">Petunjuk Arah</Text>
+                </TouchableOpacity>
+              )}
+            </View>
+          )}
+
+          {/* Reviews */}
+          <View className="mt-4">
+            {isLoadingReviews ? (
+              <SkeletonList count={2} />
+            ) : (
+              <ReviewList
+                summary={reviewData?.summary ?? {
+                  averageRating: 0,
+                  totalReviews: 0,
+                  distribution: { 1: 0, 2: 0, 3: 0, 4: 0, 5: 0 },
                 }}
-                className="flex-row items-center justify-center bg-primary/10 py-2 rounded-lg"
-              >
-                <MaterialCommunityIcons name="directions" size={16} color={colors.primary} />
-                <Text className="text-primary font-medium text-sm ml-1">Petunjuk Arah</Text>
-              </TouchableOpacity>
+                reviews={reviewData?.reviews ?? []}
+              />
             )}
           </View>
-        )}
 
-        {/* Reviews */}
-        <View className="mt-4">
-          {isLoadingReviews ? (
-            <SkeletonList count={2} />
-          ) : (
-            <ReviewList
-              summary={reviewData?.summary ?? {
-                averageRating: 0,
-                totalReviews: 0,
-                distribution: { 1: 0, 2: 0, 3: 0, 4: 0, 5: 0 },
-              }}
-              reviews={reviewData?.reviews ?? []}
-            />
-          )}
+          {/* Recommendations */}
+          <ProductRecommendation
+            category={product.category}
+            excludeId={product.id}
+          />
         </View>
+      </ScrollView>
 
-        {/* Recommendations */}
-        <ProductRecommendation
-          category={product.category}
-          excludeId={product.id}
-        />
-
+      {/* Floating button container */}
+      <View className="bg-white border-t border-gray-200 px-4 py-3">
         <Button
+          testID="add-to-cart-button"
           variant="default"
           onPress={() => {
             if (!isAuthenticated) { router.push('/login'); return; }
             addToCart(product.id);
           }}
-          className="mt-6"
         >
           <Text className="text-white font-semibold">Tambah ke Keranjang</Text>
         </Button>
       </View>
-    </ScrollView>
+    </View>
   );
 }

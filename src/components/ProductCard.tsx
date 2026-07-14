@@ -1,4 +1,4 @@
-import { View, Text, Pressable, TouchableOpacity } from 'react-native';
+import { View, Text, Pressable } from 'react-native';
 import { router } from 'expo-router';
 import { Image } from 'expo-image';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
@@ -17,7 +17,6 @@ export function ProductCard({ product, className = '' }: { product: Product; cla
   const expiryLabel = expiresAt ? formatExpiry(expiresAt) : null;
 
   const handleProductPress = () => router.push(`/product/${product.id}`);
-  const handleBeliPress = () => router.push(`/product/${product.id}`);
 
   return (
     <Pressable
@@ -91,24 +90,16 @@ export function ProductCard({ product, className = '' }: { product: Product; cla
           </Text>
         )}
 
-        {/* Price + Beli button row */}
-        <View className="flex-row items-end justify-between mt-1">
-          <View className="flex-shrink">
-            <Text className="text-sm font-bold" style={{ color: colors.secondary }}>
-              Rp{product.discountedPrice.toLocaleString()}
+        {/* Price */}
+        <View className="mt-1">
+          <Text className="text-sm font-bold" style={{ color: colors.secondary }}>
+            Rp{product.discountedPrice.toLocaleString()}
+          </Text>
+          {product.originalPrice > product.discountedPrice && (
+            <Text className="text-gray-400 line-through text-[10px]">
+              Rp{product.originalPrice.toLocaleString()}
             </Text>
-            {product.originalPrice > product.discountedPrice && (
-              <Text className="text-gray-400 line-through text-[10px]">
-                Rp{product.originalPrice.toLocaleString()}
-              </Text>
-            )}
-          </View>
-          <TouchableOpacity
-            onPress={handleBeliPress}
-            className="bg-primary px-2.5 py-1 rounded-lg active:opacity-80"
-          >
-            <Text className="text-white text-[10px] font-semibold">Beli</Text>
-          </TouchableOpacity>
+          )}
         </View>
       </View>
     </Pressable>
