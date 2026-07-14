@@ -43,12 +43,15 @@ export default function OrdersScreen() {
 				<FlatList
 					data={data?.orders}
 					keyExtractor={(item) => item.id}
+					contentContainerStyle={{ flexGrow: 1 }}
 					ListEmptyComponent={
-						<EmptyState
-							icon="package-variant-closed"
-							title="Belum ada pesanan"
-							description="Pesananmu akan muncul setelah kamu checkout"
-						/>
+						<View className="flex-1 items-center justify-center">
+							<EmptyState
+								icon="package-variant-closed"
+								title="Belum ada pesanan"
+								description="Pesananmu akan muncul setelah kamu checkout"
+							/>
+						</View>
 					}
 					renderItem={({ item }) => {
 						const firstItem = item.items?.[0];

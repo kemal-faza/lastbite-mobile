@@ -36,12 +36,12 @@ export default function SearchScreen() {
         />
 
         {isLoading ? (
-          <View className="items-center justify-center py-12">
+          <View className="flex-1 items-center justify-center">
             <ActivityIndicator size="large" />
             <Text className="text-gray-500 mt-2">Mencari produk...</Text>
           </View>
         ) : isError ? (
-          <View className="items-center justify-center py-12">
+          <View className="flex-1 items-center justify-center">
             <Text className="text-red-500 text-center mb-2">
               Gagal mencari produk
             </Text>
@@ -56,17 +56,21 @@ export default function SearchScreen() {
             </TouchableOpacity>
           </View>
         ) : !debouncedQuery ? (
-          <EmptyState
-            icon="magnify"
-            title="Cari Makanan Surplus"
-            description="Ketik nama produk atau toko untuk mulai mencari"
-          />
+          <View className="flex-1 items-center justify-center">
+            <EmptyState
+              icon="magnify"
+              title="Cari Makanan Surplus"
+              description="Ketik nama produk atau toko untuk mulai mencari"
+            />
+          </View>
         ) : !data?.products?.length ? (
-          <EmptyState
-            icon="magnify-close"
-            title={`Tidak ada hasil untuk "${debouncedQuery}"`}
-            description="Coba kata kunci lain atau periksa filter"
-          />
+          <View className="flex-1 items-center justify-center">
+            <EmptyState
+              icon="magnify-close"
+              title={`Tidak ada hasil untuk "${debouncedQuery}"`}
+              description="Coba kata kunci lain atau periksa filter"
+            />
+          </View>
         ) : (
           <FlatList
             data={data.products as Product[]}
