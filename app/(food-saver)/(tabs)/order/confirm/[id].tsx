@@ -23,7 +23,7 @@ export default function OrderConfirmScreen() {
   const [reviewProductName, setReviewProductName] = useState('');
 
   const handleBack = useCallback(() => {
-    try { router.back(); } catch { router.replace('/'); }
+    router.navigate('/');
   }, []);
 
   useBackHandler(handleBack);

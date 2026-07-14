@@ -19,7 +19,7 @@ export default function OrderDetailScreen() {
   const [reviewProductName, setReviewProductName] = useState('');
 
   const handleBack = useCallback(() => {
-    try { router.back(); } catch { router.replace('/orders'); }
+    router.navigate('/orders');
   }, []);
 
   useBackHandler(handleBack);

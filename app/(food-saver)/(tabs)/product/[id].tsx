@@ -1,5 +1,8 @@
+import { useCallback } from 'react';
 import { View, Text, ScrollView, ActivityIndicator, TouchableOpacity, Linking } from 'react-native';
 import { useLocalSearchParams, router } from 'expo-router';
+import { useBackHandler } from '@/hooks/useBackHandler';
+import { Header } from '@/components/Header';
 import { Image } from 'expo-image';
 import { Button } from '@/components/ui/button';
 import { useQueryClient } from '@tanstack/react-query';
@@ -31,6 +34,8 @@ export default function ProductDetailScreen() {
   const { data: reviewData, isLoading: isLoadingReviews } = useProductReviews(id);
   const queryClient = useQueryClient();
   const { showToast } = useToast();
+  const handleBack = useCallback(() => { router.navigate('/'); }, []);
+  useBackHandler(handleBack);
 
   if (isLoading) {
     return (
@@ -68,6 +73,7 @@ export default function ProductDetailScreen() {
 
   return (
     <View className="flex-1 bg-background">
+      <Header title="Detail Produk" onBack={handleBack} />
       <ScrollView className="flex-1" contentContainerStyle={{ paddingBottom: 16 }}>
         <View className="w-full h-64 bg-gray-200 overflow-hidden">
           <Image

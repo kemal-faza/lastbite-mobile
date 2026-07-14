@@ -1,15 +1,21 @@
+import { useCallback } from 'react';
 import { View, Text } from 'react-native';
 import { router } from 'expo-router';
+import { useBackHandler } from '@/hooks/useBackHandler';
+import { Header } from '@/components/Header';
 import { useAuthStore } from '@/stores/authStore';
 import { EmptyState } from '@/components/EmptyState';
 import { PrimaryButton } from '@/components/PrimaryButton';
 
 export default function NotificationsScreen() {
   const { isAuthenticated } = useAuthStore();
+  const handleBack = useCallback(() => { router.navigate('/profile'); }, []);
+  useBackHandler(handleBack);
 
   if (!isAuthenticated) {
     return (
       <View className="flex-1 bg-background">
+        <Header title="Notifikasi" onBack={handleBack} />
         <View className="flex-1">
           <EmptyState
             icon="bell-outline"
@@ -24,6 +30,7 @@ export default function NotificationsScreen() {
 
   return (
     <View className="flex-1 bg-background p-4">
+      <Header title="Notifikasi" onBack={handleBack} />
       <Text className="text-xl font-bold text-primary mb-4">Notifikasi</Text>
       <EmptyState
         icon="bell-sleep"
