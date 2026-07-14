@@ -1,4 +1,5 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { useAuthStore } from '@/stores/authStore';
 
 export const API_BASE = process.env.EXPO_PUBLIC_API_URL || 'http://localhost:4000';
 
@@ -33,6 +34,11 @@ export async function apiFetch<T>(
   const body = await res.json().catch(() => ({}));
 
   if (!res.ok) {
+    // Auto-logout on expired/invalid token
+    if (res.status === 401 && (body.code === 'TOKEN_EXPIRED' || body.code === 'UNAUTHORIZED')) {
+      await clearTokens();
+      useAuthStore.getState().logout();
+    }
     throw new ApiError(
       res.status,
       body.code || 'UNKNOWN',
