@@ -11,7 +11,7 @@ export function Toast({ toasts, onDismiss }: ToastProps) {
   if (toasts.length === 0) return null;
 
   return (
-    <View className="absolute bottom-24 left-4 right-4 items-center" pointerEvents="box-none">
+    <View className="absolute top-14 left-4 right-4 items-center" pointerEvents="box-none">
       {toasts.map((toast) => (
         <View
           key={toast.id}
