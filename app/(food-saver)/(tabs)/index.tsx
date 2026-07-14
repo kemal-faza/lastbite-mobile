@@ -14,7 +14,7 @@ import { FilterModal, type FilterState } from '@/components/FilterModal';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { colors } from '@/theme';
 import { useAuthStore } from '@/stores/authStore';
-import { TopBar } from '@/components/TopBar';
+
 
 export default function HomeScreen() {
   const [category, setCategory] = useState('');
@@ -65,7 +65,6 @@ export default function HomeScreen() {
 
   return (
     <View className="flex-1 bg-background">
-      <TopBar />
       <ScrollView className="flex-1" contentContainerStyle={{ paddingBottom: 24 }}>
         <Text className="text-xl font-bold text-primary p-4">
           {isAuthenticated ? 'Rekomendasi Buat Kamu' : 'Temukan Produk Terdekat'}

@@ -7,8 +7,6 @@ import { useAuthStore } from '@/stores/authStore';
 import { EmptyState } from '@/components/EmptyState';
 import { OrderStatusBadge } from '@/components/OrderStatusBadge';
 import { getImageVariants } from '@/lib/api/products';
-import { TopBar } from '@/components/TopBar';
-
 export default function OrdersScreen() {
 	const { isAuthenticated } = useAuthStore();
 	const { data } = useOrders(isAuthenticated);
@@ -16,7 +14,6 @@ export default function OrdersScreen() {
 	if (!isAuthenticated) {
 		return (
 			<View className="flex-1 bg-background">
-				<TopBar />
 				<View className="flex-1 justify-center">
 					<EmptyState
 						icon="clipboard-list-outline"
@@ -36,7 +33,6 @@ export default function OrdersScreen() {
 
 	return (
 		<View className="flex-1 bg-background">
-			<TopBar />
 			<View className="flex-1 p-4">
 				<Text className="text-xl font-bold text-primary mb-4">
 					Pesanan Saya

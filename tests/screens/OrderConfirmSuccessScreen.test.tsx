@@ -72,7 +72,7 @@ jest.mock('@/components/ReviewModal', () => {
 
 jest.mock('expo-image', () => ({ Image: 'Image' }));
 
-import OrderConfirmScreen from '../../app/(food-saver)/order/confirm/[id]';
+import OrderConfirmScreen from '../../app/(food-saver)/(tabs)/order/confirm/[id]';
 import { useOrder, useConfirmPickup } from '@/hooks/useOrders';
 
 describe('OrderConfirmSuccessScreen', () => {

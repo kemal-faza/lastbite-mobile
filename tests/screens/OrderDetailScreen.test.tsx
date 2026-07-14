@@ -27,7 +27,7 @@ jest.mock('@/components/ReviewModal', () => ({
 }));
 
 import { useOrder } from '@/hooks/useOrders';
-import OrderDetailScreen from '../../app/(food-saver)/order/[id]';
+import OrderDetailScreen from '../../app/(food-saver)/(tabs)/order/[id]';
 
 describe('OrderDetailScreen', () => {
   const baseOrder = {
