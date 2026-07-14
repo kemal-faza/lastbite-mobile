@@ -19,12 +19,12 @@ export default function CheckoutScreen() {
   const { cart } = useCart(isAuthenticated);
   const { storeName } = useLocalSearchParams<{ storeName?: string }>();
   const queryClient = useQueryClient();
+  const [notes, setNotes] = useState('');
+  const [loading, setLoading] = useState(false);
   const { showToast } = useToast();
 
   if (!isAuthenticated) return <Redirect href="/login" />;
 
-  const [notes, setNotes] = useState('');
-  const [loading, setLoading] = useState(false);
   const allItems: CartItem[] = cart.data?.cart.items || [];
   const items = storeName
     ? allItems.filter((item) => item.storeName === storeName)
