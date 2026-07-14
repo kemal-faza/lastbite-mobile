@@ -114,7 +114,7 @@ export default function CartScreen() {
 
                 return (
                   <View key={item.id} className="mb-2 rounded-xl overflow-hidden">
-                    <Swipeable ref={swipeableRef} renderRightActions={renderRightActions}>
+                    <Swipeable ref={swipeableRef} renderRightActions={renderRightActions} overshootRight={false}>
                       <View className="bg-white p-3 flex-row justify-between items-center">
                         <View className="flex-row items-center flex-1">
                           <View className="mr-3">
