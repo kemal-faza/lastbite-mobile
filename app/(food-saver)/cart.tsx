@@ -1,4 +1,6 @@
-import { View, Text, ScrollView, Pressable } from 'react-native';
+import { View, Text, ScrollView, Pressable, TouchableOpacity, Alert } from 'react-native';
+import { useRef } from 'react';
+import { Swipeable } from 'react-native-gesture-handler';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { router } from 'expo-router';
 import { Image } from 'expo-image';
@@ -79,47 +81,73 @@ export default function CartScreen() {
                 <Text className="text-lg font-bold text-gray-800 ml-2">{storeName}</Text>
               </View>
 
-              {/* Store Items */}
-              {storeItems.map((item) => (
-                <View key={item.id} className="bg-white p-3 rounded-xl mb-2 flex-row justify-between items-center">
-                  <View className="flex-row items-center flex-1">
-                    <View className="mr-3">
-                      <Image
-                        source={
-                          getImageVariants(item.imageVariants)?.thumb
-                            ? { uri: getImageVariants(item.imageVariants)!.thumb }
-                            : require('../../assets/placeholder.png')
-                        }
-                        contentFit="cover"
-                        style={{ width: 64, height: 64, borderRadius: 8, backgroundColor: '#e5e7eb' }}
-                      />
-                    </View>
-                    <View className="flex-1">
-                      <Text className="font-bold">{item.name}</Text>
-                      <Text className="text-gray-500">{item.storeName}</Text>
-                      <Text>Rp{item.price.toLocaleString()} x {item.quantity}</Text>
-                    </View>
-                  </View>
-                  <View className="flex-row items-center gap-2">
-                    <View className="flex-row items-center">
-                      <Pressable onPress={() => updateItem.mutate({ productId: item.productId, quantity: item.quantity - 1 })} className="px-3 py-1 bg-gray-200 rounded">
-                        <Text>-</Text>
-                      </Pressable>
-                      <Text className="mx-3">{item.quantity}</Text>
-                      <Pressable onPress={() => updateItem.mutate({ productId: item.productId, quantity: item.quantity + 1 })} className="px-3 py-1 bg-gray-200 rounded">
-                        <Text>+</Text>
-                      </Pressable>
-                    </View>
-                    <Pressable
-                      testID="delete-item"
-                      onPress={() => removeItem.mutate(item.productId)}
-                      className="ml-2 p-2 bg-red-50 rounded-lg"
+              {/* Store Items with swipe-to-delete */}
+              {storeItems.map((item) => {
+                const swipeableRef = useRef<Swipeable>(null);
+
+                const renderRightActions = () => (
+                  <View className="flex-row items-center">
+                    <TouchableOpacity
+                      onPress={() => {
+                        swipeableRef.current?.close();
+                        Alert.alert(
+                          'Hapus Item',
+                          `Hapus "${item.name}" dari keranjang?`,
+                          [
+                            { text: 'Batal', style: 'cancel' },
+                            {
+                              text: 'Hapus',
+                              style: 'destructive',
+                              onPress: () => removeItem.mutate(item.productId),
+                            },
+                          ]
+                        );
+                      }}
+                      accessibilityLabel="Hapus item"
+                      accessibilityRole="button"
+                      className="bg-red-500 justify-center items-center w-16 self-stretch mb-2 rounded-r-xl"
                     >
-                      <MaterialCommunityIcons name="delete-outline" size={20} color="#ef4444" />
-                    </Pressable>
+                      <MaterialCommunityIcons name="trash-can-outline" size={22} color="white" />
+                    </TouchableOpacity>
                   </View>
-                </View>
-              ))}
+                );
+
+                return (
+                  <View key={item.id} className="mb-2 rounded-xl overflow-hidden">
+                    <Swipeable ref={swipeableRef} renderRightActions={renderRightActions}>
+                      <View className="bg-white p-3 flex-row justify-between items-center">
+                        <View className="flex-row items-center flex-1">
+                          <View className="mr-3">
+                            <Image
+                              source={
+                                getImageVariants(item.imageVariants)?.thumb
+                                  ? { uri: getImageVariants(item.imageVariants)!.thumb }
+                                  : require('../../assets/placeholder.png')
+                              }
+                              contentFit="cover"
+                              style={{ width: 64, height: 64, borderRadius: 8, backgroundColor: '#e5e7eb' }}
+                            />
+                          </View>
+                          <View className="flex-1">
+                            <Text className="font-bold">{item.name}</Text>
+                            <Text className="text-gray-500">{item.storeName}</Text>
+                            <Text>Rp{item.price.toLocaleString()} x {item.quantity}</Text>
+                          </View>
+                        </View>
+                        <View className="flex-row items-center">
+                          <Pressable onPress={() => updateItem.mutate({ productId: item.productId, quantity: item.quantity - 1 })} className="px-3 py-1 bg-gray-200 rounded">
+                            <Text>-</Text>
+                          </Pressable>
+                          <Text className="mx-3">{item.quantity}</Text>
+                          <Pressable onPress={() => updateItem.mutate({ productId: item.productId, quantity: item.quantity + 1 })} className="px-3 py-1 bg-gray-200 rounded">
+                            <Text>+</Text>
+                          </Pressable>
+                        </View>
+                      </View>
+                    </Swipeable>
+                  </View>
+                );
+              })}
 
               {/* Store subtotal & checkout */}
               <View className="flex-row justify-between items-center mt-2 pt-2 border-t border-gray-200">
