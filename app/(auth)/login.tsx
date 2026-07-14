@@ -65,6 +65,27 @@ export default function LoginScreen() {
       <PrimaryButton onPress={handleLogin} loading={loading}>
         Masuk
       </PrimaryButton>
+
+      {__DEV__ && (
+        <View className="mt-6 pt-4 border-t border-gray-200">
+          <Text className="text-xs text-gray-400 text-center mb-2">Mode Development</Text>
+          <PrimaryButton
+            onPress={() => {
+              setUser({
+                id: 'dev-mitra-001',
+                email: 'warung-makmur@lastbite.app',
+                name: 'Warung Makmur',
+                phone: '081234567890',
+                role: 'MITRA',
+                isVerified: true,
+              });
+              router.replace('/(mitra)');
+            }}
+          >
+            Masuk sebagai Mitra (Dev)
+          </PrimaryButton>
+        </View>
+      )}
     </AuthScreenLayout>
   );
 }
