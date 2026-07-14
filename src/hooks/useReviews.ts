@@ -13,9 +13,10 @@ export function useCreateReview() {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: createReview,
-    onSuccess: (_, variables) => {
-      queryClient.invalidateQueries({ queryKey: ['reviews', variables.productId] });
+    mutationFn: (variables: { orderId: string; rating: number; comment: string }) =>
+      createReview(variables.orderId, { rating: variables.rating, comment: variables.comment }),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['reviews'] });
     },
   });
 }
