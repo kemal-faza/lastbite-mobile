@@ -25,12 +25,11 @@ export async function getProductReviews(productId: string) {
   return apiFetch<ProductReviewsResponse>(`/reviews/${productId}`);
 }
 
-export async function createReview(data: {
-  productId: string;
-  rating: number;
-  comment: string;
-}) {
-  return apiFetch<ReviewItem>('/reviews', {
+export async function createReview(
+  orderId: string,
+  data: { rating: number; comment: string },
+) {
+  return apiFetch<{ review: ReviewItem }>(`/reviews/orders/${orderId}/review`, {
     method: 'POST',
     body: JSON.stringify(data),
     auth: true,
