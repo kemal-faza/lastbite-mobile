@@ -14,6 +14,7 @@ import { colors } from '@/theme';
 import { getImageVariants } from '@/lib/api/products';
 import { addToCart } from '@/lib/api/cart';
 import { useAuthStore } from '@/stores/authStore';
+import { useToast } from '@/contexts/ToastContext';
 
 /** Calculate discount percentage, returns 0 if prices are equal or invalid. */
 function calcDiscountPct(original: number, discounted: number, explicit?: number): number {
@@ -29,6 +30,7 @@ export default function ProductDetailScreen() {
   const product = data?.product;
   const { data: reviewData, isLoading: isLoadingReviews } = useProductReviews(id);
   const queryClient = useQueryClient();
+  const { showToast } = useToast();
 
   if (isLoading) {
     return (
@@ -190,6 +192,7 @@ export default function ProductDetailScreen() {
             try {
               await addToCart(product.id);
               queryClient.invalidateQueries({ queryKey: ['cart'] });
+              showToast(`${product.name} ditambahkan ke keranjang`);
             } catch (e: any) {
               alert(e.message || 'Gagal menambahkan ke keranjang');
             }

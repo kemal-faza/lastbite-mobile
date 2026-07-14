@@ -3,6 +3,7 @@ import { Stack } from 'expo-router';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { usePushNotifications } from '@/hooks/usePushNotifications';
+import { ToastProvider } from '@/contexts/ToastContext';
 import '../global.css';
 
 const queryClient = new QueryClient();
@@ -13,7 +14,9 @@ export default function RootLayout() {
     <GestureHandlerRootView style={{ flex: 1 }}>
       <SafeAreaProvider>
         <QueryClientProvider client={queryClient}>
-          <Stack screenOptions={{ headerShown: false }} />
+          <ToastProvider>
+            <Stack screenOptions={{ headerShown: false }} />
+          </ToastProvider>
         </QueryClientProvider>
       </SafeAreaProvider>
     </GestureHandlerRootView>

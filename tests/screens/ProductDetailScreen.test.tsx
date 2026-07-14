@@ -1,6 +1,7 @@
 import { render } from '@testing-library/react-native';
 import React from 'react';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+import { ToastProvider } from '@/contexts/ToastContext';
 import ProductDetailScreen from '../../app/(food-saver)/product/[id]';
 import { useProduct } from '@/hooks/useProducts';
 import { useProductReviews } from '@/hooks/useReviews';
@@ -96,7 +97,9 @@ async function renderScreen(productOverrides?: Partial<Product>, reviewsOverride
 
   return render(
     <QueryClientProvider client={queryClient}>
-      <ProductDetailScreen />
+      <ToastProvider>
+        <ProductDetailScreen />
+      </ToastProvider>
     </QueryClientProvider>
   );
 }
