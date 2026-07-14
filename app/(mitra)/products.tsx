@@ -59,7 +59,7 @@ function ProductListItem({
 
   return (
     <View className="rounded-xl overflow-hidden mb-2">
-      <Swipeable ref={swipeableRef} renderRightActions={rightActions}>
+      <Swipeable ref={swipeableRef} renderRightActions={rightActions} overshootRight={false}>
         <TouchableOpacity
           activeOpacity={0.7}
           onPress={() => closeAndNavigate(`/(mitra)/products/${item.id}`)}
