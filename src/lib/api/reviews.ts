@@ -27,7 +27,7 @@ export async function getProductReviews(productId: string) {
 
 export async function createReview(
   orderId: string,
-  data: { rating: number; comment: string },
+  data: { rating: number; comment?: string },
 ) {
   return apiFetch<{ review: ReviewItem }>(`/reviews/orders/${orderId}/review`, {
     method: 'POST',
