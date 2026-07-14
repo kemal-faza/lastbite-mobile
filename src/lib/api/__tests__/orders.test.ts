@@ -27,6 +27,16 @@ describe('orders API', () => {
   });
 
   it('confirmPickup aliases verifyPickup behavior', async () => {
+    (global.fetch as jest.Mock).mockResolvedValueOnce({
+      ok: true,
+      json: async () => ({
+        order: {
+          id: 'order-1', status: 'PICKED_UP', pickupCode: 'LAST-1234',
+          totalAmount: 50000, savingAmount: 0, storeName: 'Test',
+          buyerName: 'A', buyerPhone: '08', items: [],
+        },
+      }),
+    });
     await confirmPickup('order-1', 'LAST-1234');
     const [url, init] = (fetch as jest.Mock).mock.calls[0];
     expect(url).toContain('/orders/order-1/verify-pickup');
