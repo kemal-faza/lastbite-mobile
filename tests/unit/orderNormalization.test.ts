@@ -1,4 +1,4 @@
-import { getOrders, getOrder } from '../../src/lib/api/orders';
+import { getOrders, getOrder, mapOrder } from '../../src/lib/api/orders';
 import { apiFetch } from '../../src/lib/api/client';
 
 jest.mock('../../src/lib/api/client', () => ({
@@ -133,5 +133,41 @@ describe('Order API normalisation', () => {
     const result = await getOrders();
 
     expect(result.orders).toEqual([]);
+  });
+});
+
+describe('mapOrder hasReviewed', () => {
+  it('maps hasReviewed: true when review exists', () => {
+    const raw = {
+      id: '1', status: 'PICKED_UP', pickupCode: 'ABC',
+      totalAmount: 50000, savingAmount: 10000,
+      storeName: 'Test Store', buyerName: 'A', buyerPhone: '08',
+      items: [],
+      review: { id: 'r1' },
+    };
+    const result = mapOrder(raw);
+    expect(result.hasReviewed).toBe(true);
+  });
+
+  it('maps hasReviewed: false when no review', () => {
+    const raw = {
+      id: '2', status: 'PICKED_UP', pickupCode: 'DEF',
+      totalAmount: 30000, savingAmount: 5000,
+      storeName: 'Test Store', buyerName: 'B', buyerPhone: '08',
+      items: [],
+    };
+    const result = mapOrder(raw);
+    expect(result.hasReviewed).toBe(false);
+  });
+
+  it('handles backward compatibility when review field is absent', () => {
+    const raw = {
+      id: '3', status: 'PENDING', pickupCode: 'GHI',
+      totalAmount: 10000, savingAmount: 2000,
+      storeName: 'Store', buyerName: 'C', buyerPhone: '08',
+      items: [],
+    };
+    const result = mapOrder(raw);
+    expect(result.hasReviewed).toBe(false);
   });
 });

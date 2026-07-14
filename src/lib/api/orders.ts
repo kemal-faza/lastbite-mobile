@@ -28,6 +28,7 @@ export interface Order {
   buyerPhone: string;
   notes?: string;
   createdAt?: string;
+  hasReviewed?: boolean;
 }
 
 // --- Raw backend types ---
@@ -57,6 +58,7 @@ interface RawOrder {
   buyerPhone: string;
   notes?: string;
   createdAt?: string;
+  review?: { id: string } | null;
 }
 
 // --- Normalisation helpers ---
@@ -75,7 +77,7 @@ function mapOrderItem(raw: RawOrderItem): OrderItem {
   };
 }
 
-function mapOrder(raw: RawOrder): Order {
+export function mapOrder(raw: RawOrder): Order {
   return {
     id: raw.id,
     status: raw.status,
@@ -89,6 +91,7 @@ function mapOrder(raw: RawOrder): Order {
     buyerPhone: raw.buyerPhone,
     notes: raw.notes,
     createdAt: raw.createdAt,
+    hasReviewed: !!raw.review,
   };
 }
 
