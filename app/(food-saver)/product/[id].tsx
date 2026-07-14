@@ -70,20 +70,33 @@ export default function ProductDetailScreen() {
       <View className="p-4">
         <Text className="text-2xl font-bold">{product.name}</Text>
         <Text className="text-gray-500">{product.storeName}</Text>
-        <Text className="text-primary text-xl font-bold mt-2">Rp{product.discountedPrice.toLocaleString()}</Text>
-        <Text className="text-gray-400 line-through">Rp{product.originalPrice.toLocaleString()}</Text>
+        {/* Price + discount badge */}
+        <View className="flex-row items-center gap-2 mt-2">
+          <Text className="text-primary text-xl font-bold">
+            Rp{product.discountedPrice.toLocaleString()}
+          </Text>
+          {(() => {
+            const pct = product.discountPercent
+              ?? Math.round((1 - product.discountedPrice / product.originalPrice) * 100);
+            return pct > 0 ? (
+              <View
+                className="px-2 py-0.5 rounded-full"
+                style={{ backgroundColor: colors.destructive }}
+              >
+                <Text className="text-white text-xs font-bold">-{pct}%</Text>
+              </View>
+            ) : null;
+          })()}
+        </View>
+        <Text className="text-gray-400 line-through">
+          Rp{product.originalPrice.toLocaleString()}
+        </Text>
 
         {/* Trust badges */}
         <View className="flex-row items-center justify-between mt-3 mb-4">
-          <TrustBadgeRow
-            badges={[
-              ...(product.storeLat ? ['verified' as const] : []),
-              'hygiene' as const,
-              'popular' as const,
-            ]}
-          />
+          <TrustBadgeRow badges={['popular']} />
           <Text
-            className={`text-xs font-medium ${
+            className={`text-sm font-semibold ${
               product.stock <= 3 ? 'text-destructive' : 'text-gray-500'
             }`}
           >
