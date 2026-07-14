@@ -1,17 +1,19 @@
 import { View, Text, FlatList, Pressable } from 'react-native';
+import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { router } from 'expo-router';
 import { Image } from 'expo-image';
 import { Button } from '@/components/ui/button';
 import { PrimaryButton } from '@/components/PrimaryButton';
 import { useCart } from '@/hooks/useCart';
 import { useAuthStore } from '@/stores/authStore';
+import type { CartItem } from '@/lib/api/cart';
 import { EmptyState } from '@/components/EmptyState';
 import { getImageVariants } from '@/lib/api/products';
 import { TopBar } from '@/components/TopBar';
 
 export default function CartScreen() {
   const { isAuthenticated } = useAuthStore();
-  const { cart, updateItem } = useCart(isAuthenticated);
+  const { cart, updateItem, removeItem } = useCart(isAuthenticated);
 
   if (!isAuthenticated) {
     return (
@@ -28,7 +30,7 @@ export default function CartScreen() {
       </View>
     );
   }
-  const items = cart.data?.cart.items || [];
+  const items: CartItem[] = cart.data?.cart.items || [];
   const total = items.reduce((sum, i) => sum + i.price * i.quantity, 0);
 
   if (items.length === 0) {
@@ -76,13 +78,22 @@ export default function CartScreen() {
                 <Text>Rp{item.price.toLocaleString()} x {item.quantity}</Text>
               </View>
             </View>
-            <View className="flex-row items-center">
-              <Pressable onPress={() => updateItem.mutate({ productId: item.productId, quantity: item.quantity - 1 })} className="px-3 py-1 bg-gray-200 rounded">
-                <Text>-</Text>
-              </Pressable>
-              <Text className="mx-3">{item.quantity}</Text>
-              <Pressable onPress={() => updateItem.mutate({ productId: item.productId, quantity: item.quantity + 1 })} className="px-3 py-1 bg-gray-200 rounded">
-                <Text>+</Text>
+            <View className="flex-row items-center gap-2">
+              <View className="flex-row items-center">
+                <Pressable onPress={() => updateItem.mutate({ productId: item.productId, quantity: item.quantity - 1 })} className="px-3 py-1 bg-gray-200 rounded">
+                  <Text>-</Text>
+                </Pressable>
+                <Text className="mx-3">{item.quantity}</Text>
+                <Pressable onPress={() => updateItem.mutate({ productId: item.productId, quantity: item.quantity + 1 })} className="px-3 py-1 bg-gray-200 rounded">
+                  <Text>+</Text>
+                </Pressable>
+              </View>
+              <Pressable
+                testID="delete-item"
+                onPress={() => removeItem.mutate(item.productId)}
+                className="ml-2 p-2 bg-red-50 rounded-lg"
+              >
+                <MaterialCommunityIcons name="delete-outline" size={20} color="#ef4444" />
               </Pressable>
             </View>
           </View>
