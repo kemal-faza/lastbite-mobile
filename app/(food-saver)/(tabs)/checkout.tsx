@@ -1,6 +1,8 @@
-import { useState } from 'react';
+import { useState, useCallback } from 'react';
 import { View, Text, ScrollView, TextInput } from 'react-native';
 import { router, Redirect, useLocalSearchParams } from 'expo-router';
+import { useBackHandler } from '@/hooks/useBackHandler';
+import { Header } from '@/components/Header';
 import { useQueryClient } from '@tanstack/react-query';
 import { Button } from '@/components/ui/button';
 import { useCart } from '@/hooks/useCart';
@@ -22,6 +24,8 @@ export default function CheckoutScreen() {
   const [notes, setNotes] = useState('');
   const [loading, setLoading] = useState(false);
   const { showToast } = useToast();
+  const handleBack = useCallback(() => { router.navigate('/cart'); }, []);
+  useBackHandler(handleBack);
 
   if (!isAuthenticated) return <Redirect href="/login" />;
 
@@ -47,6 +51,7 @@ export default function CheckoutScreen() {
 
   return (
     <View className="flex-1 bg-background">
+      <Header title="Checkout" onBack={handleBack} />
       <ScrollView className="flex-1 p-4" contentContainerStyle={{ paddingBottom: 24 }}>
         <Text className="text-xl font-bold text-primary mb-4">
           {storeName ? `Checkout - ${storeName}` : 'Checkout'}
