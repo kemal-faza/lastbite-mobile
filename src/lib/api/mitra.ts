@@ -16,10 +16,6 @@ export async function getMitraProducts() {
 }
 
 export async function getMitraOrders() {
-  if (__DEV__) {
-    const { getMockMitraOrders } = require('./mitra-orders.mock');
-    return getMockMitraOrders();
-  }
   return apiFetch<{ orders: any[] }>('/mitra/orders', { auth: true });
 }
 
