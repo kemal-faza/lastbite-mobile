@@ -12,6 +12,7 @@ jest.mock('@/hooks/useCart', () => ({
           items: [
             { id: 'ci-1', productId: 'p1', name: 'Nasi Goreng', storeName: 'Warung', price: 25000, originalPrice: 35000, quantity: 2, imageUrl: null, imageVariants: null, stock: 5 },
             { id: 'ci-2', productId: 'p2', name: 'Es Teh', storeName: 'Warung', price: 5000, originalPrice: 8000, quantity: 1, imageUrl: null, imageVariants: null, stock: 10 },
+            { id: 'ci-3', productId: 'p3', name: 'Croissant', storeName: 'Bakery Segar', price: 15000, originalPrice: 25000, quantity: 3, imageUrl: null, imageVariants: null, stock: 8 },
           ],
         },
       },
@@ -55,23 +56,32 @@ describe('CartScreen', () => {
     jest.clearAllMocks();
   });
 
-  it('renders cart items', async () => {
+  it('renders all cart items', async () => {
     const { getByText } = await render(<CartScreen />);
     expect(getByText('Nasi Goreng')).toBeTruthy();
     expect(getByText('Es Teh')).toBeTruthy();
+    expect(getByText('Croissant')).toBeTruthy();
   });
 
-  it('renders total price', async () => {
+  it('renders store group headers', async () => {
+    const { getAllByText } = await render(<CartScreen />);
+    // Warung appears in store header + item storeName text
+    expect(getAllByText('Warung').length).toBeGreaterThanOrEqual(1);
+    expect(getAllByText('Bakery Segar').length).toBeGreaterThanOrEqual(1);
+  });
+
+  it('renders subtotal per store', async () => {
     const { getByText } = await render(<CartScreen />);
-    // total = (25000*2) + (5000*1) = 55000
-    expect(getByText(/55[,.]000/)).toBeTruthy();
+    // Warung subtotal = (25000*2) + (5000*1) = 55000
+    expect(getByText(/Subtotal.*55[.,]000/)).toBeTruthy();
+    // Bakery Segar subtotal = (15000*3) = 45000
+    expect(getByText(/Subtotal.*45[.,]000/)).toBeTruthy();
   });
 
-  it('calls removeItem when delete button pressed', async () => {
-    const { getAllByTestId } = await render(<CartScreen />);
-    const deleteButtons = getAllByTestId('delete-item');
-    fireEvent.press(deleteButtons[0]);
-    expect(mockRemoveItem.mutate).toHaveBeenCalledWith('p1');
+  it('has no visible delete icon (swipe-to-delete instead)', async () => {
+    const { queryAllByTestId } = await render(<CartScreen />);
+    // Delete is now via Swipeable gesture, not a visible button
+    expect(queryAllByTestId('delete-item').length).toBe(0);
   });
 
   it('calls updateItem on quantity minus', async () => {
@@ -97,10 +107,17 @@ describe('CartScreen', () => {
     expect(getByText('Keranjang Kosong')).toBeTruthy();
   });
 
-  it('navigates to checkout on button press', async () => {
+  it('navigates to per-store checkout on button press', async () => {
     const { router } = require('expo-router');
     const { getByTestId } = await render(<CartScreen />);
-    fireEvent.press(getByTestId('checkout-button'));
-    expect(router.push).toHaveBeenCalledWith('/checkout');
+    fireEvent.press(getByTestId('checkout-Warung'));
+    expect(router.push).toHaveBeenCalledWith('/checkout?storeName=Warung');
+  });
+
+  it('navigates to checkout for second store', async () => {
+    const { router } = require('expo-router');
+    const { getByTestId } = await render(<CartScreen />);
+    fireEvent.press(getByTestId('checkout-Bakery-Segar'));
+    expect(router.push).toHaveBeenCalledWith('/checkout?storeName=Bakery%20Segar');
   });
 });
