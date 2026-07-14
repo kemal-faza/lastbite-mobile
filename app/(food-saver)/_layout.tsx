@@ -16,6 +16,7 @@ export default function FoodSaverLayout() {
         <Stack.Screen name="checkout" />
         <Stack.Screen name="product/[id]" />
         <Stack.Screen name="order/confirm/[id]" />
+        <Stack.Screen name="order/[id]" options={{ headerShown: true, title: 'Detail Pesanan' }} />
         <Stack.Screen name="wishlist" />
         <Stack.Screen name="notifications" />
       </Stack>

@@ -1,4 +1,4 @@
-import { View, Text, FlatList } from 'react-native';
+import { View, Text, FlatList, TouchableOpacity } from 'react-native';
 import { router } from 'expo-router';
 import { Image } from 'expo-image';
 import { PrimaryButton } from '@/components/PrimaryButton';
@@ -56,7 +56,11 @@ export default function OrdersScreen() {
 					renderItem={({ item }) => {
 						const firstItem = item.items?.[0];
 						return (
-							<View className="bg-white p-3 rounded-xl mb-2 flex-row items-center">
+							<TouchableOpacity
+								className="bg-white p-3 rounded-xl mb-2 flex-row items-center"
+								onPress={() => router.push(`/order/${item.id}`)}
+								activeOpacity={0.7}
+							>
 								{firstItem && (
 									<View className="mr-3">
 										<Image
@@ -95,7 +99,7 @@ export default function OrdersScreen() {
 										{item.pickupCode}
 									</Text>
 								</View>
-							</View>
+							</TouchableOpacity>
 						);
 					}}
 				/>
