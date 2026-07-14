@@ -1,11 +1,13 @@
 import { useState } from 'react';
 import { View, Text, ScrollView, TouchableOpacity, ActivityIndicator } from 'react-native';
-import { useLocalSearchParams } from 'expo-router';
+import { useLocalSearchParams, router } from 'expo-router';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
+import LottieView from 'lottie-react-native';
 import { useOrder } from '@/hooks/useOrders';
 import { useConfirmPickup } from '@/hooks/useOrders';
 import { CountdownTimer } from '@/components/CountdownTimer';
 import { ConfirmDialog } from '@/components/ConfirmDialog';
+import { ReviewModal } from '@/components/ReviewModal';
 import { useToast } from '@/contexts/ToastContext';
 import { colors } from '@/theme';
 
@@ -16,6 +18,8 @@ export default function OrderConfirmScreen() {
   const { showToast } = useToast();
   const [showConfirm, setShowConfirm] = useState(false);
   const [showSuccessScreen, setShowSuccessScreen] = useState(false);
+  const [showReviewModal, setShowReviewModal] = useState(false);
+  const [reviewProductName, setReviewProductName] = useState('');
 
   if (isLoading) {
     return (
@@ -37,6 +41,92 @@ export default function OrderConfirmScreen() {
 
   const order = orderData.order;
   const pickupExpiresAt = order.pickupExpiresAt || new Date(Date.now() + 30 * 60 * 1000).toISOString();
+
+  // Check for success state
+  const showSuccess = showSuccessScreen || order.status === 'PICKED_UP';
+
+  if (showSuccess) {
+    const productName = order.items?.[0]?.name || 'Produk';
+
+    return (
+      <View className="flex-1 bg-background">
+        {/* Header */}
+        <View className="bg-primary px-4 py-3">
+          <Text className="text-white text-lg font-semibold text-center">
+            Pesanan Selesai
+          </Text>
+        </View>
+
+        <ScrollView
+          className="flex-1"
+          contentContainerStyle={{
+            flexGrow: 1,
+            justifyContent: 'center',
+            alignItems: 'center',
+            padding: 24,
+          }}
+        >
+          {/* Lottie animation */}
+          <LottieView
+            testID="lottie-success"
+            source={require('@/assets/animations/success.json')}
+            autoPlay
+            loop={false}
+            style={{ width: 120, height: 120, marginBottom: 16 }}
+          />
+
+          <Text className="text-2xl font-bold text-center mb-2">
+            Pesanan Berhasil Diambil
+          </Text>
+          <Text className="text-sm text-gray-500 text-center max-w-xs mb-8">
+            Terima kasih telah berkontribusi mengurangi food waste. Setiap
+            pesanan yang kamu ambil membantu menyelamatkan makanan dari
+            tempat pembuangan.
+          </Text>
+
+          {/* Action buttons */}
+          <View className="w-full gap-3">
+            <TouchableOpacity
+              onPress={() => router.replace('/')}
+              className="bg-primary py-3.5 rounded-xl"
+            >
+              <Text className="text-white text-center font-semibold">
+                Cari Makanan Lagi
+              </Text>
+            </TouchableOpacity>
+
+            <TouchableOpacity
+              onPress={() => router.replace('/orders')}
+              className="border-2 border-primary py-3.5 rounded-xl"
+            >
+              <Text className="text-primary text-center font-semibold">
+                Lihat Riwayat Pesanan
+              </Text>
+            </TouchableOpacity>
+
+            <TouchableOpacity
+              onPress={() => {
+                setReviewProductName(productName);
+                setShowReviewModal(true);
+              }}
+              className="bg-secondary py-3.5 rounded-xl"
+            >
+              <Text className="text-white text-center font-semibold">
+                Tulis Ulasan
+              </Text>
+            </TouchableOpacity>
+          </View>
+        </ScrollView>
+
+        <ReviewModal
+          visible={showReviewModal}
+          onClose={() => setShowReviewModal(false)}
+          orderId={order.id}
+          productName={reviewProductName}
+        />
+      </View>
+    );
+  }
 
   const handlePickupCompleted = () => {
     setShowConfirm(false);

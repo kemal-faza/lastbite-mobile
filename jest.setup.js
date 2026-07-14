@@ -73,6 +73,17 @@ jest.mock('react-native', () => {
   };
 });
 
+// Mock lottie-react-native — native module, needs stub for tests
+jest.mock('lottie-react-native', () => {
+  const React = require('react');
+  const { View } = require('react-native');
+  return {
+    __esModule: true,
+    default: (props) =>
+      React.createElement(View, { testID: props.testID || 'lottie-view', ...props }),
+  };
+});
+
 // Mock @expo/vector-icons — uses manual mock in __mocks__/@expo/vector-icons.js
 jest.mock('@expo/vector-icons');
 
