@@ -4,6 +4,7 @@ import React from 'react';
 jest.mock('expo-router', () => ({
   Redirect: ({ href }: any) => null,
   router: { replace: jest.fn() },
+  useLocalSearchParams: jest.fn(() => ({})),
 }));
 
 jest.mock('@/stores/authStore', () => ({
@@ -63,33 +64,50 @@ jest.mock('@/components/PaymentSummary', () => ({
 
 jest.mock('expo-image', () => ({ Image: 'Image' }));
 
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+import { ToastProvider } from '@/contexts/ToastContext';
 import CheckoutScreen from '../../app/(food-saver)/checkout';
 import { createOrder } from '@/lib/api/orders';
+
+const queryClient = new QueryClient({ defaultOptions: { queries: { retry: false } } });
+
+function renderWithProviders(ui: React.ReactElement) {
+  return render(
+    <QueryClientProvider client={queryClient}>
+      <ToastProvider>{ui}</ToastProvider>
+    </QueryClientProvider>
+  );
+}
+
+// Helper to re-mock useLocalSearchParams before each test
+import { useLocalSearchParams as useLocalSearchParamsOriginal } from 'expo-router';
+const useLocalSearchParams = useLocalSearchParamsOriginal;
 
 describe('CheckoutScreen', () => {
   beforeEach(() => {
     jest.clearAllMocks();
+    (useLocalSearchParams as jest.Mock).mockReturnValue({});
   });
 
   it('renders buyer info from auth store', async () => {
-    const { getByText } = await render(<CheckoutScreen />);
+    const { getByText } = await renderWithProviders(<CheckoutScreen />);
     expect(getByText('John Doe')).toBeTruthy();
     expect(getByText('08123456789')).toBeTruthy();
   });
 
   it('renders cart items summary', async () => {
-    const { getByText } = await render(<CheckoutScreen />);
+    const { getByText } = await renderWithProviders(<CheckoutScreen />);
     expect(getByText('Nasi Goreng')).toBeTruthy();
     expect(getByText('Es Teh')).toBeTruthy();
   });
 
   it('renders PaymentSummary', async () => {
-    const { getByTestId } = await render(<CheckoutScreen />);
+    const { getByTestId } = await renderWithProviders(<CheckoutScreen />);
     expect(getByTestId('payment-summary')).toBeTruthy();
   });
 
   it('shows notes character counter', async () => {
-    const { getByTestId } = await render(<CheckoutScreen />);
+    const { getByTestId } = await renderWithProviders(<CheckoutScreen />);
     const input = getByTestId('notes-input');
     expect(input.props.maxLength).toBe(500);
   });
@@ -97,7 +115,7 @@ describe('CheckoutScreen', () => {
   it('disables confirm button when cart is empty', async () => {
     const { useCart } = require('@/hooks/useCart');
     (useCart as jest.Mock).mockReturnValueOnce({ cart: { data: { cart: { items: [] } } } });
-    const { getByTestId } = await render(<CheckoutScreen />);
+    const { getByTestId } = await renderWithProviders(<CheckoutScreen />);
     expect(getByTestId('confirm-button').props.disabled).toBe(true);
   });
 
@@ -106,12 +124,12 @@ describe('CheckoutScreen', () => {
       order: { id: 'ord-1', status: 'PENDING', pickupCode: 'LAST-X1', total: 55000, storeName: 'Warung', items: [] },
     });
 
-    const { getByTestId } = await render(<CheckoutScreen />);
+    const { getByTestId } = await renderWithProviders(<CheckoutScreen />);
     await fireEvent.changeText(getByTestId('notes-input'), 'Tanpa sambal');
     await fireEvent.press(getByTestId('confirm-button'));
 
     await waitFor(() => {
-      expect(createOrder).toHaveBeenCalledWith('John Doe', '08123456789', 'Tanpa sambal');
+      expect(createOrder).toHaveBeenCalledWith('John Doe', '08123456789', 'Tanpa sambal', undefined);
     });
   });
 
@@ -121,7 +139,7 @@ describe('CheckoutScreen', () => {
       order: { id: 'ord-2', status: 'PENDING', pickupCode: 'LAST-Y2', total: 30000, storeName: 'Bakery', items: [] },
     });
 
-    const { getByTestId } = await render(<CheckoutScreen />);
+    const { getByTestId } = await renderWithProviders(<CheckoutScreen />);
     await fireEvent.press(getByTestId('confirm-button'));
 
     await waitFor(() => {
@@ -133,12 +151,49 @@ describe('CheckoutScreen', () => {
     (createOrder as jest.Mock).mockRejectedValueOnce(new Error('CART_EMPTY'));
     const alertSpy = jest.spyOn(global, 'alert').mockImplementation(() => {});
 
-    const { getByTestId } = await render(<CheckoutScreen />);
+    const { getByTestId } = await renderWithProviders(<CheckoutScreen />);
     await fireEvent.press(getByTestId('confirm-button'));
 
     await waitFor(() => {
       expect(alertSpy).toHaveBeenCalled();
     });
     alertSpy.mockRestore();
+  });
+
+  it('filters items by storeName and shows store header', async () => {
+    const { useLocalSearchParams } = require('expo-router');
+    (useLocalSearchParams as jest.Mock).mockReturnValueOnce({ storeName: 'Warung' });
+
+    const { getByText, queryByText } = await renderWithProviders(<CheckoutScreen />);
+    // Should show Warung items
+    expect(getByText('Nasi Goreng')).toBeTruthy();
+    expect(getByText('Es Teh')).toBeTruthy();
+    // Should NOT show items from other stores
+    expect(queryByText('Croissant')).toBeNull();
+    // Should show store-specific header
+    expect(getByText('Checkout - Warung')).toBeTruthy();
+  });
+
+  it('passes storeName to createOrder when filtering by store', async () => {
+    const { useLocalSearchParams } = require('expo-router');
+    (useLocalSearchParams as jest.Mock).mockReturnValueOnce({ storeName: 'Warung' });
+    (createOrder as jest.Mock).mockResolvedValueOnce({
+      order: { id: 'ord-3', status: 'PENDING', pickupCode: 'LAST-Z3', total: 30000, storeName: 'Warung', items: [] },
+    });
+
+    const { getByTestId } = await renderWithProviders(<CheckoutScreen />);
+    await fireEvent.press(getByTestId('confirm-button'));
+
+    await waitFor(() => {
+      expect(createOrder).toHaveBeenCalledWith('John Doe', '08123456789', undefined, 'Warung');
+    });
+  });
+
+  it('shows all items and no store header when storeName is not set', async () => {
+    const { getByText } = await renderWithProviders(<CheckoutScreen />);
+    expect(getByText('Nasi Goreng')).toBeTruthy();
+    expect(getByText('Es Teh')).toBeTruthy();
+    // Without storeName, show generic header
+    expect(getByText('Checkout')).toBeTruthy();
   });
 });
