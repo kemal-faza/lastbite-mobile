@@ -1,5 +1,13 @@
-import { useMutation, useQueryClient } from '@tanstack/react-query';
-import { createReview } from '@/lib/api/reviews';
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { getProductReviews, createReview } from '@/lib/api/reviews';
+
+export function useProductReviews(productId: string) {
+  return useQuery({
+    queryKey: ['product-reviews', productId],
+    queryFn: () => getProductReviews(productId),
+    enabled: !!productId,
+  });
+}
 
 export function useCreateReview() {
   const queryClient = useQueryClient();
