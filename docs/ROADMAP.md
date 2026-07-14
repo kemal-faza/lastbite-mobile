@@ -8,8 +8,8 @@
 
 | Status | Count |
 |--------|-------|
-| Done | 2 (Sub-spek 0, Sub-spek 1) |
-| Not started | 6 (Sub-spek 2–7) |
+| Done | 4 (Sub-spek 0, Sub-spek 1, Sub-spek 2, Sub-spek 3) |
+| Not started | 4 (Sub-spek 4–7) |
 
 ---
 
@@ -65,42 +65,79 @@
 
 ---
 
-## Sub-spek 2: Mitra Product Management (NOT STARTED)
+## Sub-spek 2: Mitra Product Management (DONE)
 
-**Scope:**
-- Add product form lengkap (name, price, stock, category, expiry, image)
-- Edit product (pre-populate form, update via `updateMitraProduct`)
-- Image upload via `expo-image-picker` (take photo / gallery)
-- Category dropdown / picker
-- Expiry date picker
+**Tanggal:** 2026-07-13
+**Spec:** `docs/superpowers/specs/2026-07-13-mitra-product-management-design.md`
+**Plan:** `docs/superpowers/plans/2026-07-13-mitra-product-management-implementation.md`
+
+**Yang sudah ada:**
+- Product form lengkap (`ProductForm.tsx`) — name, price, stock, category, expiry, image
+- Expiry date picker (`ExpiryPicker.tsx`)
+- Image upload via `expo-image-picker` (take photo / gallery) dengan FormData
+- Add product (`app/(mitra)/products/add.tsx`)
+- Edit product (`app/(mitra)/products/[id]/edit.tsx`) — pre-populate form
+- Detail product (`app/(mitra)/products/[id].tsx`)
+- List product dengan swipe-to-edit/delete (`app/(mitra)/products.tsx`)
 - Delete product dengan konfirmasi
+- API: `createMitraProduct`, `updateMitraProduct`, `deleteMitraProduct`
 
-**Depends on:** Sub-spek 0, backend `/mitra/products` CRUD, `expo-image-picker` (already installed)
+**Commits:**
+- `6444ad0` feat(mitra): add swipe-to-edit/delete and tap-to-detail to products list
+- `378fe4d` feat(mitra): implement product detail screen (Task 6)
+- `0619f63` feat(mitra): add edit product screen at products/[id]/edit
+- `052c5e0` feat(mitra): replace add product screen with ProductForm + FormData upload
+- `5bd0b88` feat(mitra): add ExpiryPicker component with tests
+- `d9b3622` feat(api): extend mitra product mutations with FormData support
 
-**Files likely touched:**
-- `app/(mitra)/products.tsx` — extend
-- New: `app/(mitra)/product/new.tsx`
-- New: `app/(mitra)/product/[id]/edit.tsx`
-- New: `src/components/ProductForm.tsx`
-- New: `src/components/ExpiryPicker.tsx`
+**Depends on:** Sub-spek 0, backend `/mitra/products` CRUD, `expo-image-picker`
 
 ---
 
-## Sub-spek 3: Mitra Orders (NOT STARTED)
+## Sub-spek 3: Mitra Orders (DONE)
 
-**Scope:**
-- Order list dengan sections (PENDING, PROCESSED, READY, PICKED_UP, CANCELLED)
-- Detail order: buyer info, items, pickup code
-- Status transition buttons (Process, Ready, Cancel)
-- `confirmPickup` flow untuk Food Saver
-- Pull-to-refresh
+**Tanggal:** 2026-07-14
+**Spec:** `docs/superpowers/specs/2026-07-13-mitra-orders-design.md`
+**Plan:** `docs/superpowers/plans/2026-07-13-mitra-orders-implementation.md`
+
+**Arsitektur Update:**
+- Orders menggunakan **Stack layout** murni (bukan Drawer langsung) agar tombol back emulator kembali ke daftar pesanan, bukan dashboard.
+- Dev mock: `__DEV__` mode bypasses API, menggunakan data mock dari `mitra-orders.mock.ts` (6 sample orders, semua status).
+- Dev login: tombol "Masuk sebagai Mitra (Dev)" di halaman login untuk testing tanpa backend.
+
+**Yang sudah ada:**
+- `updateMitraOrderStatus()` API + `useUpdateOrderStatus()` mutation hook dengan query invalidation (`mitra-orders` + `mitra-stats`)
+- `MitraOrderCard` reusable component — badge status, buyer info, conditional action button, error handling
+- List screen dengan custom Top Tabs: **Aktif** (PENDING/PROCESSED/READY, sorted by urgency) dan **Riwayat** (PICKED_UP/CANCELLED)
+- Pull-to-refresh + Refresh on Focus + Loading/Empty states
+- Detail screen (`app/(mitra)/orders/[id].tsx`) — Kode Pickup, buyer info, items list, sticky action button
+- Stack layout navigation (`app/(mitra)/orders/_layout.tsx`) — tombol back ke daftar pesanan
+- 138 tests (18 baru + 120 existing), 0 failures
+
+**Commits:**
+- `a160d4c` fix: replace @react-navigation/drawer import with expo-router/drawer for SDK 56 compat
+- `04e67f4` fix: convert orders to Stack layout for proper back navigation
+- `a3d834b` feat: create Mitra order detail screen
+- `003197a` feat: implement active/history tabs in mitra orders screen
+- `c42ccad` fix: address code review issues — named export, error handling, type safety, test coverage
+- `9928c5e` fix: show order ID instead of pickup code in MitraOrderCard header
+- `6defc2c` feat: create MitraOrderCard component
+- `fc3c800` fix: add invalidation assertions to useUpdateOrderStatus test
+- `3d7e9fe` fix: add mitra-stats invalidation to useUpdateOrderStatus
+- `2d322ba` feat: add useUpdateOrderStatus mutation
+
+**Files created/dimodifikasi:**
+- `src/lib/api/mitra-orders.mock.ts` — mock data (6 sample orders)
+- `src/components/MitraOrderCard.tsx` — reusable order card
+- `app/(mitra)/orders/_layout.tsx` — Stack layout
+- `app/(mitra)/orders/index.tsx` — list screen with tabs
+- `app/(mitra)/orders/[id].tsx` — detail screen
+- `src/hooks/useMitra.ts` — +`useUpdateOrderStatus`
+- `src/lib/api/mitra.ts` — +`updateMitraOrderStatus`, dev mock bypass
+- `app/(mitra)/_layout.tsx` — drawer config update (headerShown: false untuk orders)
+- `app/(auth)/login.tsx` — dev login button
 
 **Depends on:** Sub-spek 0, backend `/mitra/orders`
-
-**Files likely touched:**
-- New: `app/(mitra)/orders/[id].tsx`
-- `src/lib/api/mitra.ts` — already has `getMitraOrders`, `MitraOrder` type
-- New: `src/components/OrderStatusBadge.tsx`
 
 ---
 
@@ -188,8 +225,8 @@
 ## Execution Order (Recommended)
 
 ```
-Sub-spek 0 ✓ → Sub-spek 1 (Mitra Dashboard) → Sub-spek 2 (Product Mgmt)
-              → Sub-spek 3 (Mitra Orders)     → Sub-spek 5 (Cart+Checkout) → Sub-spek 6 (Confirm+Review)
+Sub-spek 0 ✓ → Sub-spek 1 ✓ → Sub-spek 2 ✓ → Sub-spek 3 ✓
+              → Sub-spek 5 (Cart+Checkout) → Sub-spek 6 (Confirm+Review)
               → Sub-spek 7 (Wishlist+Notif+Search+Profile)
               → Sub-spek 4 (Product Detail+AI Rec) — bisa paralel dengan yang lain
 ```
