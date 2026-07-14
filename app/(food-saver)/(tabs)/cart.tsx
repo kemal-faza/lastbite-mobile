@@ -122,7 +122,7 @@ export default function CartScreen() {
                               source={
                                 getImageVariants(item.imageVariants)?.thumb
                                   ? { uri: getImageVariants(item.imageVariants)!.thumb }
-                                  : require('../../assets/placeholder.png')
+                                  : require('@/assets/placeholder.png')
                               }
                               contentFit="cover"
                               style={{ width: 64, height: 64, borderRadius: 8, backgroundColor: '#e5e7eb' }}

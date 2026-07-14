@@ -70,7 +70,7 @@ function ProductListItem({
               source={
                 thumbUrl
                   ? { uri: thumbUrl }
-                  : require('../../assets/placeholder.png')
+                  : require('@/assets/placeholder.png')
               }
               contentFit="cover"
               style={{ width: 64, height: 64, borderRadius: 8, backgroundColor: '#e5e7eb' }}

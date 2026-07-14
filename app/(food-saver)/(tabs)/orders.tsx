@@ -69,7 +69,7 @@ export default function OrdersScreen() {
 																firstItem.imageVariants,
 															)!.thumb,
 														}
-													: require('../../assets/placeholder.png')
+													: require('@/assets/placeholder.png')
 											}
 											contentFit="cover"
 											style={{
