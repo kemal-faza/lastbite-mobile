@@ -105,7 +105,7 @@ export default function CartScreen() {
                       }}
                       accessibilityLabel="Hapus item"
                       accessibilityRole="button"
-                      className="bg-red-500 justify-center items-center w-16 self-stretch mb-2 rounded-r-xl"
+                      className="bg-red-500 justify-center items-center w-16 self-stretch"
                     >
                       <MaterialCommunityIcons name="trash-can-outline" size={22} color="white" />
                     </TouchableOpacity>
