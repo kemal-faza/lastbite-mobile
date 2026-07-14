@@ -1,16 +1,17 @@
-import { useState } from 'react';
+import { useState, useCallback } from 'react';
 import { View, Text, ScrollView, TouchableOpacity, ActivityIndicator } from 'react-native';
 import { useLocalSearchParams, router } from 'expo-router';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import LottieView from 'lottie-react-native';
 import { useOrder } from '@/hooks/useOrders';
 import { useConfirmPickup } from '@/hooks/useOrders';
+import { useBackHandler } from '@/hooks/useBackHandler';
 import { CountdownTimer } from '@/components/CountdownTimer';
 import { ConfirmDialog } from '@/components/ConfirmDialog';
+import { Header } from '@/components/Header';
 import { ReviewModal } from '@/components/ReviewModal';
 import { useToast } from '@/contexts/ToastContext';
 import { colors } from '@/theme';
-
 export default function OrderConfirmScreen() {
   const { id } = useLocalSearchParams<{ id: string }>();
   const { data: orderData, isLoading, isError } = useOrder(id);
@@ -20,6 +21,12 @@ export default function OrderConfirmScreen() {
   const [showSuccessScreen, setShowSuccessScreen] = useState(false);
   const [showReviewModal, setShowReviewModal] = useState(false);
   const [reviewProductName, setReviewProductName] = useState('');
+
+  const handleBack = useCallback(() => {
+    try { router.back(); } catch { router.replace('/'); }
+  }, []);
+
+  useBackHandler(handleBack);
 
   if (isLoading) {
     return (
@@ -50,13 +57,7 @@ export default function OrderConfirmScreen() {
 
     return (
       <View className="flex-1 bg-background">
-        {/* Header */}
-        <View className="bg-primary px-4 py-3">
-          <Text className="text-white text-lg font-semibold text-center">
-            Pesanan Selesai
-          </Text>
-        </View>
-
+        <Header title="Pesanan Selesai" onBack={handleBack} />
         <ScrollView
           className="flex-1"
           contentContainerStyle={{
@@ -146,7 +147,8 @@ export default function OrderConfirmScreen() {
 
   return (
     <View className="flex-1 bg-background">
-    <ScrollView className="flex-1">
+      <Header title="Konfirmasi Pesanan" onBack={handleBack} />
+      <ScrollView className="flex-1">
         <View className="bg-primary p-6 items-center">
           <MaterialCommunityIcons name="check-circle" size={64} color="white" />
           <Text className="text-white text-lg font-bold mt-2">Pesanan Berhasil!</Text>

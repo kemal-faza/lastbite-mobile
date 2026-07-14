@@ -190,10 +190,10 @@ describe('CheckoutScreen', () => {
   });
 
   it('shows all items and no store header when storeName is not set', async () => {
-    const { getByText } = await renderWithProviders(<CheckoutScreen />);
+    const { getByText, getAllByText } = await renderWithProviders(<CheckoutScreen />);
     expect(getByText('Nasi Goreng')).toBeTruthy();
     expect(getByText('Es Teh')).toBeTruthy();
-    // Without storeName, show generic header
-    expect(getByText('Checkout')).toBeTruthy();
+    // Without storeName, show generic header (Header component + body title)
+    expect(getAllByText('Checkout').length).toBeGreaterThanOrEqual(2);
   });
 });
