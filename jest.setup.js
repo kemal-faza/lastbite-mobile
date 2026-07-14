@@ -30,11 +30,20 @@ jest.mock('react-native', () => {
     return React.createElement('View', null, children);
   };
 
+  // Functional TextInput that supports fireEvent.changeText / onChangeText
+  // Required so RNTL tests can programmatically trigger text changes
+  const TextInput = (props) => {
+    return React.createElement('TextInput', props);
+  };
+
   return {
     View: 'View',
     Text: 'Text',
     Image: 'Image',
     Pressable: 'Pressable',
+    Alert: {
+      alert: jest.fn(),
+    },
     Animated,
     StyleSheet: {
       create: jest.fn((styles) => styles),
@@ -48,7 +57,7 @@ jest.mock('react-native', () => {
     ActivityIndicator: 'ActivityIndicator',
     ScrollView: 'ScrollView',
     FlatList,
-    TextInput: 'TextInput',
+    TextInput,
     TouchableOpacity: 'TouchableOpacity',
     Modal: 'Modal',
     RefreshControl: 'RefreshControl',
@@ -93,6 +102,9 @@ jest.mock('react-native-maps', () => {
     PROVIDER_GOOGLE: 'google',
   };
 });
+
+// Polyfill global.alert for components that use it directly (not Alert.alert)
+global.alert = jest.fn();
 
 // Mock expo-router segments + navigation (additive to any existing expo-router mock)
 jest.mock('expo-router', () => ({
