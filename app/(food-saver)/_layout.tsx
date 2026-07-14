@@ -1,14 +1,19 @@
 import { Tabs } from 'expo-router';
-import { View } from 'react-native';
+import { View, Text } from 'react-native';
 import { StatusBar } from 'expo-status-bar';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { OfflineBanner } from '@/components/OfflineBanner';
 import { useNetworkStatus } from '@/hooks/useNetworkStatus';
+import { useCart } from '@/hooks/useCart';
+import { useAuthStore } from '@/stores/authStore';
 import { colors } from '@/theme';
 
 export default function FoodSaverLayout() {
   const isConnected = useNetworkStatus();
+  const { isAuthenticated } = useAuthStore();
+  const { cart: cartQuery } = useCart(isAuthenticated);
+  const itemCount = cartQuery.data?.cart.items?.length || 0;
 
   return (
     <SafeAreaView edges={['top']} className="flex-1 bg-primary">
@@ -44,10 +49,15 @@ export default function FoodSaverLayout() {
           options={{
             title: 'Keranjang',
             tabBarIcon: ({ focused }) => (
-              <View
-                className={`items-center justify-center -mt-4 rounded-full w-14 h-14 shadow-lg ${focused ? 'bg-primary' : 'bg-primary/80'}`}
-              >
-                <MaterialCommunityIcons name="cart" size={28} color="white" />
+              <View className="items-center justify-center -mt-4">
+                <View className={`items-center justify-center rounded-full w-14 h-14 shadow-lg ${focused ? 'bg-primary' : 'bg-primary/80'}`}>
+                  <MaterialCommunityIcons name="cart" size={28} color="white" />
+                </View>
+                {itemCount > 0 && (
+                  <View className="absolute -top-1 -right-1 bg-red-500 rounded-full min-w-[20px] h-5 items-center justify-center px-1">
+                    <Text className="text-white text-xs font-bold">{itemCount > 99 ? '99+' : itemCount}</Text>
+                  </View>
+                )}
               </View>
             ),
           }}
