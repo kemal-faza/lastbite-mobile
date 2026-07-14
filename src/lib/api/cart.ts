@@ -31,3 +31,17 @@ export async function addToCart(productId: string, quantity = 1) {
 export async function updateCartItem(productId: string, quantity: number) {
   return apiFetch<{ cart: Cart }>(`/cart/items/${productId}`, { auth: true, method: 'PATCH', body: JSON.stringify({ quantity }) });
 }
+
+export async function removeCartItem(productId: string) {
+  return apiFetch<{ cart: Cart }>(`/cart/items/${productId}`, {
+    auth: true,
+    method: 'DELETE',
+  });
+}
+
+export async function clearCart() {
+  return apiFetch<{ message: string }>('/cart', {
+    auth: true,
+    method: 'DELETE',
+  });
+}
