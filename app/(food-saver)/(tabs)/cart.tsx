@@ -1,5 +1,5 @@
 import { View, Text, ScrollView, Pressable, TouchableOpacity, Alert } from 'react-native';
-import { useRef } from 'react';
+import { useRef, useCallback } from 'react';
 import { Swipeable } from 'react-native-gesture-handler';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { router } from 'expo-router';
@@ -12,6 +12,88 @@ import type { CartItem } from '@/lib/api/cart';
 import { EmptyState } from '@/components/EmptyState';
 import { getImageVariants } from '@/lib/api/products';
 import { TopBar } from '@/components/TopBar';
+
+// --- Cart item row with swipe-to-delete ---
+function CartItemRow({
+  item,
+  updateItem,
+  removeItem,
+}: {
+  item: CartItem;
+  updateItem: any;
+  removeItem: any;
+}) {
+  const swipeableRef = useRef<Swipeable>(null);
+
+  const handleDelete = useCallback(() => {
+    swipeableRef.current?.close();
+    Alert.alert('Hapus Item', `Hapus "${item.name}" dari keranjang?`, [
+      { text: 'Batal', style: 'cancel' },
+      {
+        text: 'Hapus',
+        style: 'destructive',
+        onPress: () => removeItem.mutate(item.productId),
+      },
+    ]);
+  }, [item.name, item.productId, removeItem]);
+
+  return (
+    <View className="mb-2 rounded-xl overflow-hidden">
+      <Swipeable
+        ref={swipeableRef}
+        overshootRight={false}
+        renderRightActions={() => (
+          <View className="flex-row items-center">
+            <TouchableOpacity
+              onPress={handleDelete}
+              accessibilityLabel="Hapus item"
+              accessibilityRole="button"
+              className="bg-red-500 justify-center items-center w-16 self-stretch"
+            >
+              <MaterialCommunityIcons name="trash-can-outline" size={22} color="white" />
+            </TouchableOpacity>
+          </View>
+        )}
+      >
+        <View className="bg-white p-3 flex-row justify-between items-center">
+          <View className="flex-row items-center flex-1">
+            <View className="mr-3">
+              <Image
+                source={
+                  getImageVariants(item.imageVariants)?.thumb
+                    ? { uri: getImageVariants(item.imageVariants)!.thumb }
+                    : require('@/assets/placeholder.png')
+                }
+                contentFit="cover"
+                style={{ width: 64, height: 64, borderRadius: 8, backgroundColor: '#e5e7eb' }}
+              />
+            </View>
+            <View className="flex-1">
+              <Text className="font-bold">{item.name}</Text>
+              <Text className="text-gray-500">{item.storeName}</Text>
+              <Text>Rp{item.price.toLocaleString()} x {item.quantity}</Text>
+            </View>
+          </View>
+          <View className="flex-row items-center">
+            <Pressable
+              onPress={() => updateItem.mutate({ productId: item.productId, quantity: item.quantity - 1 })}
+              className="px-3 py-1 bg-gray-200 rounded"
+            >
+              <Text>-</Text>
+            </Pressable>
+            <Text className="mx-3">{item.quantity}</Text>
+            <Pressable
+              onPress={() => updateItem.mutate({ productId: item.productId, quantity: item.quantity + 1 })}
+              className="px-3 py-1 bg-gray-200 rounded"
+            >
+              <Text>+</Text>
+            </Pressable>
+          </View>
+        </View>
+      </Swipeable>
+    </View>
+  );
+}
 
 export default function CartScreen() {
   const { isAuthenticated } = useAuthStore();
@@ -82,72 +164,14 @@ export default function CartScreen() {
               </View>
 
               {/* Store Items with swipe-to-delete */}
-              {storeItems.map((item) => {
-                const swipeableRef = useRef<Swipeable>(null);
-
-                const renderRightActions = () => (
-                  <View className="flex-row items-center">
-                    <TouchableOpacity
-                      onPress={() => {
-                        swipeableRef.current?.close();
-                        Alert.alert(
-                          'Hapus Item',
-                          `Hapus "${item.name}" dari keranjang?`,
-                          [
-                            { text: 'Batal', style: 'cancel' },
-                            {
-                              text: 'Hapus',
-                              style: 'destructive',
-                              onPress: () => removeItem.mutate(item.productId),
-                            },
-                          ]
-                        );
-                      }}
-                      accessibilityLabel="Hapus item"
-                      accessibilityRole="button"
-                      className="bg-red-500 justify-center items-center w-16 self-stretch"
-                    >
-                      <MaterialCommunityIcons name="trash-can-outline" size={22} color="white" />
-                    </TouchableOpacity>
-                  </View>
-                );
-
-                return (
-                  <View key={item.id} className="mb-2 rounded-xl overflow-hidden">
-                    <Swipeable ref={swipeableRef} renderRightActions={renderRightActions} overshootRight={false}>
-                      <View className="bg-white p-3 flex-row justify-between items-center">
-                        <View className="flex-row items-center flex-1">
-                          <View className="mr-3">
-                            <Image
-                              source={
-                                getImageVariants(item.imageVariants)?.thumb
-                                  ? { uri: getImageVariants(item.imageVariants)!.thumb }
-                                  : require('@/assets/placeholder.png')
-                              }
-                              contentFit="cover"
-                              style={{ width: 64, height: 64, borderRadius: 8, backgroundColor: '#e5e7eb' }}
-                            />
-                          </View>
-                          <View className="flex-1">
-                            <Text className="font-bold">{item.name}</Text>
-                            <Text className="text-gray-500">{item.storeName}</Text>
-                            <Text>Rp{item.price.toLocaleString()} x {item.quantity}</Text>
-                          </View>
-                        </View>
-                        <View className="flex-row items-center">
-                          <Pressable onPress={() => updateItem.mutate({ productId: item.productId, quantity: item.quantity - 1 })} className="px-3 py-1 bg-gray-200 rounded">
-                            <Text>-</Text>
-                          </Pressable>
-                          <Text className="mx-3">{item.quantity}</Text>
-                          <Pressable onPress={() => updateItem.mutate({ productId: item.productId, quantity: item.quantity + 1 })} className="px-3 py-1 bg-gray-200 rounded">
-                            <Text>+</Text>
-                          </Pressable>
-                        </View>
-                      </View>
-                    </Swipeable>
-                  </View>
-                );
-              })}
+              {storeItems.map((item) => (
+                <CartItemRow
+                  key={item.id}
+                  item={item}
+                  updateItem={updateItem}
+                  removeItem={removeItem}
+                />
+              ))}
 
               {/* Store subtotal & checkout */}
               <View className="flex-row justify-between items-center mt-2 pt-2 border-t border-gray-200">
