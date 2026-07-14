@@ -18,7 +18,10 @@ interface ReviewListProps {
 }
 
 export function ReviewList({ summary, reviews, testID }: ReviewListProps) {
-  const maxCount = Math.max(...Object.values(summary.distribution), 1);
+  const isEmpty = summary.totalReviews === 0;
+  const maxCount = isEmpty
+    ? 1
+    : Math.max(...Object.values(summary.distribution), 1);
 
   return (
     <View testID={testID} className="mt-4">
@@ -26,8 +29,10 @@ export function ReviewList({ summary, reviews, testID }: ReviewListProps) {
 
       <View className="bg-white rounded-xl p-4 mb-4 border border-gray-100">
         <View className="flex-row items-center mb-3">
-          <Text className="text-3xl font-bold mr-2">{summary.averageRating.toFixed(1)}</Text>
-          <StarRating rating={summary.averageRating} size={18} />
+          <Text className="text-3xl font-bold mr-2">
+            {isEmpty ? '-' : summary.averageRating.toFixed(1)}
+          </Text>
+          <StarRating rating={isEmpty ? 0 : summary.averageRating} size={18} />
           <Text className="text-sm text-gray-500 ml-2">
             ({summary.totalReviews} ulasan)
           </Text>
@@ -35,7 +40,9 @@ export function ReviewList({ summary, reviews, testID }: ReviewListProps) {
 
         {[5, 4, 3, 2, 1].map((star) => {
           const count = summary.distribution[star] || 0;
-          const width = maxCount > 0 ? `${Math.round((count / maxCount) * 100)}%` : '0%';
+          const width = `${
+            isEmpty ? 0 : Math.round((count / maxCount) * 100)
+          }%`;
 
           return (
             <View key={star} className="flex-row items-center mb-1">
@@ -54,8 +61,12 @@ export function ReviewList({ summary, reviews, testID }: ReviewListProps) {
         })}
       </View>
 
-      {reviews.length === 0 ? (
-        <Text className="text-gray-500 text-center py-4">Belum ada ulasan</Text>
+      {isEmpty ? (
+        <View className="bg-white rounded-xl p-6 border border-gray-100 items-center">
+          <Text className="text-gray-500 text-sm text-center">
+            Belum ada ulasan untuk produk ini
+          </Text>
+        </View>
       ) : (
         reviews.map((r) => <ReviewCard key={r.id} review={r} />)
       )}
