@@ -141,23 +141,22 @@
 
 ---
 
-## Sub-spek 4: Product Detail + AI Recommendation (NOT STARTED)
+## Sub-spek 4: Product Detail + AI Recommendation (IN PROGRESS)
 
 **Scope:**
-- Trust badge row (halal, freshness guarantee, food safety)
-- Discount percentage overlay di hero image
-- Queue indicator (stock rendah / tinggi)
-- AI Recommendation section ("Rekomendasi untukmu") — gated by `useHasPurchaseHistory`
-- Stock state handling (habis, tersisa X, normal)
+- Trust badge row (hanya badge 'populer')
+- Discount percentage di samping harga diskon
+- AI Recommendation section ("Rekomendasi Untuk Kamu") — produk sejenis, gated by `useHasPurchaseHistory`
+- Stock state handling (diperbesar teksnya)
 - "Petunjuk Arah" — sudah ada via `Linking.openURL`
+- Empty state ulasan di-refactor
 
-**Depends on:** Sub-spek 0, backend `/products/:id`, AI recommendation endpoint
+**Depends on:** Sub-spek 0, backend `/products/:id`
 
 **Files likely touched:**
 - `app/(food-saver)/product/[id].tsx` — extend
-- New: `src/components/TrustBadgeRow.tsx`
-- New: `src/components/AIRecommendation.tsx`
-- New: `src/components/StockIndicator.tsx`
+- New: `src/components/ProductRecommendation.tsx`
+- `src/components/ReviewList.tsx` — extend empty state
 
 ---
 
