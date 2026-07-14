@@ -2,6 +2,7 @@ import { render } from '@testing-library/react-native';
 import React from 'react';
 import ProductDetailScreen from '../../app/(food-saver)/product/[id]';
 import { useProduct } from '@/hooks/useProducts';
+import { useProductReviews } from '@/hooks/useReviews';
 import type { Product } from '@/lib/api/products';
 
 // --- Mock external dependencies ---
@@ -60,7 +61,7 @@ jest.mock('@/hooks/useProducts', () => ({
 }));
 
 jest.mock('@/hooks/useReviews', () => ({
-  useProductReviews: jest.fn(() => ({ data: undefined })),
+  useProductReviews: jest.fn(),
 }));
 
 jest.mock('@/stores/authStore', () => ({
@@ -73,7 +74,7 @@ jest.mock('expo-router', () => ({
 }));
 
 // --- Helpers ---
-async function renderScreen(productOverrides?: Partial<Product>) {
+async function renderScreen(productOverrides?: Partial<Product>, reviewsOverrides?: { isLoading?: boolean; data?: any }) {
   (useProduct as jest.Mock).mockReturnValue({
     data: { product: createMockProduct(productOverrides) },
     isLoading: false,
@@ -82,7 +83,21 @@ async function renderScreen(productOverrides?: Partial<Product>) {
     refetch: jest.fn(),
   });
 
+  (useProductReviews as jest.Mock).mockReturnValue({
+    isLoading: false,
+    data: undefined,
+    ...reviewsOverrides,
+  });
+
   return render(<ProductDetailScreen />);
+}
+
+function setReviews(overrides: { isLoading?: boolean; data?: any } = {}) {
+  (useProductReviews as jest.Mock).mockReturnValue({
+    isLoading: false,
+    data: undefined,
+    ...overrides,
+  });
 }
 
 // --- Tests ---
@@ -131,5 +146,53 @@ describe('ProductDetailScreen - Stock Text', () => {
   it('shows "Stok: N" when stock > 3', async () => {
     const view = await renderScreen({ stock: 10 });
     expect(view.getByText('Stok: 10')).toBeTruthy();
+  });
+});
+
+describe('ProductDetailScreen - Reviews', () => {
+  it('shows skeleton list while reviews are loading', async () => {
+    const view = await renderScreen(undefined, { isLoading: true });
+    // Skeleton is shown — no ReviewList mock output
+    expect(view.queryByText(/Ulasan/)).toBeNull();
+  });
+
+  it('shows empty review state when loaded with no data', async () => {
+    const view = await renderScreen(undefined, {
+      isLoading: false,
+      data: {
+        summary: {
+          averageRating: 0,
+          totalReviews: 0,
+          distribution: { 1: 0, 2: 0, 3: 0, 4: 0, 5: 0 },
+        },
+        reviews: [],
+      },
+    });
+    // ReviewList mock renders "Ulasan: 0" for empty
+    expect(view.getByText('Ulasan: 0')).toBeTruthy();
+  });
+
+  it('shows populated review cards when loaded with data', async () => {
+    const view = await renderScreen(undefined, {
+      isLoading: false,
+      data: {
+        summary: {
+          averageRating: 4.5,
+          totalReviews: 2,
+          distribution: { 1: 0, 2: 0, 3: 0, 4: 1, 5: 1 },
+        },
+        reviews: [
+          {
+            id: 'r1',
+            userName: 'Budi',
+            rating: 5,
+            comment: 'Enak!',
+            createdAt: '2026-07-10T08:00:00Z',
+          },
+        ],
+      },
+    });
+    // ReviewList mock renders "Ulasan: 2" for populated
+    expect(view.getByText('Ulasan: 2')).toBeTruthy();
   });
 });

@@ -7,6 +7,7 @@ import { useProductReviews } from '@/hooks/useReviews';
 import { TrustBadgeRow } from '@/components/TrustBadge';
 import { ReviewList } from '@/components/ReviewList';
 import { ProductRecommendation } from '@/components/ProductRecommendation';
+import { SkeletonList } from '@/components/SkeletonCard';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { colors } from '@/theme';
 import { getImageVariants } from '@/lib/api/products';
@@ -25,7 +26,7 @@ export default function ProductDetailScreen() {
   const { data, isLoading, isError, error, refetch } = useProduct(id);
   const { isAuthenticated } = useAuthStore();
   const product = data?.product;
-  const { data: reviewData } = useProductReviews(id);
+  const { data: reviewData, isLoading: isLoadingReviews } = useProductReviews(id);
 
   if (isLoading) {
     return (
@@ -154,16 +155,17 @@ export default function ProductDetailScreen() {
 
         {/* Reviews */}
         <View className="mt-4">
-          {reviewData ? (
-            <ReviewList
-              summary={reviewData.summary}
-              reviews={reviewData.reviews}
-            />
+          {isLoadingReviews ? (
+            <SkeletonList count={2} />
           ) : (
-            <View className="items-center justify-center py-4">
-              <ActivityIndicator size="small" />
-              <Text className="text-gray-400 text-xs mt-2">Memuat ulasan...</Text>
-            </View>
+            <ReviewList
+              summary={reviewData?.summary ?? {
+                averageRating: 0,
+                totalReviews: 0,
+                distribution: { 1: 0, 2: 0, 3: 0, 4: 0, 5: 0 },
+              }}
+              reviews={reviewData?.reviews ?? []}
+            />
           )}
         </View>
 
