@@ -82,15 +82,13 @@ export default function OrdersScreen() {
 										/>
 									</View>
 								)}
-								<View className="flex-1">
-									<Text className="font-bold">
-										{item.storeName}
-									</Text>
-									<Text>
-										Total: Rp{item.total.toLocaleString()}
-									</Text>
+								<View className="flex-1 mr-2">
+									<Text className="font-bold">{item.storeName}</Text>
+									<Text>Total: Rp{item.total.toLocaleString()}</Text>
+								</View>
+								<View className="items-end">
 									<OrderStatusBadge status={item.status} size="sm" />
-									<Text className="text-gray-400 text-xs">
+									<Text className="text-gray-400 text-xs mt-1">
 										{item.pickupCode}
 									</Text>
 								</View>

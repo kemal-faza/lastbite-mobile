@@ -1,11 +1,13 @@
-import { useState } from 'react';
+import { useState, useCallback } from 'react';
 import { View, Text, ScrollView, TouchableOpacity, ActivityIndicator } from 'react-native';
-import { useLocalSearchParams } from 'expo-router';
+import { useLocalSearchParams, router } from 'expo-router';
 import { Image } from 'expo-image';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { useOrder } from '@/hooks/useOrders';
-import { getImageVariants } from '@/lib/api/products';
+import { useBackHandler } from '@/hooks/useBackHandler';
+import { Header } from '@/components/Header';
 import { ReviewModal } from '@/components/ReviewModal';
+import { getImageVariants } from '@/lib/api/products';
 import { colors } from '@/theme';
 import { OrderStatusBadge } from '@/components/OrderStatusBadge';
 import type { OrderItem } from '@/lib/api/orders';
@@ -15,6 +17,12 @@ export default function OrderDetailScreen() {
   const { data: orderData, isLoading, isError } = useOrder(id);
   const [showReviewModal, setShowReviewModal] = useState(false);
   const [reviewProductName, setReviewProductName] = useState('');
+
+  const handleBack = useCallback(() => {
+    try { router.back(); } catch { router.replace('/orders'); }
+  }, []);
+
+  useBackHandler(handleBack);
 
   if (isLoading) {
     return (
@@ -59,7 +67,9 @@ export default function OrderDetailScreen() {
   };
 
   return (
-    <ScrollView className="flex-1 bg-background">
+    <View className="flex-1 bg-background">
+      <Header title="Detail Pesanan" onBack={handleBack} />
+      <ScrollView className="flex-1">
       {/* Status Badge */}
       <View className="bg-white mx-4 mt-4 p-4 rounded-xl">
         <View className="flex-row items-center justify-between mb-3">
@@ -157,13 +167,16 @@ export default function OrderDetailScreen() {
         </View>
       )}
 
-      {/* Review Modal */}
-      <ReviewModal
-        visible={showReviewModal}
-        onClose={() => setShowReviewModal(false)}
-        orderId={order.id}
-        productName={reviewProductName}
-      />
+      <View className="h-8" />
     </ScrollView>
+
+    {/* Review Modal */}
+    <ReviewModal
+      visible={showReviewModal}
+      onClose={() => setShowReviewModal(false)}
+      orderId={order.id}
+      productName={reviewProductName}
+    />
+  </View>
   );
 }
