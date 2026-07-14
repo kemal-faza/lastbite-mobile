@@ -6,6 +6,7 @@ import { useProduct } from '@/hooks/useProducts';
 import { useProductReviews } from '@/hooks/useReviews';
 import { TrustBadgeRow } from '@/components/TrustBadge';
 import { ReviewList } from '@/components/ReviewList';
+import { ProductRecommendation } from '@/components/ProductRecommendation';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { colors } from '@/theme';
 import { getImageVariants } from '@/lib/api/products';
@@ -165,6 +166,12 @@ export default function ProductDetailScreen() {
             </View>
           )}
         </View>
+
+        {/* Recommendations */}
+        <ProductRecommendation
+          category={product.category}
+          excludeId={product.id}
+        />
 
         <Button
           variant="default"
