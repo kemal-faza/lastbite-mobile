@@ -17,6 +17,7 @@ export interface ProductFilters {
   limit?: number;
   maxPrice?: number;
   expiry?: 'Hari Ini' | '< 1 Jam' | '< 3 Jam' | '< 6 Jam';
+  ids?: string; // comma-separated UUIDs
 }
 
 export interface Product {
@@ -74,6 +75,7 @@ export async function getProducts(params?: ProductFilters) {
   if (params?.limit !== undefined) query.append('limit', String(params.limit));
   if (params?.maxPrice !== undefined && params.maxPrice > 0) query.append('maxPrice', String(params.maxPrice));
   if (params?.expiry && params.expiry !== 'Hari Ini') query.append('expiry', params.expiry);
+  if (params?.ids) query.append('ids', params.ids);
   const qs = query.toString();
   return apiFetch<{ products: Product[] }>(`/products${qs ? `?${qs}` : ''}`);
 }
