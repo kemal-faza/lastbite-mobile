@@ -142,3 +142,10 @@ export async function hasPurchaseHistory() {
 
 // Alias untuk consistency dengan useRequireAuth flow
 export const confirmPickup = verifyPickup;
+
+export async function cancelExpiredOrder(id: string) {
+  return apiFetch<{ order: Order }>(`/orders/${id}/cancel-expired`, {
+    auth: true,
+    method: 'POST',
+  });
+}

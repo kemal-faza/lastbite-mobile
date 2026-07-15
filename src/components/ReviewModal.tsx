@@ -1,12 +1,16 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import {
-  Modal,
+  Animated,
+  Dimensions,
+  Pressable,
   View,
   Text,
   TextInput,
   TouchableOpacity,
   KeyboardAvoidingView,
   Platform,
+  BackHandler,
+  StyleSheet,
 } from 'react-native';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { useCreateReview } from '@/hooks/useReviews';
@@ -30,10 +34,48 @@ export function ReviewModal({
   const [rating, setRating] = useState(0);
   const [comment, setComment] = useState('');
   const [error, setError] = useState<string | null>(null);
+  const [mounted, setMounted] = useState(visible);
+  const opacity = useRef(new Animated.Value(visible ? 1 : 0)).current;
+  const sheetTranslateY = useRef(
+    new Animated.Value(visible ? 0 : Dimensions.get('window').height * 0.5),
+  ).current;
 
   const { mutateAsync: createReview, isPending } = useCreateReview();
   const { showToast } = useToast();
 
+  // Animate fade in + slide up (parallel, same pattern as FilterModal)
+  useEffect(() => {
+    if (visible) {
+      setMounted(true);
+      Animated.parallel([
+        Animated.timing(opacity, {
+          toValue: 1,
+          duration: 200,
+          useNativeDriver: true,
+        }),
+        Animated.timing(sheetTranslateY, {
+          toValue: 0,
+          duration: 300,
+          useNativeDriver: true,
+        }),
+      ]).start();
+    } else {
+      Animated.parallel([
+        Animated.timing(opacity, {
+          toValue: 0,
+          duration: 200,
+          useNativeDriver: true,
+        }),
+        Animated.timing(sheetTranslateY, {
+          toValue: Dimensions.get('window').height * 0.5,
+          duration: 300,
+          useNativeDriver: true,
+        }),
+      ]).start(() => setMounted(false));
+    }
+  }, [visible, opacity, sheetTranslateY]);
+
+  // Reset form when modal opens
   useEffect(() => {
     if (visible) {
       setRating(0);
@@ -41,6 +83,22 @@ export function ReviewModal({
       setError(null);
     }
   }, [visible]);
+
+  // Android back button closes the modal
+  useEffect(() => {
+    if (!visible) return;
+    const onBackPress = () => {
+      handleClose();
+      return true;
+    };
+    const subscription = BackHandler.addEventListener('hardwareBackPress', onBackPress);
+    return () => {
+      if (subscription && typeof subscription.remove === 'function') {
+        subscription.remove();
+      }
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [visible, onClose]);
 
   const handleSubmit = async () => {
     setError(null);
@@ -77,27 +135,43 @@ export function ReviewModal({
 
   const isSubmitDisabled = rating === 0 || isPending;
 
+  if (!mounted) return null;
+
   return (
-    <Modal
-      visible={visible}
-      animationType="slide"
-      transparent
-      onRequestClose={handleClose}
-    >
-      <TouchableOpacity
-        className="flex-1 justify-end bg-black/50"
-        activeOpacity={1}
-        onPress={handleClose}
-      >
-        <KeyboardAvoidingView
-          behavior={Platform.OS === 'ios' ? 'padding' : undefined}
+    <Animated.View
+      pointerEvents={visible ? 'auto' : 'none'}
+      testID="review-overlay"
+      style={[
+        StyleSheet.absoluteFill,
+        { zIndex: 50, justifyContent: 'flex-end' },
+      ]}>
+      {/* Backdrop with fade animation */}
+      <Animated.View
+        testID="review-backdrop-animated"
+        style={[
+          StyleSheet.absoluteFill,
+          { opacity, backgroundColor: 'rgba(0,0,0,0.5)' },
+        ]}>
+        <Pressable
+          testID="review-backdrop"
+          onPress={handleClose}
+          style={StyleSheet.absoluteFill}
+        />
+      </Animated.View>
+      {/* Sheet with slide animation */}
+      <Animated.View
+        testID="review-sheet-animated"
+        style={[
+          { transform: [{ translateY: sheetTranslateY }] },
+        ]}>
+        <Pressable
+          onPress={() => {}}
+          testID="review-sheet"
+          className="bg-white rounded-t-3xl px-4 pt-4 pb-4"
         >
-          <TouchableOpacity
-            activeOpacity={1}
-            onPress={() => {}}
-            className="bg-background rounded-t-2xl p-6"
+          <KeyboardAvoidingView
+            behavior={Platform.OS === 'ios' ? 'padding' : undefined}
           >
-            <View className="w-10 h-1 bg-gray-300 rounded-full mx-auto mb-4" />
             <Text className="text-xl font-bold text-center mb-1">
               Tulis Ulasan
             </Text>
@@ -167,9 +241,9 @@ export function ReviewModal({
                 {isPending ? 'Mengirim...' : 'Kirim Ulasan'}
               </Text>
             </TouchableOpacity>
-          </TouchableOpacity>
-        </KeyboardAvoidingView>
-      </TouchableOpacity>
-    </Modal>
+          </KeyboardAvoidingView>
+        </Pressable>
+      </Animated.View>
+    </Animated.View>
   );
 }

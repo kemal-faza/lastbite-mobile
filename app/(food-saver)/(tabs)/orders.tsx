@@ -4,12 +4,14 @@ import { Image } from 'expo-image';
 import { PrimaryButton } from '@/components/PrimaryButton';
 import { useOrders } from '@/hooks/useOrders';
 import { useAuthStore } from '@/stores/authStore';
+import { useRefreshOnFocus } from '@/hooks/useRefreshOnFocus';
 import { EmptyState } from '@/components/EmptyState';
 import { OrderStatusBadge } from '@/components/OrderStatusBadge';
 import { getImageVariants } from '@/lib/api/products';
 export default function OrdersScreen() {
 	const { isAuthenticated } = useAuthStore();
-	const { data } = useOrders(isAuthenticated);
+	const { data, refetch } = useOrders(isAuthenticated);
+	useRefreshOnFocus(refetch);
 
 	if (!isAuthenticated) {
 		return (
