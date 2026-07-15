@@ -1,8 +1,11 @@
 import { View, Text, Image, Pressable } from 'react-native';
 import { router } from 'expo-router';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
+import { useNotifications } from '@/hooks/useNotifications';
 
 export function TopBar() {
+  const { unreadCount } = useNotifications();
+
   return (
     <View
       className="bg-primary flex-row items-center justify-between px-4"
@@ -22,7 +25,16 @@ export function TopBar() {
         accessibilityLabel="Buka notifikasi"
         accessibilityRole="button"
       >
-        <MaterialCommunityIcons name="bell-outline" size={24} color="white" />
+        <View className="relative">
+          <MaterialCommunityIcons name="bell-outline" size={24} color="white" />
+          {unreadCount > 0 && (
+            <View className="absolute -top-1 -right-1.5 bg-red-500 rounded-full min-w-[18px] h-[18px] items-center justify-center px-1">
+              <Text className="text-white text-[10px] font-bold">
+                {unreadCount > 99 ? '99+' : unreadCount}
+              </Text>
+            </View>
+          )}
+        </View>
       </Pressable>
     </View>
   );
