@@ -1,43 +1,63 @@
-import { useCallback } from 'react';
-import { View, Text } from 'react-native';
-import { router } from 'expo-router';
-import { useBackHandler } from '@/hooks/useBackHandler';
-import { Header } from '@/components/Header';
-import { useAuthStore } from '@/stores/authStore';
+import { View, Text, FlatList, Alert, ActivityIndicator } from 'react-native';
+import { useRouter } from 'expo-router';
+import { useWishlistProducts } from '@/hooks/useWishlistProducts';
+import { useRequireAuth } from '@/hooks/useRequireAuth';
+import { ProductCard } from '@/components/ProductCard';
 import { EmptyState } from '@/components/EmptyState';
-import { PrimaryButton } from '@/components/PrimaryButton';
 
 export default function WishlistScreen() {
-  const { isAuthenticated } = useAuthStore();
-  const handleBack = useCallback(() => { router.navigate('/profile'); }, []);
-  useBackHandler(handleBack);
+  const router = useRouter();
+  const { requireAuth, isAuthenticated } = useRequireAuth();
+  const { products, isLoading, refetch } = useWishlistProducts();
 
   if (!isAuthenticated) {
+    requireAuth(() => {});
     return (
-      <View className="flex-1 bg-background">
-        <Header title="Favorit Saya" onBack={handleBack} />
-        <View className="flex-1">
-          <EmptyState
-            icon="heart-outline"
-            title="Login untuk melihat favorit"
-            description="Masuk untuk menyimpan produk favoritmu"
-            action={<PrimaryButton onPress={() => router.push('/login')}>Masuk</PrimaryButton>}
-          />
-        </View>
-      </View>
+      <EmptyState
+        icon="heart-broken"
+        title="Menu Favorit"
+        description="Masuk untuk melihat menu favorit"
+      />
     );
   }
 
   return (
-    <View className="flex-1 bg-background p-4">
-      <Header title="Favorit Saya" onBack={handleBack} />
-      <Text className="text-xl font-bold text-primary mb-4">Favorit Saya</Text>
-      <EmptyState
-        icon="heart-broken"
-        title="Favorit Kosong"
-        description="Simpan produk favoritmu dengan menekan ikon hati di produk"
-        action={<PrimaryButton onPress={() => router.push('/')}>Cari Makanan</PrimaryButton>}
-      />
+    <View className="flex-1 bg-gray-50">
+      {/* Header */}
+      <View className="bg-white px-4 py-3.5 border-b border-gray-100 flex-row items-center justify-between">
+        <Text className="text-lg font-bold text-gray-900">Menu Favorit</Text>
+        {products && products.length > 0 && (
+          <View className="bg-gray-100 px-2.5 py-1 rounded-full">
+            <Text className="text-xs text-gray-500">{products.length} produk</Text>
+          </View>
+        )}
+      </View>
+
+      {/* Content */}
+      {isLoading ? (
+        <View className="flex-1 justify-center items-center">
+          <ActivityIndicator size="large" color="#166534" />
+        </View>
+      ) : !products || products.length === 0 ? (
+        <EmptyState
+          icon="heart-outline"
+          title="Belum ada menu favorit"
+          description="Jelajahi menu dan tambahkan ke favorit"
+        />
+      ) : (
+        <FlatList
+          data={products}
+          keyExtractor={(item) => item.id}
+          numColumns={2}
+          columnWrapperStyle={{ gap: 10, marginBottom: 10 }}
+          contentContainerStyle={{ padding: 16 }}
+          renderItem={({ item }) => (
+            <ProductCard product={item} />
+          )}
+          refreshing={isLoading}
+          onRefresh={refetch}
+        />
+      )}
     </View>
   );
 }
