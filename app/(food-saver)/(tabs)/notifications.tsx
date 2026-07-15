@@ -1,42 +1,63 @@
-import { useCallback } from 'react';
-import { View, Text } from 'react-native';
-import { router } from 'expo-router';
-import { useBackHandler } from '@/hooks/useBackHandler';
-import { Header } from '@/components/Header';
-import { useAuthStore } from '@/stores/authStore';
+import { View, FlatList, Text, ActivityIndicator } from 'react-native';
+import { useNotifications } from '@/hooks/useNotifications';
+import { NotificationCard } from '@/components/NotificationCard';
+import { useNotificationTap } from '@/hooks/useNotificationTap';
+import { useRequireAuth } from '@/hooks/useRequireAuth';
 import { EmptyState } from '@/components/EmptyState';
-import { PrimaryButton } from '@/components/PrimaryButton';
 
 export default function NotificationsScreen() {
-  const { isAuthenticated } = useAuthStore();
-  const handleBack = useCallback(() => { router.navigate('/profile'); }, []);
-  useBackHandler(handleBack);
+  const { requireAuth, isAuthenticated } = useRequireAuth();
+  const { notifications, unreadCount, isLoading, refresh } = useNotifications();
+  const handleTap = useNotificationTap();
 
   if (!isAuthenticated) {
+    requireAuth(() => {});
     return (
-      <View className="flex-1 bg-background">
-        <Header title="Notifikasi" onBack={handleBack} />
-        <View className="flex-1">
-          <EmptyState
-            icon="bell-outline"
-            title="Login untuk melihat notifikasi"
-            description="Masuk untuk menerima update pesanan dan promo"
-            action={<PrimaryButton onPress={() => router.push('/login')}>Masuk</PrimaryButton>}
-          />
-        </View>
-      </View>
+      <EmptyState
+        icon="bell-sleep"
+        title="Notifikasi"
+        description="Masuk untuk melihat notifikasi"
+      />
     );
   }
 
   return (
-    <View className="flex-1 bg-background p-4">
-      <Header title="Notifikasi" onBack={handleBack} />
-      <Text className="text-xl font-bold text-primary mb-4">Notifikasi</Text>
-      <EmptyState
-        icon="bell-sleep"
-        title="Belum Ada Notifikasi"
-        description="Notifikasi pesanan dan promo akan muncul di sini"
-      />
+    <View className="flex-1 bg-gray-50">
+      {/* Header */}
+      <View className="bg-white px-4 py-3.5 border-b border-gray-100 flex-row items-center justify-between">
+        <Text className="text-lg font-bold text-gray-900">Notifikasi</Text>
+        {unreadCount > 0 && (
+          <View className="bg-red-500 rounded-full min-w-[22px] h-[22px] items-center justify-center px-1.5">
+            <Text className="text-white text-[11px] font-bold">{unreadCount}</Text>
+          </View>
+        )}
+      </View>
+
+      {/* Content */}
+      {isLoading ? (
+        <View className="flex-1 justify-center items-center">
+          <ActivityIndicator size="large" color="#166534" />
+        </View>
+      ) : notifications.length === 0 ? (
+        <EmptyState
+          icon="bell-outline"
+          title="Belum ada notifikasi"
+          description="Notifikasi akan muncul di sini"
+        />
+      ) : (
+        <FlatList
+          data={notifications}
+          keyExtractor={(item) => item.id}
+          renderItem={({ item }) => (
+            <NotificationCard
+              notification={item}
+              onPress={handleTap}
+            />
+          )}
+          refreshing={isLoading}
+          onRefresh={refresh}
+        />
+      )}
     </View>
   );
 }
