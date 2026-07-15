@@ -1,22 +1,45 @@
-// STUB: returns empty defaults until backend /wishlist endpoints are ready.
-// Sub-spek 7 will swap stub for real implementation.
+import { apiFetch } from './client';
 
-export async function fetchWishlistProducts<T = unknown>(_ids: string[]): Promise<T[]> {
-  // STUB: no throw; return empty
-  return [];
+interface RawWishlistSubscription {
+  productId: string;
 }
 
-export async function subscribeToStockAlert(_productId: string): Promise<{ subscribed: boolean }> {
-  // STUB: no-op
-  return { subscribed: true };
+interface RawWishlistResponse {
+  subscriptions: RawWishlistSubscription[];
 }
 
-export async function unsubscribeFromStockAlert(_productId: string): Promise<{ subscribed: boolean }> {
-  // STUB: no-op
-  return { subscribed: false };
+export interface WishlistResponse {
+  productIds: string[];
 }
 
-export async function getStockAlertSubscriptions(): Promise<string[]> {
-  // STUB: no throw; return empty
-  return [];
+// Exported for testing
+export type { RawWishlistResponse };
+
+export function mapWishlistResponse(raw: RawWishlistResponse): WishlistResponse {
+  return {
+    productIds: raw.subscriptions.map(s => s.productId),
+  };
+}
+
+export async function getWishlist(): Promise<WishlistResponse> {
+  const raw = await apiFetch<RawWishlistResponse>('/wishlist-subscriptions');
+  return mapWishlistResponse(raw);
+}
+
+export async function subscribeToProduct(productId: string): Promise<void> {
+  await apiFetch('/wishlist-subscriptions', {
+    method: 'POST',
+    body: JSON.stringify({ productId }),
+  });
+}
+
+export async function unsubscribeFromProduct(productId: string): Promise<void> {
+  await apiFetch(`/wishlist-subscriptions/${productId}`, {
+    method: 'DELETE',
+  });
+}
+
+export async function checkWishlistStatus(productId: string): Promise<boolean> {
+  const { productIds } = await getWishlist();
+  return productIds.includes(productId);
 }
