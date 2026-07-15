@@ -91,10 +91,6 @@ export default function TabsLayout() {
         options={{ href: null, headerShown: false }}
       />
       <Tabs.Screen
-        name="order/confirm/[id]"
-        options={{ href: null, headerShown: false }}
-      />
-      <Tabs.Screen
         name="wishlist"
         options={{ href: null, headerShown: false }}
       />
