@@ -41,7 +41,7 @@ export default function CheckoutScreen() {
       const res = await createOrder(user.name, user.phone, notes || undefined, storeName);
       queryClient.invalidateQueries({ queryKey: ['cart'] });
       showToast('Pesanan berhasil dibuat!');
-      router.replace(`/order/confirm/${res.order.id}`);
+      router.replace(`/order/${res.order.id}?just-checked=true`);
     } catch (e: any) {
       alert(e.message || 'Gagal membuat pesanan. Silakan coba lagi.');
     } finally {
