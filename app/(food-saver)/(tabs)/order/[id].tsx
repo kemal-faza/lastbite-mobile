@@ -1,9 +1,9 @@
-import { useState, useCallback } from 'react';
+import { useState, useCallback, useEffect } from 'react';
 import { View, Text, ScrollView, TouchableOpacity, ActivityIndicator } from 'react-native';
 import { useLocalSearchParams, router } from 'expo-router';
 import LottieView from 'lottie-react-native';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
-import { useOrder, useConfirmPickup } from '@/hooks/useOrders';
+import { useOrder, useConfirmPickup, useCancelExpired } from '@/hooks/useOrders';
 import { useBackHandler } from '@/hooks/useBackHandler';
 import { CountdownTimer } from '@/components/CountdownTimer';
 import { ConfirmDialog } from '@/components/ConfirmDialog';
@@ -16,6 +16,7 @@ export default function OrderDetailScreen() {
   const { id, justChecked } = useLocalSearchParams<{ id: string; justChecked?: string }>();
   const { data: orderData, isLoading, isError } = useOrder(id);
   const { mutate: doConfirmPickup, isPending } = useConfirmPickup();
+  const { mutate: doCancelExpired } = useCancelExpired();
   const { showToast } = useToast();
   const [showConfirm, setShowConfirm] = useState(false);
   const [showSuccessAfterCheckout, setShowSuccessAfterCheckout] = useState(
@@ -30,6 +31,31 @@ export default function OrderDetailScreen() {
   }, []);
   useBackHandler(handleBack);
 
+  // Derive values at top level so all hooks are before early returns
+  const order = orderData?.order;
+  const isPickedUp = order?.status === 'PICKED_UP';
+  const isCancelled = order?.status === 'CANCELLED';
+  const isFinal = isPickedUp || isCancelled;
+  const pickupExpiresAt = order?.pickupExpiresAt || new Date(Date.now() + 30 * 60 * 1000).toISOString();
+  const isExpired = !isFinal && new Date() > new Date(pickupExpiresAt);
+
+  // Auto-cancel expired order when order detail screen loads
+  useEffect(() => {
+    if (isExpired && order) {
+      doCancelExpired(order.id, {
+        onSuccess: () => showToast('Pesanan dibatalkan karena kode kedaluwarsa'),
+        onError: (err: any) => {
+          // Silent for race conditions (mitra already cancelled/picked-up)
+          if (err?.code !== 'INVALID_STATUS' && err?.code !== 'ORDER_NOT_FOUND') {
+            console.warn('Auto-cancel expired order failed:', err);
+          }
+        },
+      });
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isExpired, order?.id]);
+
+  // --- EARLY EXIT: loading state ---
   if (isLoading) {
     return (
       <View className="flex-1 bg-background items-center justify-center">
@@ -39,6 +65,7 @@ export default function OrderDetailScreen() {
     );
   }
 
+  // --- EARLY EXIT: not found ---
   if (isError || !orderData?.order) {
     return (
       <View className="flex-1 bg-background items-center justify-center p-4">
@@ -47,10 +74,6 @@ export default function OrderDetailScreen() {
       </View>
     );
   }
-
-  const order = orderData.order;
-  const isPickedUp = order.status === 'PICKED_UP';
-  const pickupExpiresAt = order.pickupExpiresAt || new Date(Date.now() + 30 * 60 * 1000).toISOString();
 
   const formatDate = (dateStr?: string) => {
     if (!dateStr) return '-';
@@ -169,8 +192,8 @@ export default function OrderDetailScreen() {
   return (
     <View className="flex-1 bg-background">
       <ScrollView className="flex-1">
-        {/* Hero section (only for non-picked-up, non-success state) */}
-        {!isPickedUp && (
+        {/* Hero section (only for active non-expired orders) */}
+        {!isFinal && !isExpired && (
           <View className="bg-primary p-6 items-center">
             <MaterialCommunityIcons name="check-circle" size={64} color="white" />
             <Text className="text-white text-lg font-bold mt-2">Pesanan Berhasil!</Text>
@@ -179,7 +202,7 @@ export default function OrderDetailScreen() {
         )}
 
         {/* Pickup code card */}
-        <View className={`bg-white mx-4 rounded-xl p-6 items-center border border-gray-100 shadow-md ${isPickedUp ? 'mt-4' : '-mt-4'}`}>
+        <View className={`bg-white mx-4 rounded-xl p-6 items-center border border-gray-100 shadow-md ${isFinal ? 'mt-4' : '-mt-4'}`}>
           <Text className="text-sm text-gray-500 mb-1">Kode Pickup</Text>
           <Text className="text-2xl font-bold tracking-widest text-primary">
             {order.pickupCode || 'LAST-XXXX'}
@@ -190,18 +213,26 @@ export default function OrderDetailScreen() {
           </Text>
         </View>
 
-        {/* Status badge for PICKED_UP orders */}
-        {isPickedUp && (
+        {/* Status badge for finalised orders */}
+        {isFinal && (
           <View className="mx-4 mt-4 flex-row items-center">
             <OrderStatusBadge status={order.status} size="md" />
           </View>
         )}
 
-        {/* Countdown timer (only for non-picked-up) */}
-        {!isPickedUp && (
-          <View className="mx-4 mt-4 bg-destructive/5 rounded-xl p-4 items-center">
-            <Text className="text-sm text-destructive mb-2">Waktu Tersisa</Text>
-            <CountdownTimer expiresAt={pickupExpiresAt} />
+        {/* Countdown timer or expired message */}
+        {!isFinal && (
+          <View className={`mx-4 mt-4 rounded-xl p-4 items-center ${isExpired ? 'bg-red-50' : 'bg-destructive/5'}`}>
+            {isExpired ? (
+              <Text className="text-sm text-red-700 text-center">
+                Pesanan sudah melewati waktu pengambilan, silakan buat pesanan baru
+              </Text>
+            ) : (
+              <>
+                <Text className="text-sm text-destructive mb-2">Waktu Tersisa</Text>
+                <CountdownTimer expiresAt={pickupExpiresAt} />
+              </>
+            )}
           </View>
         )}
 
@@ -230,8 +261,8 @@ export default function OrderDetailScreen() {
           </View>
         </View>
 
-        {/* Pickup button (non-picked-up only) */}
-        {!isPickedUp && (
+        {/* Pickup button (only for active non-expired orders) */}
+        {!isFinal && !isExpired && (
           <View className="px-4 mt-6 mb-8">
             <TouchableOpacity
               onPress={handlePickup}

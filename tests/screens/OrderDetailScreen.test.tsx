@@ -17,7 +17,10 @@ jest.mock('expo-image', () => ({ Image: 'Image' }));
 jest.mock('@/hooks/useOrders', () => ({
   useOrder: jest.fn(),
   useConfirmPickup: jest.fn(),
+  useCancelExpired: jest.fn(),
 }));
+
+const mockCancelExpiredMutate = jest.fn();
 
 jest.mock('@/components/ReviewModal', () => ({
   ReviewModal: () => {
@@ -57,7 +60,7 @@ jest.mock('@/hooks/useBackHandler', () => ({
   useBackHandler: jest.fn(),
 }));
 
-import { useOrder, useConfirmPickup } from '@/hooks/useOrders';
+import { useOrder, useConfirmPickup, useCancelExpired } from '@/hooks/useOrders';
 import OrderDetailScreen from '../../app/(food-saver)/(tabs)/order/[id]';
 
 const baseOrder = {
@@ -92,6 +95,9 @@ describe('OrderDetailScreen', () => {
     (useConfirmPickup as jest.Mock).mockReturnValue({
       mutate: jest.fn(),
       isPending: false,
+    });
+    (useCancelExpired as jest.Mock).mockReturnValue({
+      mutate: mockCancelExpiredMutate,
     });
   });
 
@@ -184,5 +190,43 @@ describe('OrderDetailScreen', () => {
     });
     const { getByText } = await render(<OrderDetailScreen />);
     expect(getByText('Pesanan tidak ditemukan')).toBeTruthy();
+  });
+
+  it('hides pickup button and shows expired message for expired READY order', async () => {
+    // Past pickupExpiresAt + status READY but not yet final state
+    const pastExpiry = new Date(Date.now() - 3600000).toISOString();
+    (useOrder as jest.Mock).mockReturnValue({
+      data: { order: { ...baseOrder, status: 'READY', pickupExpiresAt: pastExpiry } },
+      isLoading: false,
+      isError: false,
+    });
+    const { queryByText, getByText } = await render(<OrderDetailScreen />);
+    expect(queryByText('Saya Sudah Mengambil Pesanan')).toBeNull();
+    expect(getByText(/Pesanan sudah melewati waktu pengambilan/)).toBeTruthy();
+  });
+
+  it('triggers auto-cancel mutation for expired order', async () => {
+    const pastExpiry = new Date(Date.now() - 3600000).toISOString();
+    (useOrder as jest.Mock).mockReturnValue({
+      data: { order: { ...baseOrder, status: 'READY', pickupExpiresAt: pastExpiry } },
+      isLoading: false,
+      isError: false,
+    });
+    await render(<OrderDetailScreen />);
+    expect(mockCancelExpiredMutate).toHaveBeenCalledWith('order-1', expect.any(Object));
+  });
+
+  it('shows CANCELLED badge for cancelled orders', async () => {
+    (useOrder as jest.Mock).mockReturnValue({
+      data: { order: { ...baseOrder, status: 'CANCELLED' } },
+      isLoading: false,
+      isError: false,
+    });
+    const { getByText, queryByText } = await render(<OrderDetailScreen />);
+    expect(getByText('Dibatalkan')).toBeTruthy();
+    // No pickup button for cancelled orders
+    expect(queryByText('Saya Sudah Mengambil Pesanan')).toBeNull();
+    // No countdown for cancelled orders
+    expect(queryByText('Waktu Tersisa')).toBeNull();
   });
 });
