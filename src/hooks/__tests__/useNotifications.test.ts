@@ -1,15 +1,15 @@
 import { renderHook, act, waitFor } from '@testing-library/react-native';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { useNotifications } from '../useNotifications';
-import { fetchNotifications, markNotificationRead } from '@/lib/api/notifications';
+import { getNotifications, markNotificationRead } from '@/lib/api/notifications';
 import React from 'react';
 
 jest.mock('@/lib/api/notifications', () => ({
-  fetchNotifications: jest.fn(),
+  getNotifications: jest.fn(),
   markNotificationRead: jest.fn(),
 }));
 
-const mockFetch = fetchNotifications as jest.MockedFunction<typeof fetchNotifications>;
+const mockFetch = getNotifications as jest.MockedFunction<typeof getNotifications>;
 const mockMark = markNotificationRead as jest.MockedFunction<typeof markNotificationRead>;
 
 function createWrapper() {
@@ -43,7 +43,7 @@ describe('useNotifications', () => {
   it('returns notifications when API returns data', async () => {
     mockFetch.mockResolvedValue({
       notifications: [
-        { id: 'n1', type: 'order_status', title: 'Test', body: 'Body', isRead: false, createdAt: '2026-07-10T12:00:00Z' },
+        { id: 'n1', type: 'order_status', title: 'Test', body: 'Body', isRead: false, createdAt: '2026-07-10T12:00:00Z', relativeTime: 'Baru saja' },
       ],
       unreadCount: 1,
     });
@@ -60,7 +60,7 @@ describe('useNotifications', () => {
 
   it('markAsRead calls API and invalidates query', async () => {
     mockFetch.mockResolvedValue({ notifications: [], unreadCount: 1 });
-    mockMark.mockResolvedValue({ success: true });
+    mockMark.mockResolvedValue(undefined);
 
     const { result } = await renderHook(() => useNotifications(), {
       wrapper: createWrapper(),
@@ -71,7 +71,7 @@ describe('useNotifications', () => {
       await result.current.markAsRead('n1');
     });
 
-    expect(mockMark).toHaveBeenCalledWith('n1', expect.anything());
+    expect(mockMark).toHaveBeenCalledWith('n1');
   });
 
   it('handles fetch error silently (no throw)', async () => {
