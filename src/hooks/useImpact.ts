@@ -23,11 +23,8 @@ export function calculateImpact(orders: Order[]): Impact {
 }
 
 export function useImpact(): Impact & { isLoading: boolean } {
-  const { data: orders, isLoading } = useOrders();
-
-  if (!orders) {
-    return { moneySaved: 0, foodSaved: 0, isLoading };
-  }
+  const { data, isLoading } = useOrders();
+  const orders = data?.orders ?? [];
 
   return { ...calculateImpact(orders), isLoading };
 }

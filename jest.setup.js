@@ -93,6 +93,7 @@ jest.mock('@react-native-async-storage/async-storage', () => ({
   setItem: jest.fn(() => Promise.resolve()),
   removeItem: jest.fn(() => Promise.resolve()),
   clear: jest.fn(() => Promise.resolve()),
+  multiRemove: jest.fn(() => Promise.resolve()),
 }));
 
 // Mock expo-location
@@ -136,3 +137,19 @@ jest.mock('expo-router', () => ({
   Redirect: () => null,
   Link: () => null,
 }));
+
+// Mock react-native-gesture-handler for testing components using Swipeable
+jest.mock('react-native-gesture-handler', () => {
+  const React = require('react');
+  const { View } = require('react-native');
+  return {
+    Swipeable: ({ children, renderRightActions }) => {
+      return React.createElement(View, null,
+        renderRightActions ? renderRightActions() : null,
+        children
+      );
+    },
+    GestureHandlerRootView: ({ children }) => children,
+  };
+});
+
