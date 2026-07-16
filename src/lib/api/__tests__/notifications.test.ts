@@ -9,21 +9,23 @@ describe('notifications API stub', () => {
     jest.clearAllMocks();
   });
 
-  it('getNotifications returns empty array (no throw)', async () => {
+  it('getNotifications calls apiFetch with auth: true', async () => {
     const { apiFetch } = require('../client') as { apiFetch: jest.Mock };
     apiFetch.mockResolvedValueOnce({ notifications: [], unreadCount: 0 });
 
-    const res = await getNotifications();
-    expect(res.notifications).toEqual([]);
-    expect(res.unreadCount).toBe(0);
+    await getNotifications();
+    expect(apiFetch).toHaveBeenCalledWith('/notifications', { auth: true });
   });
 
-  it('markNotificationRead returns success (no throw)', async () => {
+  it('markNotificationRead calls apiFetch with auth: true', async () => {
     const { apiFetch } = require('../client') as { apiFetch: jest.Mock };
     apiFetch.mockResolvedValueOnce({});
 
     await markNotificationRead('n1');
-    expect(apiFetch).toHaveBeenCalledWith('/notifications/n1/read', { method: 'PATCH' });
+    expect(apiFetch).toHaveBeenCalledWith('/notifications/n1/read', {
+      method: 'PATCH',
+      auth: true,
+    });
   });
 
   it('Notification type accepts valid shape', () => {
