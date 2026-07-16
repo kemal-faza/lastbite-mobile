@@ -1,32 +1,24 @@
 import { useCallback } from 'react';
-import { useRouter } from 'expo-router';
+import { useQueryClient } from '@tanstack/react-query';
+import { useAuthStore } from '@/stores/authStore';
 import { useNotifications } from './useNotifications';
+import { NotificationRouter } from '@/lib/notifications/NotificationRouter';
 import type { Notification } from '@/lib/api/notifications';
 
 export function useNotificationTap() {
-  const router = useRouter();
+  const queryClient = useQueryClient();
+  const { user } = useAuthStore();
   const { markAsRead } = useNotifications();
 
   const handleTap = useCallback(
     (notification: Notification) => {
-      markAsRead(notification.id);
-
-      switch (notification.type) {
-        case 'stock_alert':
-          if (notification.productId) {
-            router.push(`/(food-saver)/product/${notification.productId}`);
-          }
-          break;
-        case 'order_status':
-          if (notification.orderId) {
-            router.push(`/(food-saver)/order/${notification.orderId}`);
-          }
-          break;
-        default:
-          router.push('/(food-saver)');
-      }
+      NotificationRouter.handleTap(notification, {
+        queryClient,
+        userRole: user?.role,
+        markAsReadFn: async (id) => markAsRead(id),
+      });
     },
-    [markAsRead, router]
+    [markAsRead, queryClient, user?.role]
   );
 
   return handleTap;
