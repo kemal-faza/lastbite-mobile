@@ -1,30 +1,31 @@
-import { useState, useCallback, useEffect, useMemo } from 'react';
+import { useState, useCallback, useEffect } from 'react';
 import { View, Text, FlatList, TouchableOpacity, ScrollView, ActivityIndicator } from 'react-native';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
-import { useProducts } from '@/hooks/useProducts';
+import { useProductFilter } from '@/hooks/useProductFilter';
 import { getTrendingSearches } from '@/lib/api/search';
 import { useSearchHistory } from '@/hooks/useSearchHistory';
 import { SearchBar } from '@/components/SearchBar';
 import { ProductCard } from '@/components/ProductCard';
 import { EmptyState } from '@/components/EmptyState';
-import { useDebounce } from '@/hooks/useDebounce';
 import { useWishlist } from '@/hooks/useWishlist';
 import { useAuthStore } from '@/stores/authStore';
 import { useToast } from '@/contexts/ToastContext';
 
 export default function SearchScreen() {
-  const [query, setQuery] = useState('');
   const [trending, setTrending] = useState<Array<{ query: string; count: number }>>([]);
   const { history: recent, addQuery, clearAll } = useSearchHistory();
-  const debouncedQuery = useDebounce(query, 300);
 
   const { isAuthenticated } = useAuthStore();
   const { showToast } = useToast();
   const { isWishlisted, toggle } = useWishlist();
 
-  const { data, isLoading, isError, refetch } = useProducts(
-    debouncedQuery.length >= 2 ? { search: debouncedQuery } : undefined
-  );
+  const {
+    query,
+    setQuery,
+    productsQuery,
+  } = useProductFilter();
+
+  const { data, isLoading, isError } = productsQuery;
   const products = data?.products ?? [];
 
   // Load trending on mount
@@ -146,7 +147,7 @@ export default function SearchScreen() {
           {isError && (
             <View className="flex-1 justify-center items-center">
               <Text className="text-gray-500 mb-2">Gagal memuat hasil</Text>
-              <TouchableOpacity onPress={() => refetch()}>
+              <TouchableOpacity onPress={() => productsQuery.refetch()}>
                 <Text className="text-primary font-semibold">Coba lagi</Text>
               </TouchableOpacity>
             </View>
@@ -155,13 +156,13 @@ export default function SearchScreen() {
             <EmptyState
               icon="magnify-close"
               title="Tidak ditemukan"
-              description={`Tidak ada hasil untuk "${debouncedQuery}"`}
+              description={`Tidak ada hasil untuk "${query}"`}
             />
           )}
           {!isLoading && !isError && products.length > 0 && (
             <>
               <Text className="text-xs text-gray-500 mb-2">
-                {products.length} hasil untuk "{debouncedQuery}"
+                {products.length} hasil untuk "{query}"
               </Text>
               <FlatList
                 data={products}

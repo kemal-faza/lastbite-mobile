@@ -1,5 +1,6 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { createMitraProduct, updateMitraProduct, deleteMitraProduct, getMitraStats, type MitraStats, type MitraOrder } from '../mitra';
+import { createMitraProduct, updateMitraProduct, deleteMitraProduct, getMitraStats, type MitraOrder } from '../mitra';
+import type { MitraStats } from '@/types/domain';
 
 jest.mock('@react-native-async-storage/async-storage', () => ({
   getItem: jest.fn(() => Promise.resolve('mock-token')),

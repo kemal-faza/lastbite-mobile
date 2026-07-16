@@ -13,6 +13,7 @@ import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { colors } from '@/theme';
 import { useToast } from '@/contexts/ToastContext';
 import type { CartItem } from '@/lib/api/cart';
+import { filterForCheckout } from '@/lib/cart';
 
 const NOTES_MAX = 500;
 
@@ -31,7 +32,7 @@ export default function CheckoutScreen() {
 
   const allItems: CartItem[] = cart.data?.cart.items || [];
   const items = storeName
-    ? allItems.filter((item) => item.storeName === storeName)
+    ? filterForCheckout(allItems, storeName)
     : allItems;
 
   const handleCheckout = async () => {

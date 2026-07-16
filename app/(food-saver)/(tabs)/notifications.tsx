@@ -1,7 +1,6 @@
 import { View, FlatList, Text, ActivityIndicator } from 'react-native';
-import { useNotifications } from '@/hooks/useNotifications';
+import { useNotifications, useNotificationTap } from '@/hooks/useNotifications';
 import { NotificationCard } from '@/components/NotificationCard';
-import { useNotificationTap } from '@/hooks/useNotificationTap';
 import { useRequireAuth } from '@/hooks/useRequireAuth';
 import { EmptyState } from '@/components/EmptyState';
 

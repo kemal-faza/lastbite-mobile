@@ -1,10 +1,7 @@
-import { useState, useMemo, useCallback } from 'react';
+import { useCallback } from 'react';
 import { View, Text, ScrollView, ActivityIndicator, TouchableOpacity } from 'react-native';
 
-import { useProducts } from '@/hooks/useProducts';
-import { useGeolocation } from '@/hooks/useGeolocation';
-import { haversineDistance } from '@/lib/utils/haversine';
-import { filterByDistance } from '@/lib/utils/filterByDistance';
+import { useProductFilter } from '@/hooks/useProductFilter';
 import type { Product } from '@/lib/api/products';
 import { ProductCard } from '@/components/ProductCard';
 import { CategoryFilter } from '@/components/CategoryFilter';
@@ -19,53 +16,24 @@ import { useToast } from '@/contexts/ToastContext';
 
 
 export default function HomeScreen() {
-  const [category, setCategory] = useState('');
-  const [sort, setSort] = useState<SortOption>('default');
-  const [showFilter, setShowFilter] = useState(false);
-  const [filters, setFilters] = useState<FilterState>({
-    maxDistance: 0,
-    maxPrice: 0,
-    expiry: 'Hari Ini',
-  });
   const { isAuthenticated } = useAuthStore();
   const { showToast } = useToast();
   const { isWishlisted, toggle } = useWishlist();
-  const { lat, lng } = useGeolocation();
 
-  // Map frontend sort to backend sort param (mirrors Next.js pattern)
-  const sortParam: 'price_asc' | 'distance_asc' | 'stock_asc' | undefined =
-    sort === 'price-asc' ? 'price_asc' :
-    sort === 'distance-asc' ? 'distance_asc' :
-    sort === 'remaining-asc' ? 'stock_asc' :
-    undefined;
+  const {
+    category,
+    setCategory,
+    sort,
+    setSort,
+    showFilter,
+    setShowFilter,
+    filters,
+    setFilters,
+    productsQuery,
+  } = useProductFilter();
 
-  const { data, isLoading, isError, error, refetch, isRefetching, isPlaceholderData, isFetching } = useProducts({
-    category: category || undefined,
-    sort: sortParam,
-    maxPrice: filters.maxPrice > 0 ? filters.maxPrice : undefined,
-    expiry: filters.expiry !== 'Hari Ini' ? filters.expiry : undefined,
-  });
-
-  // Normalize distance client-side using haversine with user's current GPS
-  // This ensures distanceKm is consistent regardless of backend sort mode
-  const productsWithDistance = useMemo(() => {
-    if (!data?.products) return data?.products ?? [];
-    if (lat == null || lng == null) return data.products;
-    return data.products.map((p) => ({
-      ...p,
-      distanceKm:
-        p.storeLat != null && p.storeLng != null
-          ? haversineDistance(lat, lng, p.storeLat, p.storeLng)
-          : p.distanceKm,
-    }));
-  }, [data?.products, lat, lng]);
-
-  // Client-side distance filter (applied after server fetch + haversine computation)
-  // Uses pre-computed distanceKm (from backend or haversine), no GPS dependency needed
-  const filteredProducts = useMemo(
-    () => filterByDistance(productsWithDistance, filters.maxDistance),
-    [productsWithDistance, filters.maxDistance],
-  );
+  const { data, isLoading, isError, error, refetch, isRefetching, isPlaceholderData, isFetching } = productsQuery;
+  const filteredProducts = data?.products ?? [];
 
   const handleToggle = useCallback(
     (productId: string) => {

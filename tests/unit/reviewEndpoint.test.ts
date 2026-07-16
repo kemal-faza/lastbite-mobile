@@ -41,9 +41,11 @@ describe('createReview', () => {
 
   it('returns the created review', async () => {
     const mockResponse = {
-      review: { id: 'r3', rating: 3, comment: 'Biasa', createdAt: '2024-01-01' },
+      review: { id: 'r3', rating: 3, comment: 'Biasa', createdAt: '2024-01-01', productId: '', userId: '', userName: '' },
     };
-    (apiFetch as jest.Mock).mockResolvedValue(mockResponse);
+    (apiFetch as jest.Mock).mockResolvedValue({
+      review: { id: 'r3', rating: 3, comment: 'Biasa', createdAt: '2024-01-01' },
+    });
 
     const result = await createReview('order-789', { rating: 3, comment: 'Biasa' });
 
