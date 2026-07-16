@@ -13,7 +13,7 @@ interface RawUserResponse {
 }
 
 export async function getProfile(): Promise<User> {
-  const raw = await apiFetch<RawUserResponse>('/users/me');
+  const raw = await apiFetch<RawUserResponse>('/users/me', { auth: true });
   return {
     id: raw.user.id,
     email: raw.user.email,
@@ -31,6 +31,7 @@ export async function updateProfile(data: {
   const raw = await apiFetch<RawUserResponse>('/users/me', {
     method: 'PATCH',
     body: JSON.stringify(data),
+    auth: true,
   });
   return {
     id: raw.user.id,

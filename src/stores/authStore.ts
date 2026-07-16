@@ -1,4 +1,5 @@
 import { create } from 'zustand';
+import { clearTokens } from '@/lib/api/tokenStorage';
 
 export interface User {
   id: string;
@@ -13,7 +14,7 @@ interface AuthState {
   user: User | null;
   isAuthenticated: boolean;
   setUser: (user: User) => void;
-  logout: () => void;
+  logout: () => Promise<void>;
   updateUser: (partial: Partial<User>) => void;
 }
 
@@ -21,7 +22,14 @@ export const useAuthStore = create<AuthState>((set, get) => ({
   user: null,
   isAuthenticated: false,
   setUser: (user) => set({ user, isAuthenticated: true }),
-  logout: () => set({ user: null, isAuthenticated: false }),
+  logout: async () => {
+    try {
+      await clearTokens();
+    } catch (e) {
+      console.error('[authStore] Failed to clear tokens on logout:', e);
+    }
+    set({ user: null, isAuthenticated: false });
+  },
   updateUser: (partial) => {
     const current = get().user;
     if (!current) return;

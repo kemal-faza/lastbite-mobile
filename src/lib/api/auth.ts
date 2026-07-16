@@ -1,4 +1,4 @@
-import { apiFetch, setTokens } from './client';
+import { apiFetch, setSession } from './client';
 import type { User } from '@/stores/authStore';
 
 export interface RegisterData {
@@ -31,6 +31,6 @@ export async function login(email: string, password: string) {
     method: 'POST',
     body: JSON.stringify({ email, password }),
   });
-  await setTokens(res.tokens.accessToken, res.tokens.refreshToken);
+  await setSession(res.tokens.accessToken, res.tokens.refreshToken, res.user);
   return res;
 }

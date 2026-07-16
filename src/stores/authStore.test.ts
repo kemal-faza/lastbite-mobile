@@ -20,7 +20,7 @@ describe('authStore', () => {
     expect(useAuthStore.getState().user?.name).toBe('Test');
   });
 
-  it('clears user on logout', () => {
+  it('clears user on logout', async () => {
     useAuthStore
       .getState()
       .setUser({
@@ -31,7 +31,7 @@ describe('authStore', () => {
         phone: null,
         isVerified: false,
       });
-    useAuthStore.getState().logout();
+    await useAuthStore.getState().logout();
     expect(useAuthStore.getState().isAuthenticated).toBe(false);
     expect(useAuthStore.getState().user).toBeNull();
   });

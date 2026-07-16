@@ -36,8 +36,7 @@ export async function apiFetch<T>(
   if (!res.ok) {
     // Auto-logout on expired/invalid token
     if (res.status === 401 && (body.code === 'TOKEN_EXPIRED' || body.code === 'UNAUTHORIZED')) {
-      await clearTokens();
-      useAuthStore.getState().logout();
+      await useAuthStore.getState().logout();
     }
     throw new ApiError(
       res.status,
@@ -48,11 +47,5 @@ export async function apiFetch<T>(
   return body as T;
 }
 
-export async function setTokens(accessToken: string, refreshToken: string) {
-  await AsyncStorage.setItem('accessToken', accessToken);
-  await AsyncStorage.setItem('refreshToken', refreshToken);
-}
+export { setSession, clearTokens } from './tokenStorage';
 
-export async function clearTokens() {
-  await AsyncStorage.multiRemove(['accessToken', 'refreshToken', 'user']);
-}
