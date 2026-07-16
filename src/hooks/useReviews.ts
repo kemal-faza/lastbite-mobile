@@ -6,6 +6,7 @@ export function useProductReviews(productId: string) {
     queryKey: ['product-reviews', productId],
     queryFn: () => getProductReviews(productId),
     enabled: !!productId,
+    staleTime: 30_000,
   });
 }
 

@@ -4,7 +4,7 @@ import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { View, ActivityIndicator } from 'react-native';
 import { PortalHost } from '@rn-primitives/portal';
-import { useNotificationManager } from '@/hooks/useNotificationManager';
+import { useNotificationManager } from '@/hooks/useNotifications';
 import { useAuthBootstrap } from '@/hooks/useAuthBootstrap';
 import { ToastProvider } from '@/contexts/ToastContext';
 import '../global.css';

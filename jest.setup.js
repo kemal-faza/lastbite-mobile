@@ -153,3 +153,16 @@ jest.mock('react-native-gesture-handler', () => {
   };
 });
 
+// Mock expo-notifications and expo-device globally for Node test environment
+jest.mock('expo-notifications', () => ({
+  addNotificationReceivedListener: jest.fn(() => ({ remove: jest.fn() })),
+  addNotificationResponseReceivedListener: jest.fn(() => ({ remove: jest.fn() })),
+  requestPermissionsAsync: jest.fn(() => Promise.resolve({ status: 'granted' })),
+  getExpoPushTokenAsync: jest.fn(() => Promise.resolve({ data: 'mock-expo-push-token' })),
+}));
+
+jest.mock('expo-device', () => ({
+  isDevice: true,
+}));
+
+

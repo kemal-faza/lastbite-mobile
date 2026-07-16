@@ -18,7 +18,7 @@ export function useMitraStats() {
   return useQuery({
     queryKey: ['mitra-stats'],
     queryFn: getMitraStats,
-    staleTime: 10000,
+    staleTime: 30_000,
   });
 }
 

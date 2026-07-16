@@ -1,4 +1,5 @@
-import { mapNotification, formatRelativeTime } from '../../src/lib/api/notifications';
+import { mapNotification } from '../../src/lib/api/notifications';
+import { formatRelativeTime } from '../../src/lib/utils/formatRelativeTime';
 import type { RawNotification, Notification } from '../../src/lib/api/notifications';
 
 jest.mock('../../src/lib/api/client', () => ({

@@ -1,24 +1,21 @@
 import { useState } from 'react';
 import { View, Text, Pressable } from 'react-native';
 import { router } from 'expo-router';
-import { login } from '@/lib/api/auth';
-import { useAuthStore } from '@/stores/authStore';
 import { AuthScreenLayout } from '@/components/AuthScreenLayout';
 import { TextField } from '@/components/TextField';
 import { PrimaryButton } from '@/components/PrimaryButton';
 import { colors } from '@/theme';
+import { authService } from '@/lib/auth';
 
 export default function LoginScreen() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
-  const { setUser } = useAuthStore();
 
   const handleLogin = async () => {
     setLoading(true);
     try {
-      const res = await login(email, password);
-      setUser(res.user);
+      const res = await authService.login(email, password);
       router.replace(res.user.role === 'MITRA' ? '/(mitra)' : '/(food-saver)');
     } catch (e: any) {
       alert(e.message);
@@ -74,8 +71,7 @@ export default function LoginScreen() {
             onPress={async () => {
               setLoading(true);
               try {
-                const res = await login('foodsaver@lastbite.id', 'foodsaver123');
-                setUser(res.user);
+                await authService.login('foodsaver@lastbite.id', 'foodsaver123');
                 router.replace('/(food-saver)');
               } catch (e: any) {
                 alert(e.message);
@@ -92,8 +88,7 @@ export default function LoginScreen() {
             onPress={async () => {
               setLoading(true);
               try {
-                const res = await login('dapurbuani@lastbite.id', 'password123');
-                setUser(res.user);
+                await authService.login('dapurbuani@lastbite.id', 'password123');
                 router.replace('/(mitra)');
               } catch (e: any) {
                 alert(e.message);

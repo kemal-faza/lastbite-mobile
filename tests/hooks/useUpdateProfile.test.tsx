@@ -1,6 +1,7 @@
 import { renderHook, waitFor } from '@testing-library/react-native';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
-import { useUpdateProfile } from '@/hooks/useUpdateProfile';
+import { useMutation } from '@tanstack/react-query';
+import { updateProfile } from '@/lib/api/profile';
 
 jest.mock('@/lib/api/client', () => ({
   apiFetch: jest.fn(),
@@ -17,13 +18,18 @@ const wrapper = ({ children }: { children: React.ReactNode }) => {
   return <QueryClientProvider client={queryClient}>{children}</QueryClientProvider>;
 };
 
-describe('useUpdateProfile', () => {
-  it('calls apiFetch with PATCH', async () => {
+describe('useUpdateProfile (inlined mutation)', () => {
+  it('calls apiFetch with PATCH via updateProfile', async () => {
     const { apiFetch } = require('@/lib/api/client');
     apiFetch.mockResolvedValue({ user: { id: '1', email: 'test@test.com', name: 'Budi', phone: '08123456789', role: 'FOOD_SAVER', isVerified: true } });
 
-    const { result } = await renderHook(() => useUpdateProfile(), { wrapper });
-    result.current.mutate({ name: 'Budi' });
+    const rendered = await renderHook(
+      () => useMutation({
+        mutationFn: (data: { name?: string; phone?: string }) => updateProfile(data),
+      }),
+      { wrapper }
+    );
+    rendered.result.current.mutate({ name: 'Budi' });
 
     await waitFor(() => {
       expect(apiFetch).toHaveBeenCalledWith('/users/me', {

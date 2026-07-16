@@ -9,8 +9,9 @@ import { colors } from '@/theme';
 import { ImpactStats } from '@/components/ImpactStats';
 import { ProfileMenuItem } from '@/components/ProfileMenuItem';
 import { useImpact } from '@/hooks/useImpact';
-import { useUpdateProfile } from '@/hooks/useUpdateProfile';
 import { useToast } from '@/contexts/ToastContext';
+import { useMutation } from '@tanstack/react-query';
+import { updateProfile as updateProfileApi } from '@/lib/api/profile';
 
 export default function ProfileScreen() {
   const { user, isAuthenticated, logout } = useAuthStore();
@@ -18,7 +19,13 @@ export default function ProfileScreen() {
   const [editValue, setEditValue] = useState('');
   const { showToast } = useToast();
   const { moneySaved, foodSaved, isLoading: impactLoading } = useImpact();
-  const updateProfile = useUpdateProfile();
+  const updateUser = useAuthStore(s => s.updateUser);
+  const updateProfile = useMutation({
+    mutationFn: (data: { name?: string; phone?: string }) => updateProfileApi(data),
+    onSuccess: (user) => {
+      updateUser(user);
+    },
+  });
 
   const startEdit = (field: 'name' | 'phone', currentValue: string) => {
     setEditingField(field);

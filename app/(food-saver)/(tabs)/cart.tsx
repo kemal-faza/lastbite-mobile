@@ -11,6 +11,7 @@ import { useAuthStore } from '@/stores/authStore';
 import type { CartItem } from '@/lib/api/cart';
 import { EmptyState } from '@/components/EmptyState';
 import { getImageVariants } from '@/lib/api/products';
+import { groupByStore, calculateCartTotal } from '@/lib/cart';
 // --- Cart item row with swipe-to-delete ---
 function CartItemRow({
   item,
@@ -132,12 +133,7 @@ export default function CartScreen() {
   }
 
   // Group items by store
-  const storeGroups = items.reduce((groups, item) => {
-    const store = item.storeName;
-    if (!groups[store]) groups[store] = [];
-    groups[store].push(item);
-    return groups;
-  }, {} as Record<string, CartItem[]>);
+  const storeGroups = groupByStore(items);
 
   const storeNames = Object.keys(storeGroups);
 
@@ -148,7 +144,7 @@ export default function CartScreen() {
 
         {storeNames.map((storeName) => {
           const storeItems = storeGroups[storeName];
-          const storeTotal = storeItems.reduce((sum, i) => sum + i.price * i.quantity, 0);
+          const storeTotal = calculateCartTotal(storeItems);
 
           return (
             <View key={storeName} className="mb-6">
