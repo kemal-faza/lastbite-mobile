@@ -1,28 +1,54 @@
-import {
-  fetchWishlistProducts,
-  subscribeToStockAlert,
-  unsubscribeFromStockAlert,
-  getStockAlertSubscriptions,
-} from '../wishlist';
+import { getWishlist, subscribeToProduct, unsubscribeFromProduct } from '../wishlist';
 
-describe('wishlist API stub', () => {
-  it('fetchWishlistProducts returns empty array (no throw)', async () => {
-    const res = await fetchWishlistProducts(['p1', 'p2']);
-    expect(res).toEqual([]);
+jest.mock('../client', () => ({
+  apiFetch: jest.fn(),
+}));
+
+describe('wishlist API', () => {
+  beforeEach(() => {
+    jest.clearAllMocks();
   });
 
-  it('subscribeToStockAlert returns subscribed: true (no-op)', async () => {
-    const res = await subscribeToStockAlert('p1');
-    expect(res.subscribed).toBe(true);
+  describe('getWishlist', () => {
+    it('calls apiFetch with auth:true and returns mapped productIds', async () => {
+      const { apiFetch } = jest.requireMock('../client') as { apiFetch: jest.Mock };
+      apiFetch.mockResolvedValueOnce({
+        subscriptions: [{ productId: 'uuid-1' }, { productId: 'uuid-2' }],
+      });
+
+      const result = await getWishlist();
+
+      expect(apiFetch).toHaveBeenCalledWith('/wishlist-subscriptions', { auth: true });
+      expect(result).toEqual({ productIds: ['uuid-1', 'uuid-2'] });
+    });
   });
 
-  it('unsubscribeFromStockAlert returns subscribed: false (no-op)', async () => {
-    const res = await unsubscribeFromStockAlert('p1');
-    expect(res.subscribed).toBe(false);
+  describe('subscribeToProduct', () => {
+    it('calls apiFetch POST with auth:true and productId in body', async () => {
+      const { apiFetch } = jest.requireMock('../client') as { apiFetch: jest.Mock };
+      apiFetch.mockResolvedValueOnce({});
+
+      await subscribeToProduct('prod-1');
+
+      expect(apiFetch).toHaveBeenCalledWith('/wishlist-subscriptions', {
+        auth: true,
+        method: 'POST',
+        body: JSON.stringify({ productId: 'prod-1' }),
+      });
+    });
   });
 
-  it('getStockAlertSubscriptions returns empty array (no-op)', async () => {
-    const res = await getStockAlertSubscriptions();
-    expect(res).toEqual([]);
+  describe('unsubscribeFromProduct', () => {
+    it('calls apiFetch DELETE with auth:true', async () => {
+      const { apiFetch } = jest.requireMock('../client') as { apiFetch: jest.Mock };
+      apiFetch.mockResolvedValueOnce({});
+
+      await unsubscribeFromProduct('prod-1');
+
+      expect(apiFetch).toHaveBeenCalledWith('/wishlist-subscriptions/prod-1', {
+        auth: true,
+        method: 'DELETE',
+      });
+    });
   });
 });

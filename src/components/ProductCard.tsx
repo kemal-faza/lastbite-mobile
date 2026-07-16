@@ -6,8 +6,16 @@ import { getImageVariants, type Product } from '@/lib/api/products';
 import { formatExpiry } from '@/lib/utils/formatExpiry';
 import { formatDistance } from '@/lib/utils/formatDistance';
 import { colors } from '@/theme';
+import { WishlistHeart } from './WishlistHeart';
 
-export function ProductCard({ product, className = '' }: { product: Product; className?: string }) {
+interface ProductCardProps {
+  product: Product;
+  className?: string;
+  isWishlisted?: boolean;
+  onToggleWishlist?: () => void;
+}
+
+export function ProductCard({ product, className = '', isWishlisted, onToggleWishlist }: ProductCardProps) {
   const variants = getImageVariants(product.imageVariants);
   const imageSource = variants?.card
     ? { uri: variants.card }
@@ -55,10 +63,26 @@ export function ProductCard({ product, className = '' }: { product: Product; cla
           </View>
         )}
 
-        {/* Heart — bottom-left (stub, functional di sub-spek 7) */}
-        <View className="absolute bottom-1.5 left-1.5 w-6 h-6 rounded-full bg-white/90 items-center justify-center">
-          <MaterialCommunityIcons name="heart-outline" size={12} color={colors.textSecondary} />
-        </View>
+        {/* Heart — interactive toggle */}
+        {onToggleWishlist ? (
+          <Pressable
+            testID="product-card-heart"
+            onPress={(e) => {
+              e.stopPropagation?.();
+              onToggleWishlist();
+            }}
+            className="absolute bottom-1.5 left-1.5 z-10"
+            hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
+          >
+            <View className="w-6 h-6 rounded-full bg-white/90 items-center justify-center">
+              <WishlistHeart isWishlisted={!!isWishlisted} onToggle={() => {}} size={12} />
+            </View>
+          </Pressable>
+        ) : (
+          <View className="absolute bottom-1.5 left-1.5 w-6 h-6 rounded-full bg-white/90 items-center justify-center">
+            <MaterialCommunityIcons name="heart-outline" size={12} color={colors.textSecondary} />
+          </View>
+        )}
       </View>
 
       {/* Card body */}
