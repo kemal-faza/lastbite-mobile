@@ -1,7 +1,7 @@
 import { renderHook, act, waitFor } from '@testing-library/react-native/pure';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import React from 'react';
-import { useNotificationManager } from '../../src/hooks/useNotificationManager';
+import { useNotificationManager } from '../../src/hooks/useNotifications';
 import { apiFetch } from '../../src/lib/api/client';
 import { useAuthStore } from '../../src/stores/authStore';
 import { router } from 'expo-router';
@@ -175,6 +175,7 @@ describe('useNotificationManager', () => {
 
       expect(apiFetch).toHaveBeenCalledWith('/notifications/notif-777/read', {
         method: 'PATCH',
+        auth: true,
       });
 
       expect(router.push).toHaveBeenCalledWith('/(food-saver)/order/ord-123');

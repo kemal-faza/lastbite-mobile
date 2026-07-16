@@ -9,6 +9,11 @@ jest.mock('@/lib/api/notifications', () => ({
   markNotificationRead: jest.fn(),
 }));
 
+const mockUseAuthStore = jest.fn();
+jest.mock('@/stores/authStore', () => ({
+  useAuthStore: () => mockUseAuthStore(),
+}));
+
 const mockFetch = getNotifications as jest.MockedFunction<typeof getNotifications>;
 const mockMark = markNotificationRead as jest.MockedFunction<typeof markNotificationRead>;
 
@@ -24,6 +29,21 @@ function createWrapper() {
 describe('useNotifications', () => {
   beforeEach(() => {
     jest.clearAllMocks();
+    mockUseAuthStore.mockReturnValue({ isAuthenticated: true });
+  });
+
+  it('does not fetch when isAuthenticated is false', async () => {
+    mockUseAuthStore.mockReturnValue({ isAuthenticated: false });
+
+    const { result } = await renderHook(() => useNotifications(), {
+      wrapper: createWrapper(),
+    });
+
+    // Give a tick for the query to potentially fire
+    await new Promise((r) => setTimeout(r, 50));
+    expect(mockFetch).not.toHaveBeenCalled();
+    expect(result.current.notifications).toEqual([]);
+    expect(result.current.unreadCount).toBe(0);
   });
 
   it('returns empty defaults initially', async () => {
