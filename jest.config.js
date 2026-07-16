@@ -7,8 +7,8 @@ module.exports = {
     ],
   },
   moduleNameMapper: {
-    // Image assets via @/ alias — must come before catch-all
-    '^@/(.*)\\.(png|jpg|jpeg|gif|svg|webp)$': '<rootDir>/__mocks__/fileMock.js',
+    // Image assets via relative path or @/ alias — must come before catch-all
+    '\\.(png|jpg|jpeg|gif|svg|webp)$': '<rootDir>/__mocks__/fileMock.js',
     // TypeScript modules via @/ alias
     '^@/(.*)$': '<rootDir>/src/$1',
     // Other mocks

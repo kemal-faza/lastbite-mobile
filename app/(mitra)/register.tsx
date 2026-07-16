@@ -15,16 +15,16 @@ export default function RegisterMitraScreen() {
   const [location, setLocation] = useState<{ latitude: number; longitude: number } | null>(null);
   const [loading, setLoading] = useState(false);
 
-  const { location: gpsLocation, errorMsg, requestPermission } = useGeolocation();
+  const { lat: gpsLat, lng: gpsLng, error: errorMsg, requestLocation } = useGeolocation();
 
   useEffect(() => {
-    if (gpsLocation && !location) {
+    if (gpsLat !== null && gpsLng !== null && !location) {
       setLocation({
-        latitude: gpsLocation.coords.latitude,
-        longitude: gpsLocation.coords.longitude,
+        latitude: gpsLat,
+        longitude: gpsLng,
       });
     }
-  }, [gpsLocation]);
+  }, [gpsLat, gpsLng, location]);
 
   const pickImage = async () => {
     const result = await ImagePicker.launchImageLibraryAsync({
@@ -103,7 +103,7 @@ export default function RegisterMitraScreen() {
       <Text className="font-medium mb-2">Lokasi Toko *</Text>
       {!location ? (
         <View className="mb-6">
-          <Button variant="outline" onPress={requestPermission} className="w-full">
+          <Button variant="outline" onPress={requestLocation} className="w-full">
             <Text>Deteksi Lokasi Saat Ini</Text>
           </Button>
           {errorMsg && <Text className="text-red-500 mt-2 text-sm">{errorMsg}</Text>}

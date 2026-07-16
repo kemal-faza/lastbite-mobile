@@ -1,37 +1,43 @@
-import { useState, useCallback, useEffect } from 'react';
+import { useState, useCallback, useEffect, useMemo } from 'react';
 import { View, Text, FlatList, TouchableOpacity, ScrollView, ActivityIndicator } from 'react-native';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { useProducts } from '@/hooks/useProducts';
-import { getTrendingSearches, getRecentSearches, addRecentSearch, clearRecentSearches } from '@/lib/api/search';
+import { getTrendingSearches } from '@/lib/api/search';
+import { useSearchHistory } from '@/hooks/useSearchHistory';
 import { SearchBar } from '@/components/SearchBar';
 import { ProductCard } from '@/components/ProductCard';
 import { EmptyState } from '@/components/EmptyState';
 import { useDebounce } from '@/hooks/useDebounce';
+import { useWishlist } from '@/hooks/useWishlist';
+import { useAuthStore } from '@/stores/authStore';
+import { useToast } from '@/contexts/ToastContext';
 
 export default function SearchScreen() {
   const [query, setQuery] = useState('');
   const [trending, setTrending] = useState<Array<{ query: string; count: number }>>([]);
-  const [recent, setRecent] = useState<string[]>([]);
+  const { history: recent, addQuery, clearAll } = useSearchHistory();
   const debouncedQuery = useDebounce(query, 300);
 
-  const { data: products, isLoading, isError, refetch } = useProducts(
+  const { isAuthenticated } = useAuthStore();
+  const { showToast } = useToast();
+  const { isWishlisted, toggle } = useWishlist();
+
+  const { data, isLoading, isError, refetch } = useProducts(
     debouncedQuery.length >= 2 ? { search: debouncedQuery } : undefined
   );
+  const products = data?.products ?? [];
 
-  // Load trending and recent on mount
+  // Load trending on mount
   useEffect(() => {
     getTrendingSearches().then(setTrending).catch(() => {});
-    getRecentSearches().then(setRecent).catch(() => {});
   }, []);
 
   // Refresh recent when query changes to results
   const handleSubmit = useCallback(async () => {
     if (query.trim().length >= 2) {
-      await addRecentSearch(query.trim());
-      const updated = await getRecentSearches();
-      setRecent(updated);
+      await addQuery(query);
     }
-  }, [query]);
+  }, [query, addQuery]);
 
   const handleTrendingTap = useCallback((q: string) => {
     setQuery(q);
@@ -42,9 +48,23 @@ export default function SearchScreen() {
   }, []);
 
   const handleClearRecent = useCallback(async () => {
-    await clearRecentSearches();
-    setRecent([]);
-  }, []);
+    await clearAll();
+  }, [clearAll]);
+
+  const handleToggle = useCallback(
+    (productId: string) => {
+      if (!isAuthenticated) {
+        showToast('Login untuk menambah favorit');
+        return;
+      }
+      const isCurrentlyWishlisted = isWishlisted(productId);
+      toggle(
+        { productId, isWishlisted: isCurrentlyWishlisted },
+        { onError: () => showToast('Gagal memperbarui favorit') }
+      ).catch(() => {});
+    },
+    [isAuthenticated, isWishlisted, toggle, showToast],
+  );
 
   // Show suggestions when query is empty
   const showSuggestions = query.length < 2;
@@ -131,14 +151,14 @@ export default function SearchScreen() {
               </TouchableOpacity>
             </View>
           )}
-          {!isLoading && !isError && products && products.length === 0 && (
+          {!isLoading && !isError && products.length === 0 && (
             <EmptyState
               icon="magnify-close"
               title="Tidak ditemukan"
               description={`Tidak ada hasil untuk "${debouncedQuery}"`}
             />
           )}
-          {!isLoading && products && products.length > 0 && (
+          {!isLoading && !isError && products.length > 0 && (
             <>
               <Text className="text-xs text-gray-500 mb-2">
                 {products.length} hasil untuk "{debouncedQuery}"
@@ -146,7 +166,13 @@ export default function SearchScreen() {
               <FlatList
                 data={products}
                 keyExtractor={(item) => item.id}
-                renderItem={({ item }) => <ProductCard product={item} />}
+                renderItem={({ item }) => (
+                  <ProductCard
+                    product={item}
+                    isWishlisted={isWishlisted(item.id)}
+                    onToggleWishlist={() => handleToggle(item.id)}
+                  />
+                )}
                 numColumns={2}
                 columnWrapperStyle={{ gap: 10, marginBottom: 10 }}
                 showsVerticalScrollIndicator={false}

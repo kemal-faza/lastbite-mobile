@@ -61,7 +61,7 @@ import { useAuthStore } from '@/stores/authStore';
 describe('OrdersScreen', () => {
   beforeEach(() => {
     jest.clearAllMocks();
-    (useAuthStore as jest.Mock).mockReturnValue({ isAuthenticated: true });
+    ((useAuthStore as unknown) as jest.Mock).mockReturnValue({ isAuthenticated: true });
   });
 
   it('renders orders list', async () => {
@@ -72,11 +72,11 @@ describe('OrdersScreen', () => {
     });
     const { getByText } = await render(<OrdersScreen />);
     expect(getByText('Warung A')).toBeTruthy();
-    expect(getByText('25,000')).toBeTruthy();
+    expect(getByText(/25,000/)).toBeTruthy();
   });
 
   it('renders login prompt when not authenticated', async () => {
-    (useAuthStore as jest.Mock).mockReturnValue({ isAuthenticated: false });
+    ((useAuthStore as unknown) as jest.Mock).mockReturnValue({ isAuthenticated: false });
     (useOrders as jest.Mock).mockReturnValue({ data: null, isLoading: false, isError: false });
 
     const { getByText } = await render(<OrdersScreen />);

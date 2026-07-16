@@ -1,4 +1,4 @@
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useCallback } from 'react';
 import { View, Text, ScrollView, ActivityIndicator, TouchableOpacity } from 'react-native';
 
 import { useProducts } from '@/hooks/useProducts';
@@ -14,6 +14,8 @@ import { FilterModal, type FilterState } from '@/components/FilterModal';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { colors } from '@/theme';
 import { useAuthStore } from '@/stores/authStore';
+import { useWishlist } from '@/hooks/useWishlist';
+import { useToast } from '@/contexts/ToastContext';
 
 
 export default function HomeScreen() {
@@ -26,6 +28,8 @@ export default function HomeScreen() {
     expiry: 'Hari Ini',
   });
   const { isAuthenticated } = useAuthStore();
+  const { showToast } = useToast();
+  const { isWishlisted, toggle } = useWishlist();
   const { lat, lng } = useGeolocation();
 
   // Map frontend sort to backend sort param (mirrors Next.js pattern)
@@ -61,6 +65,21 @@ export default function HomeScreen() {
   const filteredProducts = useMemo(
     () => filterByDistance(productsWithDistance, filters.maxDistance),
     [productsWithDistance, filters.maxDistance],
+  );
+
+  const handleToggle = useCallback(
+    (productId: string) => {
+      if (!isAuthenticated) {
+        showToast('Login untuk menambah favorit');
+        return;
+      }
+      const isCurrentlyWishlisted = isWishlisted(productId);
+      toggle(
+        { productId, isWishlisted: isCurrentlyWishlisted },
+        { onError: () => showToast('Gagal memperbarui favorit') }
+      ).catch(() => {});
+    },
+    [isAuthenticated, isWishlisted, toggle, showToast],
   );
 
   return (
@@ -130,7 +149,13 @@ export default function HomeScreen() {
               )}
               <View className={`flex-row flex-wrap justify-between ${isPlaceholderData && isFetching ? 'opacity-50' : ''}`}>
                 {filteredProducts.map((p) => (
-                  <ProductCard key={p.id} product={p} className="w-[48%] mb-4" />
+                  <ProductCard
+                    key={p.id}
+                    product={p}
+                    className="w-[48%] mb-4"
+                    isWishlisted={isWishlisted(p.id)}
+                    onToggleWishlist={() => handleToggle(p.id)}
+                  />
                 ))}
               </View>
             </>
