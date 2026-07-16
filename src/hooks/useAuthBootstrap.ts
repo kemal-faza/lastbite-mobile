@@ -1,45 +1,29 @@
 import { useEffect, useState } from 'react';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { useAuthStore } from '@/stores/authStore';
+import { authService } from '@/lib/auth';
 import { getProfile } from '@/lib/api/profile';
+import { useAuthStore } from '@/stores/authStore';
 
 export function useAuthBootstrap() {
   const [isBootstrapping, setIsBootstrapping] = useState(true);
-  const { setUser } = useAuthStore();
 
   useEffect(() => {
-    async function bootstrap() {
-      try {
-        const token = await AsyncStorage.getItem('accessToken');
-        const cachedUserStr = await AsyncStorage.getItem('user');
+    authService.bootstrap().then(({ isAuthenticated }) => {
+      setIsBootstrapping(false);
 
-        if (token && cachedUserStr) {
-          const cachedUser = JSON.parse(cachedUserStr);
-          // 1. Restore the session immediately from cached user data (optimistic)
-          setUser(cachedUser);
-          setIsBootstrapping(false);
-
-          // 2. Refresh / sync user profile in background
-          try {
-            const freshUser = await getProfile();
-            setUser(freshUser);
-            await AsyncStorage.setItem('user', JSON.stringify(freshUser));
-          } catch (err: any) {
-            // Note: If 401 occurs, apiFetch interceptor auto-triggers logout and clears tokens.
-            // If offline or other network error, keep using the cached session.
-            console.log('[AuthBootstrap] Background profile sync failed:', err.message);
-          }
-        } else {
-          setIsBootstrapping(false);
-        }
-      } catch (e) {
-        console.error('[AuthBootstrap] Error during bootstrap:', e);
-        setIsBootstrapping(false);
+      // Background profile sync (silent fail if offline / 401)
+      // silent401:true prevents an expired cached token from silently
+      // logging the user out — the per-screen queries handle 401 on their own.
+      if (isAuthenticated) {
+        getProfile({ silent401: true })
+          .then((freshUser) => {
+            useAuthStore.getState().setUser(freshUser);
+            AsyncStorage.setItem('user', JSON.stringify(freshUser));
+          })
+          .catch(() => {});
       }
-    }
-
-    bootstrap();
-  }, [setUser]);
+    });
+  }, []);
 
   return { isBootstrapping };
 }
