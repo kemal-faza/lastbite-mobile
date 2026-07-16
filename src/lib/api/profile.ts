@@ -1,44 +1,40 @@
 import { apiFetch } from './client';
-import type { User } from '@/stores/authStore';
+import type { User } from '@/types/domain';
 
-interface RawUserResponse {
-  user: {
-    id: string;
-    email: string;
-    name: string;
-    phone: string | null;
-    role: string;
-    isVerified: boolean;
+export function mapUser(raw: any): User {
+  if (!raw) {
+    return {
+      id: '',
+      email: '',
+      name: '',
+      phone: null,
+      role: 'FOOD_SAVER',
+      isVerified: false,
+    };
+  }
+  return {
+    id: String(raw.id || ''),
+    email: String(raw.email || ''),
+    name: String(raw.name || ''),
+    phone: raw.phone ? String(raw.phone) : null,
+    role: (raw.role || 'FOOD_SAVER') as User['role'],
+    isVerified: Boolean(raw.isVerified || raw.is_verified),
   };
 }
 
-export async function getProfile(): Promise<User> {
-  const raw = await apiFetch<RawUserResponse>('/users/me', { auth: true });
-  return {
-    id: raw.user.id,
-    email: raw.user.email,
-    name: raw.user.name,
-    phone: raw.user.phone,
-    role: raw.user.role as User['role'],
-    isVerified: raw.user.isVerified,
-  };
+export async function getProfile(options?: { silent401?: boolean }): Promise<User> {
+  const raw = await apiFetch<any>('/users/me', { auth: true, ...options });
+  return mapUser(raw?.user);
 }
 
 export async function updateProfile(data: {
   name?: string;
   phone?: string;
 }): Promise<User> {
-  const raw = await apiFetch<RawUserResponse>('/users/me', {
+  const raw = await apiFetch<any>('/users/me', {
     method: 'PATCH',
     body: JSON.stringify(data),
     auth: true,
   });
-  return {
-    id: raw.user.id,
-    email: raw.user.email,
-    name: raw.user.name,
-    phone: raw.user.phone,
-    role: raw.user.role as User['role'],
-    isVerified: raw.user.isVerified,
-  };
+  return mapUser(raw?.user);
 }
