@@ -29,6 +29,7 @@ describe('useUpdateProfile', () => {
       expect(apiFetch).toHaveBeenCalledWith('/users/me', {
         method: 'PATCH',
         body: JSON.stringify({ name: 'Budi' }),
+        auth: true,
       });
     });
   });

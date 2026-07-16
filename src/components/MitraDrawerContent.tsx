@@ -22,8 +22,8 @@ export function MitraDrawerContent(_props: Record<string, unknown>) {
   const { logout } = useAuthStore();
   const currentPath = usePathname() ?? '';
 
-  const handleLogout = () => {
-    logout();
+  const handleLogout = async () => {
+    await logout();
     router.replace('/(food-saver)');
   };
 
