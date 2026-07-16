@@ -22,12 +22,13 @@ export function mapWishlistResponse(raw: RawWishlistResponse): WishlistResponse 
 }
 
 export async function getWishlist(): Promise<WishlistResponse> {
-  const raw = await apiFetch<RawWishlistResponse>('/wishlist-subscriptions');
+  const raw = await apiFetch<RawWishlistResponse>('/wishlist-subscriptions', { auth: true });
   return mapWishlistResponse(raw);
 }
 
 export async function subscribeToProduct(productId: string): Promise<void> {
   await apiFetch('/wishlist-subscriptions', {
+    auth: true,
     method: 'POST',
     body: JSON.stringify({ productId }),
   });
@@ -35,6 +36,7 @@ export async function subscribeToProduct(productId: string): Promise<void> {
 
 export async function unsubscribeFromProduct(productId: string): Promise<void> {
   await apiFetch(`/wishlist-subscriptions/${productId}`, {
+    auth: true,
     method: 'DELETE',
   });
 }

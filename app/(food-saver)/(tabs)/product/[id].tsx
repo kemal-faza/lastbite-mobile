@@ -18,9 +18,9 @@ import { getImageVariants } from '@/lib/api/products';
 import { addToCart } from '@/lib/api/cart';
 import { useAuthStore } from '@/stores/authStore';
 import { useToast } from '@/contexts/ToastContext';
+import { useRequireAuth } from '@/hooks/useRequireAuth';
 import { WishlistHeart } from '@/components/WishlistHeart';
-import { useWishlistStatus } from '@/hooks/useWishlistStatus';
-import { useToggleWishlist } from '@/hooks/useToggleWishlist';
+import { useWishlist } from '@/hooks/useWishlist';
 
 /** Calculate discount percentage, returns 0 if prices are equal or invalid. */
 function calcDiscountPct(original: number, discounted: number, explicit?: number): number {
@@ -37,8 +37,9 @@ export default function ProductDetailScreen() {
   const { data: reviewData, isLoading: isLoadingReviews } = useProductReviews(id);
   const queryClient = useQueryClient();
   const { showToast } = useToast();
-  const { data: isWishlisted } = useWishlistStatus(id);
-  const toggleWishlist = useToggleWishlist(id);
+  const { isWishlisted, toggle: toggleWishlist, isPending: isTogglePending } = useWishlist();
+  const isProductWishlisted = isWishlisted(id!);
+  const { requireAuth } = useRequireAuth();
   const handleBack = useCallback(() => { router.navigate('/'); }, []);
   useBackHandler(handleBack);
 
@@ -96,9 +97,16 @@ export default function ProductDetailScreen() {
           <View className="flex-row items-center justify-between">
             <Text className="text-2xl font-bold flex-1">{product.name}</Text>
             <WishlistHeart
-              isWishlisted={!!isWishlisted}
-              onToggle={() => toggleWishlist.mutate({ isWishlisted: !!isWishlisted })}
-              loading={toggleWishlist.isPending}
+              isWishlisted={isProductWishlisted}
+              onToggle={() =>
+                requireAuth(() =>
+                  toggleWishlist(
+                    { productId: id!, isWishlisted: isProductWishlisted },
+                    { onError: () => showToast('Gagal memperbarui favorit') },
+                  ).catch(() => {}),
+                )
+              }
+              loading={isTogglePending}
             />
           </View>
           <Text className="text-gray-500">{product.storeName}</Text>

@@ -1,14 +1,23 @@
 import { View, Text, FlatList, Alert, ActivityIndicator } from 'react-native';
 import { useRouter } from 'expo-router';
-import { useWishlistProducts } from '@/hooks/useWishlistProducts';
+import { useWishlist } from '@/hooks/useWishlist';
 import { useRequireAuth } from '@/hooks/useRequireAuth';
+import { useToast } from '@/contexts/ToastContext';
 import { ProductCard } from '@/components/ProductCard';
 import { EmptyState } from '@/components/EmptyState';
 
 export default function WishlistScreen() {
   const router = useRouter();
   const { requireAuth, isAuthenticated } = useRequireAuth();
-  const { products, isLoading, refetch } = useWishlistProducts();
+  const { products, isLoading, refetch, toggle } = useWishlist({ loadProducts: true });
+  const { showToast } = useToast();
+
+  const handleToggle = (productId: string) => {
+    toggle(
+      { productId, isWishlisted: true },
+      { onError: () => showToast('Gagal memperbarui favorit') },
+    ).catch(() => {});
+  };
 
   if (!isAuthenticated) {
     requireAuth(() => {});
@@ -52,7 +61,11 @@ export default function WishlistScreen() {
           columnWrapperStyle={{ gap: 10, marginBottom: 10 }}
           contentContainerStyle={{ padding: 16 }}
           renderItem={({ item }) => (
-            <ProductCard product={item} />
+            <ProductCard
+              product={item}
+              isWishlisted={true}
+              onToggleWishlist={() => handleToggle(item.id)}
+            />
           )}
           refreshing={isLoading}
           onRefresh={refetch}

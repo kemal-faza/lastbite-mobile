@@ -38,7 +38,16 @@ jest.mock('expo-image', () => ({
   Image: 'Image',
 }));
 
-// --- Create mock product factory ---
+// --- Make useWishlist mockable ---
+jest.mock('@/hooks/useWishlist', () => ({
+  useWishlist: jest.fn(),
+}));
+
+// --- @expo/vector-icons for WishlistHeart ---
+jest.mock('@expo/vector-icons', () => ({
+  MaterialCommunityIcons: 'MaterialCommunityIcons',
+}));
+
 const baseProduct: Product = {
   id: 'prod-1',
   name: 'Nasi Goreng Spesial',
@@ -66,13 +75,15 @@ jest.mock('@/hooks/useReviews', () => ({
   useProductReviews: jest.fn(),
 }));
 
+const mockIsAuthenticated = jest.fn(() => true);
 jest.mock('@/stores/authStore', () => ({
-  useAuthStore: jest.fn(() => ({ isAuthenticated: true })),
+  useAuthStore: () => ({ isAuthenticated: mockIsAuthenticated() }),
 }));
 
 jest.mock('expo-router', () => ({
   useLocalSearchParams: jest.fn(() => ({ id: 'prod-1' })),
-  router: { push: jest.fn() },
+  useSegments: jest.fn(() => ['product', 'prod-1']),
+  router: { push: jest.fn(), replace: jest.fn() },
 }));
 
 // --- Helpers ---
@@ -80,7 +91,22 @@ const queryClient = new QueryClient({
   defaultOptions: { queries: { retry: false } },
 });
 
-async function renderScreen(productOverrides?: Partial<Product>, reviewsOverrides?: { isLoading?: boolean; data?: any }) {
+async function renderScreen(
+  productOverrides?: Partial<Product>,
+  reviewsOverrides?: { isLoading?: boolean; data?: any },
+  wishlistOverrides?: { isWishlisted?: boolean; mutate?: jest.Mock; isPending?: boolean },
+) {
+  const useWishlistMock = jest.requireMock('@/hooks/useWishlist').useWishlist as jest.Mock;
+  const toggleFn = wishlistOverrides?.mutate ?? jest.fn().mockResolvedValue(undefined);
+  if (wishlistOverrides?.mutate) {
+    wishlistOverrides.mutate.mockResolvedValue(undefined);
+  }
+  useWishlistMock.mockReturnValue({
+    isWishlisted: () => wishlistOverrides?.isWishlisted ?? false,
+    toggle: toggleFn,
+    isPending: wishlistOverrides?.isPending ?? false,
+  });
+
   (useProduct as jest.Mock).mockReturnValue({
     data: { product: createMockProduct(productOverrides) },
     isLoading: false,
@@ -95,13 +121,16 @@ async function renderScreen(productOverrides?: Partial<Product>, reviewsOverride
     ...reviewsOverrides,
   });
 
-  return render(
-    <QueryClientProvider client={queryClient}>
-      <ToastProvider>
-        <ProductDetailScreen />
-      </ToastProvider>
-    </QueryClientProvider>
-  );
+  return {
+    ...(await render(
+      <QueryClientProvider client={queryClient}>
+        <ToastProvider>
+          <ProductDetailScreen />
+        </ToastProvider>
+      </QueryClientProvider>,
+    )),
+    toggleFn,
+  };
 }
 
 function setReviews(overrides: { isLoading?: boolean; data?: any } = {}) {
@@ -206,5 +235,51 @@ describe('ProductDetailScreen - Reviews', () => {
     });
     // ReviewList mock renders "Ulasan: 2" for populated
     expect(view.getByText('Ulasan: 2')).toBeTruthy();
+  });
+});
+
+describe('ProductDetailScreen - Wishlist Heart', () => {
+  beforeEach(() => {
+    jest.clearAllMocks();
+  });
+
+  it('calls mutate when heart is tapped (authenticated)', async () => {
+    mockIsAuthenticated.mockReturnValue(true);
+    const mutate = jest.fn();
+    const view = await renderScreen(undefined, undefined, {
+      isWishlisted: false,
+      mutate,
+    });
+
+    const heart = view.getByTestId('wishlist-heart');
+    const { fireEvent } = require('@testing-library/react-native');
+    fireEvent.press(heart);
+
+    expect(mutate).toHaveBeenCalledWith(
+      expect.objectContaining({ productId: 'prod-1', isWishlisted: false }),
+      expect.objectContaining({ onError: expect.any(Function) }),
+    );
+  });
+
+  it('navigates to login when unauthenticated user taps heart', async () => {
+    mockIsAuthenticated.mockReturnValue(false);
+    const mutate = jest.fn();
+    const view = await renderScreen(undefined, undefined, {
+      isWishlisted: undefined,
+      mutate,
+    });
+
+    const { router } = require('expo-router');
+    const heart = view.getByTestId('wishlist-heart');
+    const { fireEvent } = require('@testing-library/react-native');
+    fireEvent.press(heart);
+
+    // Should NOT call mutate (auth guard prevents it)
+    expect(mutate).not.toHaveBeenCalled();
+    // Should navigate to login with returnUrl
+    expect(router.push).toHaveBeenCalledWith({
+      pathname: '/login',
+      params: { returnUrl: '/product/prod-1' },
+    });
   });
 });
