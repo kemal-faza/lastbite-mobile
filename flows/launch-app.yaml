@@ -1,0 +1,4 @@
+appId: com.lastbite.mobile
+---
+- launchApp
+- tapOn: 'Cari'

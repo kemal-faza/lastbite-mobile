@@ -40,7 +40,9 @@ export default function ProductDetailScreen() {
   const { isWishlisted, toggle: toggleWishlist, isPending: isTogglePending } = useWishlist();
   const isProductWishlisted = isWishlisted(id!);
   const { requireAuth } = useRequireAuth();
-  const handleBack = useCallback(() => { router.navigate('/'); }, []);
+  const handleBack = useCallback(() => {
+    try { router.back(); } catch { router.replace('/'); }
+  }, []);
   useBackHandler(handleBack);
 
   if (isLoading) {

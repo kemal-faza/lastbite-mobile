@@ -1,16 +1,18 @@
-import { TouchableOpacity, ActivityIndicator } from 'react-native';
+import { ActivityIndicator } from 'react-native';
+import { Button } from '@/components/ui/button';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 
 interface Props {
   isWishlisted: boolean;
   onToggle: () => void;
   loading?: boolean;
-  size?: number;
+  iconSize?: number;
 }
 
-export function WishlistHeart({ isWishlisted, onToggle, loading, size = 24 }: Props) {
+export function WishlistHeart({ isWishlisted, onToggle, loading, iconSize = 24 }: Props) {
   return (
-    <TouchableOpacity
+    <Button
+      variant="plain"
       testID="wishlist-heart"
       onPress={loading ? undefined : onToggle}
       hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
@@ -20,10 +22,10 @@ export function WishlistHeart({ isWishlisted, onToggle, loading, size = 24 }: Pr
       ) : (
         <MaterialCommunityIcons
           name={isWishlisted ? 'heart' : 'heart-outline'}
-          size={size}
+          size={iconSize}
           color={isWishlisted ? '#ef4444' : '#6b7280'}
         />
       )}
-    </TouchableOpacity>
+    </Button>
   );
 }

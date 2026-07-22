@@ -1,0 +1,19 @@
+appId: com.lastbite.mobile
+---
+# Logout from current session
+# Works for both Food Saver and Mitra roles
+# Post-conditions: back on login screen
+
+# Navigate to profile
+- tapOn:
+    text: "Profil"
+    optional: true
+- tapOn:
+    text: "Keluar"
+    optional: true
+
+# Wait for logout to complete
+- waitForAnimationToEnd
+
+# Verify back on login screen
+- assertVisible: "Masuk LastBite"

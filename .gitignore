@@ -56,3 +56,6 @@ AGENTS.md
 
 # Firebase config (public identifiers, but env-specific)
 google-services.json
+
+# Personal learning plan (not part of shipped app)
+LEARN-PLAN.md

@@ -1,7 +1,8 @@
 import { TextClassContext } from '@/components/ui/text';
+import { PressableOpacity, type PressableOpacityProps } from '@/components/PressableOpacity';
 import { cn } from '@/lib/utils';
 import { cva, type VariantProps } from 'class-variance-authority';
-import { Platform, Pressable } from 'react-native';
+import { Platform } from 'react-native';
 
 const buttonVariants = cva(
   cn(
@@ -42,6 +43,7 @@ const buttonVariants = cva(
           Platform.select({ web: 'hover:bg-accent dark:hover:bg-accent/50' })
         ),
         link: '',
+        plain: '',
       },
       size: {
         default: cn('h-10 px-4 py-2 sm:h-9', Platform.select({ web: 'has-[>svg]:px-3' })),
@@ -81,6 +83,7 @@ const buttonTextVariants = cva(
           'text-primary group-active:underline',
           Platform.select({ web: 'underline-offset-4 hover:underline group-hover:underline' })
         ),
+        plain: '',
       },
       size: {
         default: '',
@@ -96,16 +99,23 @@ const buttonTextVariants = cva(
   }
 );
 
-type ButtonProps = React.ComponentProps<typeof Pressable> & React.RefAttributes<typeof Pressable> & VariantProps<typeof buttonVariants>;
+type ButtonProps = PressableOpacityProps & VariantProps<typeof buttonVariants>;
 
-function Button({ className, variant, size, ...props }: ButtonProps) {
+function Button({ className, variant, size, children, ...props }: ButtonProps) {
   return (
     <TextClassContext.Provider value={buttonTextVariants({ variant, size })}>
-      <Pressable
-        className={cn(props.disabled && 'opacity-50', buttonVariants({ variant, size }), className)}
+      <PressableOpacity
+        className={cn(
+          variant !== 'plain' && buttonVariants({ variant, size }),
+          props.disabled && 'opacity-50',
+          className,
+        )}
+        hitSlop={size === 'icon' ? { top: 10, bottom: 10, left: 10, right: 10 } : undefined}
         role="button"
         {...props}
-      />
+      >
+        {children}
+      </PressableOpacity>
     </TextClassContext.Provider>
   );
 }

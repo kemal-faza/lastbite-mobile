@@ -1,0 +1,46 @@
+appId: com.lastbite.mobile
+---
+# Mitra views product list
+
+# Login first
+- runFlow:
+    file: ../shared/login-mitra.yaml
+
+# --- Step 1: Navigate to Daftar Produk ---
+# Open drawer
+- tapOn:
+    accessibilityLabel: "Open drawer"
+    optional: true
+- tapOn:
+    point: "5%,5%"
+    optional: true
+- waitForAnimationToEnd
+
+- tapOn:
+    accessibilityLabel: "Daftar Produk"
+- waitForAnimationToEnd
+
+# --- Step 2: Verify products page ---
+- assertVisible: "Daftar Produk"
+
+# Scroll through products if any exist
+- scrollUntilVisible:
+    item: "Hapus"
+    direction: DOWN
+    timeout: 5000
+    optional: true
+
+# --- Step 3: Navigate back to dashboard ---
+# Open drawer
+- tapOn:
+    accessibilityLabel: "Open drawer"
+    optional: true
+- tapOn:
+    point: "5%,5%"
+    optional: true
+- waitForAnimationToEnd
+
+- tapOn:
+    accessibilityLabel: "Dashboard"
+- waitForAnimationToEnd
+- assertVisible: "Dashboard"

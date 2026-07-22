@@ -13,12 +13,12 @@ jest.mock('@/lib/api/cart', () => ({
 }));
 
 jest.mock('@/components/ui/button', () => ({
-  Button: ({ children, onPress, disabled }: any) => {
+  Button: ({ children, onPress, disabled, testID }: any) => {
     const React = require('react');
     const { Pressable, Text } = require('react-native');
     return React.createElement(
       Pressable,
-      { onPress, disabled, testID: 'add-to-cart-button' },
+      { onPress, disabled, testID: testID || 'add-to-cart-button' },
       typeof children === 'string'
         ? React.createElement(Text, null, children)
         : children

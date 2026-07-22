@@ -1,0 +1,36 @@
+appId: com.lastbite.mobile
+---
+# Add product to cart from product detail page
+
+# Login first
+- runFlow:
+    file: ../shared/login-foodsaver.yaml
+
+# --- Step 1: Scroll to find a product and tap it ---
+- scrollUntilVisible:
+    item: "Sisa"
+    direction: DOWN
+    timeout: 10000
+
+# Tap on the first product card (identified by price pattern)
+- tapOn:
+    text: "Rp"
+    index: 0
+- waitForAnimationToEnd
+
+# --- Step 2: Verify product detail page ---
+- assertVisible: "Detail Produk"
+- assertVisible: "Tambah ke Keranjang"
+
+# --- Step 3: Add to cart ---
+- tapOn:
+    id: "add-to-cart-button"
+
+# Wait for toast
+- extendedWaitUntil:
+    visible: "ditambahkan ke keranjang"
+    timeout: 10000
+
+# --- Step 4: Verify cart badge or navigate to cart ---
+- tapOn: "Keranjang"
+- assertVisible: "Checkout"

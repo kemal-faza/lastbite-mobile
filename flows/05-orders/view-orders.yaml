@@ -1,0 +1,14 @@
+appId: com.lastbite.mobile
+---
+# View order history from orders tab
+
+# Login first
+- runFlow:
+    file: ../shared/login-foodsaver.yaml
+
+# Navigate to orders tab
+- tapOn: "Pesanan"
+- waitForAnimationToEnd
+
+# Verify orders page title
+- assertVisible: "Pesanan"

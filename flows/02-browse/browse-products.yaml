@@ -1,0 +1,54 @@
+appId: com.lastbite.mobile
+---
+# Browse products on Beranda: scroll, filter by category, sort
+
+# Login first
+- runFlow:
+    file: ../shared/login-foodsaver.yaml
+
+# Verify products are visible
+- assertVisible: "produk tersedia"
+
+# --- Test: Category Filters ---
+# Tap first category pill
+- tapOn:
+    point: "15%,25%"     # Approximate position of first category chip
+
+# Wait for filter to apply
+- waitForAnimationToEnd
+
+# Verify products still visible after filter
+- assertVisible: "produk tersedia"
+
+# Tap "Semua" to clear filter (first chip)
+- tapOn:
+    point: "15%,25%"
+
+# --- Test: Sort Options ---
+# Tap sort pill to cycle sort options
+- tapOn:
+    point: "30%,30%"     # Approximate position of "Terdekat" or first sort pill
+- waitForAnimationToEnd
+
+# --- Test: Filter Modal ---
+# Tap Filter icon button
+- tapOn: "Filter"
+- waitForAnimationToEnd
+
+# Verify filter modal opened
+- assertVisible:
+    id: "filter-sheet"
+
+# Close filter modal by tapping backdrop
+- tapOn:
+    id: "filter-backdrop"
+- waitForAnimationToEnd
+
+# --- Test: Scroll through products ---
+- scrollUntilVisible:
+    item: "Beli Lagi"
+    direction: DOWN
+    timeout: 5000
+
+# Verify still on Beranda
+- assertVisible: "Rekomendasi Buat Kamu"

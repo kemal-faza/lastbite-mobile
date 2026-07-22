@@ -1,0 +1,61 @@
+appId: com.lastbite.mobile
+---
+# View Mitra dashboard and navigate drawer items
+
+# Login first
+- runFlow:
+    file: ../shared/login-mitra.yaml
+
+# --- Step 1: Verify Dashboard ---
+- assertVisible: "Dashboard"
+- assertVisible: "Active Orders"
+- assertVisible: "Products"
+- assertVisible: "Revenue"
+
+# --- Step 2: Open drawer and navigate ---
+# Open drawer by tapping hamburger icon
+- tapOn:
+    accessibilityLabel: "Open drawer"
+    optional: true
+
+# If drawer didn't open, try tapping top-left corner
+- tapOn:
+    point: "5%,5%"
+    optional: true
+
+# Wait for drawer animation
+- waitForAnimationToEnd
+
+# --- Step 3: Navigate to Analisis ---
+- tapOn:
+    accessibilityLabel: "Analisis"
+- waitForAnimationToEnd
+- assertVisible: "Analisis"
+
+# --- Step 4: Open drawer and go to Daftar Produk ---
+- tapOn:
+    accessibilityLabel: "Open drawer"
+    optional: true
+- tapOn:
+    point: "5%,5%"
+    optional: true
+- waitForAnimationToEnd
+
+- tapOn:
+    accessibilityLabel: "Daftar Produk"
+- waitForAnimationToEnd
+- assertVisible: "Daftar Produk"
+
+# --- Step 5: Open drawer and go back to Dashboard ---
+- tapOn:
+    accessibilityLabel: "Open drawer"
+    optional: true
+- tapOn:
+    point: "5%,5%"
+    optional: true
+- waitForAnimationToEnd
+
+- tapOn:
+    accessibilityLabel: "Dashboard"
+- waitForAnimationToEnd
+- assertVisible: "Dashboard"

@@ -1,6 +1,13 @@
 import { render, fireEvent } from '@testing-library/react-native';
 import { WishlistHeart } from '@/components/WishlistHeart';
 
+jest.mock('@/components/ui/text', () => ({
+  TextClassContext: {
+    Provider: ({ children }: { children: React.ReactNode }) => <>{children}</>,
+  },
+  Text: 'Text',
+}));
+
 jest.mock('@expo/vector-icons', () => ({
   MaterialCommunityIcons: 'MaterialCommunityIcons',
 }));

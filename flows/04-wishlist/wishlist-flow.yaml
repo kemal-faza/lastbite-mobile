@@ -1,0 +1,43 @@
+appId: com.lastbite.mobile
+---
+# Toggle wishlist on product cards, then view wishlist page
+
+# Login first
+- runFlow:
+    file: ../shared/login-foodsaver.yaml
+
+# --- Step 1: Toggle wishlist on a product card ---
+- scrollUntilVisible:
+    item: "Sisa"
+    direction: DOWN
+    timeout: 10000
+
+# Tap wishlist heart on first product card
+- tapOn:
+    id: "product-card-heart"
+    index: 0
+
+# Brief pause for animation
+- waitForAnimationToEnd
+
+# --- Step 2: Open product detail and toggle wishlist there too ---
+- tapOn:
+    text: "Rp"
+    index: 0
+- waitForAnimationToEnd
+
+# Toggle wishlist from detail page
+- tapOn:
+    id: "wishlist-heart"
+- waitForAnimationToEnd
+
+# --- Step 3: Navigate to wishlist page via profile ---
+- tapOn: "Profil"
+- scrollUntilVisible:
+    item: "Menu Favorit"
+    direction: DOWN
+- tapOn: "Menu Favorit"
+- waitForAnimationToEnd
+
+# Verify wishlist page
+- assertVisible: "Menu Favorit"
