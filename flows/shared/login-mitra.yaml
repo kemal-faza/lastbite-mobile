@@ -1,0 +1,23 @@
+appId: com.lastbite.mobile
+---
+# Login as Mitra via dev button
+# Post-conditions: on Mitra dashboard with "Dashboard" visible
+
+# Open app & handle Expo Dev Client launcher
+- runFlow:
+    file: open-app.yaml
+
+- assertVisible: "Masuk LastBite"
+
+# Tap dev login button (__DEV__ only)
+- tapOn: "Masuk sebagai Mitra (Dev)"
+
+# Wait for navigation and data load
+- waitForAnimationToEnd
+- extendedWaitUntil:
+    visible: "Dashboard"
+    timeout: 10000
+
+# Verify landing on mitra dashboard
+- assertVisible: "Dashboard"
+- assertVisible: "Active Orders"

@@ -1,0 +1,20 @@
+# LastBite Maestro E2E Test Configuration
+# 
+# Usage:
+#   maestro test flows/                          # Run all flows
+#   maestro test flows/03-cart/checkout.yaml      # Run single flow
+#   maestro test flows/ --format junit --output reports/
+
+flows:
+  - ../flows
+
+executionOrder:
+  continueOnFailure: true
+
+appId: com.lastbite.mobile
+
+env:
+  FS_EMAIL: "process.env.EXPO_PUBLIC_DEV_FOODSAVER_EMAIL"
+  FS_PASSWORD: "process.env.EXPO_PUBLIC_DEV_FOODSAVER_PASSWORD"
+  MITRA_EMAIL: "process.env.EXPO_PUBLIC_DEV_MITRA_EMAIL"
+  MITRA_PASSWORD: "process.env.EXPO_PUBLIC_DEV_MITRA_PASSWORD"

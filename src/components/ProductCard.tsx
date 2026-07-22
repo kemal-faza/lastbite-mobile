@@ -75,7 +75,7 @@ export function ProductCard({ product, className = '', isWishlisted, onToggleWis
             hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
           >
             <View className="w-6 h-6 rounded-full bg-white/90 items-center justify-center">
-              <WishlistHeart isWishlisted={!!isWishlisted} onToggle={() => {}} size={12} />
+              <WishlistHeart isWishlisted={!!isWishlisted} onToggle={() => {}} iconSize={12} />
             </View>
           </Pressable>
         ) : (

@@ -1,0 +1,29 @@
+appId: com.lastbite.mobile
+---
+# Test full auth cycle: Food Saver login → logout → Mitra login → logout
+
+# --- Phase 1: Food Saver Login ---
+- runFlow:
+    file: ../shared/login-foodsaver.yaml
+- assertVisible: "Rekomendasi Buat Kamu"
+
+# --- Phase 2: Logout ---
+- runFlow:
+    file: ../shared/logout.yaml
+
+# --- Phase 3: Mitra Login ---
+# App is now on login screen after logout, just foreground (don't re-launch)
+- launchApp:
+    stopApp: false
+- assertVisible: "Masuk LastBite"
+- tapOn: "Masuk sebagai Mitra (Dev)"
+- waitForAnimationToEnd
+- extendedWaitUntil:
+    visible: "Dashboard"
+    timeout: 10000
+- assertVisible: "Dashboard"
+- assertVisible: "Active Orders"
+
+# --- Phase 4: Logout ---
+- runFlow:
+    file: ../shared/logout.yaml

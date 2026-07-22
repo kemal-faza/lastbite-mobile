@@ -1,0 +1,43 @@
+appId: com.lastbite.mobile
+---
+# Mitra processes an order: view orders → process → mark as ready
+
+# Login first
+- runFlow:
+    file: ../shared/login-mitra.yaml
+
+# --- Step 1: Navigate to Pesanan Masuk ---
+# Open drawer
+- tapOn:
+    accessibilityLabel: "Open drawer"
+    optional: true
+- tapOn:
+    point: "5%,5%"
+    optional: true
+- waitForAnimationToEnd
+
+- tapOn:
+    accessibilityLabel: "Pesanan Masuk"
+- waitForAnimationToEnd
+
+# --- Step 2: View active orders ---
+- assertVisible: "Aktif"
+
+# Process the first pending order if available
+- tapOn:
+    text: "Proses Pesanan"
+    index: 0
+    optional: true
+
+# Wait for status update
+- waitForAnimationToEnd
+
+# Mark as ready if processed
+- tapOn:
+    text: "Siap Diambil"
+    index: 0
+    optional: true
+
+# --- Step 3: View order history ---
+- tapOn: "Riwayat"
+- waitForAnimationToEnd

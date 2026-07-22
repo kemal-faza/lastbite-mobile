@@ -18,6 +18,7 @@ module.exports = {
 			'expo-router',
 			'expo-dev-client',
 			'expo-image',
+			'expo-splash-screen',
 			[
 				'expo-location',
 				{
@@ -38,7 +39,7 @@ module.exports = {
 		orientation: 'portrait',
 		icon: './assets/icon.png',
 		userInterfaceStyle: 'light',
-		newArchEnabled: true,
+		newArchEnabled: false,
 		splash: {
 			image: './assets/splash.png',
 			resizeMode: 'contain',

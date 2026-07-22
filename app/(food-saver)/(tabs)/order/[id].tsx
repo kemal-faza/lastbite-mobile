@@ -27,7 +27,7 @@ export default function OrderDetailScreen() {
 
   // Hardware back → navigate to /orders (Pesanan tab)
   const handleBack = useCallback(() => {
-    router.navigate('/orders');
+    try { router.back(); } catch { router.replace('/orders'); }
   }, []);
   useBackHandler(handleBack);
 

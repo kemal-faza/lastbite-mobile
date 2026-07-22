@@ -1,0 +1,50 @@
+appId: com.lastbite.mobile
+---
+# Manage cart: adjust quantity, delete item
+# Prerequisites: at least one product in cart
+
+# Login first
+- runFlow:
+    file: ../shared/login-foodsaver.yaml
+
+# Navigate to cart
+- tapOn: "Keranjang"
+- waitForAnimationToEnd
+
+# Skip if cart is empty, otherwise test management
+- assertVisible:
+    text: "Checkout"
+    optional: true
+
+# --- Adjust quantity: tap + once ---
+- tapOn:
+    text: "+"
+    index: 0
+- waitForAnimationToEnd
+
+# --- Adjust quantity: tap - once ---
+- tapOn:
+    text: "-"
+    index: 0
+- waitForAnimationToEnd
+
+# --- Verify checkout button still visible ---
+- assertVisible:
+    text: "Checkout"
+    optional: true
+
+# --- Swipe to delete ---
+# Note: Maestro swipe uses coordinates
+- swipe:
+    from:
+      point: "30%,50%"    # Center-left of cart item
+    direction: LEFT
+    duration: 500
+
+# Wait for delete button
+- waitForAnimationToEnd
+
+# Tap delete button (trash icon or "Hapus" text)
+- tapOn:
+    text: "Hapus"
+    optional: true

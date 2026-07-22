@@ -1,0 +1,42 @@
+appId: com.lastbite.mobile
+---
+# Search products by keyword
+
+# Login first
+- runFlow:
+    file: ../shared/login-foodsaver.yaml
+
+# Navigate to search tab
+- tapOn: "Cari"
+- assertVisible: "Cari produk"
+- waitForAnimationToEnd
+
+# Type a search term
+- tapOn:
+    point: "50%,20%"      # Approximate position of search input
+- inputText: "Nasi"
+
+# Verify search results appear
+- extendedWaitUntil:
+    visible: "produk"
+    timeout: 10000
+
+# Clear search
+- tapOn:
+    id: "searchbar-clear"
+    optional: true
+
+# Search another term
+- tapOn:
+    point: "50%,20%"
+- inputText: "Ayam"
+
+# Verify new results
+- extendedWaitUntil:
+    visible: "produk"
+    timeout: 10000
+
+# Clear and verify empty state
+- tapOn:
+    id: "searchbar-clear"
+    optional: true

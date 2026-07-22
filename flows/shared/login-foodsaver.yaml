@@ -1,0 +1,24 @@
+appId: com.lastbite.mobile
+---
+# Login as Food Saver via dev button
+# Post-conditions: on Beranda tab with "Rekomendasi Buat Kamu" visible
+
+# Open app & handle Expo Dev Client launcher
+- runFlow:
+      file: open-app.yaml
+
+- tapOn: 'Profil'
+- tapOn: 'Masuk'
+
+- assertVisible: 'Masuk LastBite'
+- assertVisible: 'Selamat datang kembali'
+
+# Tap dev login button (__DEV__ only)
+- tapOn: 'Masuk sebagai Food Saver (Dev)'
+
+# Wait for navigation to complete
+- waitForAnimationToEnd
+
+# Verify landing on food saver home
+- assertVisible: 'Rekomendasi Buat Kamu'
+- assertVisible: 'Beranda'

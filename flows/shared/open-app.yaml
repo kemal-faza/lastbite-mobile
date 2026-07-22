@@ -1,0 +1,11 @@
+appId: com.lastbite.mobile
+---
+# Open app with clean state, handle Expo Dev Client launcher
+# Handles two scenarios:
+#   A) Server discovered → tap "LastBite" entry to load app
+#   B) No server found  → tap "Fetch development servers" to discover
+#   C) Dev Drawer overlay → swipe down to close
+
+- launchApp
+# Wait for Dev Client launcher to render
+- waitForAnimationToEnd

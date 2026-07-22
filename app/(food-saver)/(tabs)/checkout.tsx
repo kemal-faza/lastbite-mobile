@@ -25,7 +25,9 @@ export default function CheckoutScreen() {
   const [notes, setNotes] = useState('');
   const [loading, setLoading] = useState(false);
   const { showToast } = useToast();
-  const handleBack = useCallback(() => { router.navigate('/cart'); }, []);
+  const handleBack = useCallback(() => {
+    try { router.back(); } catch { router.replace('/cart'); }
+  }, []);
   useBackHandler(handleBack);
 
   if (!isAuthenticated) return <Redirect href="/login" />;
