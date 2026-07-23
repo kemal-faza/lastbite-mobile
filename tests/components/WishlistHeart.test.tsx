@@ -8,6 +8,8 @@ jest.mock('@/components/ui/text', () => ({
   Text: 'Text',
 }));
 
+jest.mock('react-native-reanimated');
+
 jest.mock('@expo/vector-icons', () => ({
   MaterialCommunityIcons: 'MaterialCommunityIcons',
 }));
@@ -45,5 +47,46 @@ describe('WishlistHeart', () => {
     );
     fireEvent.press(getByTestId('wishlist-heart'));
     expect(onToggle).not.toHaveBeenCalled();
+  });
+
+  it('renders icon without Button wrapper when bare=true', async () => {
+    const { queryByTestId } = await render(
+      <WishlistHeart isWishlisted={false} onToggle={jest.fn()} bare />
+    );
+    // bare mode skips Button wrapper, so testID="wishlist-heart" should NOT exist
+    expect(queryByTestId('wishlist-heart')).toBeNull();
+  });
+
+  it('uses 3-stage withTiming animation (no spring delay) on isWishlisted change', async () => {
+    const reanimated = jest.requireMock('react-native-reanimated');
+    const withTimingSpy = jest.spyOn(reanimated, 'withTiming');
+
+    const { rerender } = await render(
+      <WishlistHeart isWishlisted={false} onToggle={jest.fn()} />
+    );
+
+    // Clear spy: first render triggers useEffect but isFirstRender skips it
+    withTimingSpy.mockClear();
+
+    // Trigger state change — useEffect fires the animation
+    await rerender(<WishlistHeart isWishlisted={true} onToggle={jest.fn()} />);
+
+    // Wait for useEffect side effects
+    const { act } = require('react');
+    await act(() => {});
+
+    // Verify timing-based animation: up → down → hard reset
+    const timingCallArgs = withTimingSpy.mock.calls.map((call: unknown[]) => call[0]);
+    expect(timingCallArgs).toEqual([1.12, 1, 1]);
+
+    // Verify durations: 80ms up, 80ms down, 0ms hard reset
+    const timingConfigs = withTimingSpy.mock.calls.map((call: unknown[]) => call[1]);
+    expect(timingConfigs).toEqual([
+      { duration: 80 },
+      { duration: 80 },
+      { duration: 0 },
+    ]);
+
+    withTimingSpy.mockRestore();
   });
 });

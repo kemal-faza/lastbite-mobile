@@ -1,36 +1,43 @@
-import { useState, useCallback, useEffect } from 'react';
-import { View, Text, FlatList, TouchableOpacity, ScrollView, ActivityIndicator } from 'react-native';
-import { MaterialCommunityIcons } from '@expo/vector-icons';
-import { useProductFilter } from '@/hooks/useProductFilter';
-import { getTrendingSearches } from '@/lib/api/search';
-import { useSearchHistory } from '@/hooks/useSearchHistory';
-import { SearchBar } from '@/components/SearchBar';
-import { ProductCard } from '@/components/ProductCard';
-import { EmptyState } from '@/components/EmptyState';
-import { useWishlist } from '@/hooks/useWishlist';
-import { useAuthStore } from '@/stores/authStore';
-import { useToast } from '@/contexts/ToastContext';
+import { useState, useCallback, useEffect } from "react";
+import {
+  View,
+  Text,
+  FlatList,
+  TouchableOpacity,
+  ScrollView,
+  ActivityIndicator,
+} from "react-native";
+import { MaterialCommunityIcons } from "@expo/vector-icons";
+import { useProductFilter } from "@/hooks/useProductFilter";
+import { getTrendingSearches } from "@/lib/api/search";
+import { useSearchHistory } from "@/hooks/useSearchHistory";
+import { SearchBar } from "@/components/SearchBar";
+import { ProductCard } from "@/components/ProductCard";
+import { EmptyState } from "@/components/EmptyState";
+import { useWishlist } from "@/hooks/useWishlist";
+import { useAuthStore } from "@/stores/authStore";
+import { useToast } from "@/contexts/ToastContext";
 
 export default function SearchScreen() {
-  const [trending, setTrending] = useState<Array<{ query: string; count: number }>>([]);
+  const [trending, setTrending] = useState<
+    Array<{ query: string; count: number }>
+  >([]);
   const { history: recent, addQuery, clearAll } = useSearchHistory();
 
   const { isAuthenticated } = useAuthStore();
   const { showToast } = useToast();
   const { isWishlisted, toggle } = useWishlist();
 
-  const {
-    query,
-    setQuery,
-    productsQuery,
-  } = useProductFilter();
+  const { query, setQuery, productsQuery } = useProductFilter();
 
   const { data, isLoading, isError } = productsQuery;
   const products = data?.products ?? [];
 
   // Load trending on mount
   useEffect(() => {
-    getTrendingSearches().then(setTrending).catch(() => {});
+    getTrendingSearches()
+      .then(setTrending)
+      .catch(() => {});
   }, []);
 
   // Refresh recent when query changes to results
@@ -55,13 +62,13 @@ export default function SearchScreen() {
   const handleToggle = useCallback(
     (productId: string) => {
       if (!isAuthenticated) {
-        showToast('Login untuk menambah favorit');
+        showToast("Login untuk menambah favorit");
         return;
       }
       const isCurrentlyWishlisted = isWishlisted(productId);
       toggle(
         { productId, isWishlisted: isCurrentlyWishlisted },
-        { onError: () => showToast('Gagal memperbarui favorit') }
+        { onError: () => showToast("Gagal memperbarui favorit") },
       ).catch(() => {});
     },
     [isAuthenticated, isWishlisted, toggle, showToast],
@@ -88,7 +95,9 @@ export default function SearchScreen() {
           {/* Trending */}
           {trending.length > 0 && (
             <View className="mb-5">
-              <Text className="text-xs font-bold text-gray-500 uppercase mb-3">Trending</Text>
+              <Text className="text-xs font-bold text-gray-500 uppercase mb-3">
+                Trending
+              </Text>
               <View className="flex-row flex-wrap gap-2">
                 {trending.map((item) => (
                   <TouchableOpacity
@@ -116,12 +125,19 @@ export default function SearchScreen() {
                   className="flex-row items-center justify-between py-2.5 border-b border-gray-100"
                 >
                   <View className="flex-row items-center gap-2.5">
-                    <MaterialCommunityIcons name="clock-outline" size={16} color="#9ca3af" />
+                    <MaterialCommunityIcons
+                      name="clock-outline"
+                      size={16}
+                      color="#9ca3af"
+                    />
                     <Text className="text-sm text-gray-700">{item}</Text>
                   </View>
                 </TouchableOpacity>
               ))}
-              <TouchableOpacity onPress={handleClearRecent} className="self-end mt-2.5">
+              <TouchableOpacity
+                onPress={handleClearRecent}
+                className="self-end mt-2.5"
+              >
                 <Text className="text-xs text-red-500">Hapus semua</Text>
               </TouchableOpacity>
             </View>

@@ -113,7 +113,7 @@ describe('useWishlist', () => {
 
     const mockProducts = [{ id: 'uuid-1', name: 'Product 1' }, { id: 'uuid-2', name: 'Product 2' }];
     (useProducts as jest.Mock).mockReturnValue({
-      data: mockProducts,
+      data: { products: mockProducts },
       isLoading: false,
       isError: false,
     });
