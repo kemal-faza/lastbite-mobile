@@ -100,15 +100,17 @@ export default function CartScreen() {
 
   if (!isAuthenticated) {
     return (
-      <View className="flex-1 bg-background">
-        <View className="flex-1 justify-center">
-          <EmptyState
-            icon="cart-outline"
-            title="Login untuk mengakses keranjang"
-            description="Masuk atau daftar untuk mulai berbelanja"
-            action={<PrimaryButton onPress={() => router.push('/login')}>Masuk</PrimaryButton>}
-          />
-        </View>
+      <View className="flex-1 bg-background justify-center items-center px-4">
+        <EmptyState
+          icon="cart-outline"
+          title="Login untuk mengakses keranjang"
+          description="Masuk atau daftar untuk mulai berbelanja"
+          action={
+            <PrimaryButton onPress={() => router.push({ pathname: '/login', params: { returnUrl: '/(food-saver)/(tabs)/cart' } })}>
+              Masuk
+            </PrimaryButton>
+          }
+        />
       </View>
     );
   }

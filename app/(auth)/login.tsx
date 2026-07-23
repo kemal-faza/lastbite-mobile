@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { View, Text, Pressable } from 'react-native';
-import { router } from 'expo-router';
+import { router, useLocalSearchParams } from 'expo-router';
 import { AuthScreenLayout } from '@/components/AuthScreenLayout';
 import { TextField } from '@/components/TextField';
 import { PrimaryButton } from '@/components/PrimaryButton';
@@ -8,6 +8,7 @@ import { colors } from '@/theme';
 import { authService } from '@/lib/auth';
 
 export default function LoginScreen() {
+  const { returnUrl } = useLocalSearchParams<{ returnUrl?: string }>();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
@@ -16,7 +17,8 @@ export default function LoginScreen() {
     setLoading(true);
     try {
       const res = await authService.login(email, password);
-      router.replace(res.user.role === 'MITRA' ? '/(mitra)' : '/(food-saver)');
+      const target = returnUrl || (res.user.role === 'MITRA' ? '/(mitra)' : '/(food-saver)');
+      router.replace(target as any);
     } catch (e: any) {
       alert(e.message);
     } finally {
@@ -72,7 +74,7 @@ export default function LoginScreen() {
               setLoading(true);
               try {
                 await authService.login('process.env.EXPO_PUBLIC_DEV_FOODSAVER_EMAIL', 'process.env.EXPO_PUBLIC_DEV_FOODSAVER_PASSWORD');
-                router.replace('/(food-saver)');
+                router.replace((returnUrl || '/(food-saver)') as any);
               } catch (e: any) {
                 alert(e.message);
               } finally {
@@ -89,7 +91,7 @@ export default function LoginScreen() {
               setLoading(true);
               try {
                 await authService.login('process.env.EXPO_PUBLIC_DEV_MITRA_EMAIL', 'process.env.EXPO_PUBLIC_DEV_MITRA_PASSWORD');
-                router.replace('/(mitra)');
+                router.replace((returnUrl || '/(mitra)') as any);
               } catch (e: any) {
                 alert(e.message);
               } finally {
