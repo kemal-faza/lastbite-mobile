@@ -30,7 +30,7 @@ function calcDiscountPct(original: number, discounted: number, explicit?: number
 }
 
 export default function ProductDetailScreen() {
-  const { id } = useLocalSearchParams<{ id: string }>();
+  const { id, fromScreen } = useLocalSearchParams<{ id: string; fromScreen?: string }>();
   const { data, isLoading, isError, error, refetch } = useProduct(id);
   const { isAuthenticated } = useAuthStore();
   const product = data?.product;
@@ -41,8 +41,14 @@ export default function ProductDetailScreen() {
   const isProductWishlisted = isWishlisted(id!);
   const { requireAuth } = useRequireAuth();
   const handleBack = useCallback(() => {
-    try { router.back(); } catch { router.replace('/'); }
-  }, []);
+    if (fromScreen) {
+      router.navigate(fromScreen as any);
+    } else if (router.canGoBack()) {
+      router.back();
+    } else {
+      router.replace('/');
+    }
+  }, [fromScreen]);
   useBackHandler(handleBack);
 
   if (isLoading) {
@@ -81,7 +87,7 @@ export default function ProductDetailScreen() {
 
   return (
     <View className="flex-1 bg-background">
-      <Header title="Detail Produk" onBack={handleBack} />
+      <Header title="Detail Produk" onBack={handleBack} fallbackHref={fromScreen || '/'} />
       <ScrollView className="flex-1" contentContainerStyle={{ paddingBottom: 16 }}>
         <View className="w-full h-64 bg-gray-200 overflow-hidden">
           <Image

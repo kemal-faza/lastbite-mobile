@@ -12,12 +12,10 @@ export function Header({ title, onBack, fallbackHref = '/' }: HeaderProps) {
   const handleBack = () => {
     if (onBack) {
       onBack();
+    } else if (router.canGoBack()) {
+      router.back();
     } else {
-      try {
-        router.back();
-      } catch {
-        router.replace(fallbackHref);
-      }
+      router.replace(fallbackHref);
     }
   };
 

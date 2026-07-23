@@ -1,16 +1,37 @@
+import { useEffect, useCallback } from 'react';
 import { View, Text, FlatList, Alert, ActivityIndicator } from 'react-native';
-import { useRouter } from 'expo-router';
+import { useRouter, useLocalSearchParams } from 'expo-router';
 import { useWishlist } from '@/hooks/useWishlist';
 import { useRequireAuth } from '@/hooks/useRequireAuth';
 import { useToast } from '@/contexts/ToastContext';
 import { ProductCard } from '@/components/ProductCard';
 import { EmptyState } from '@/components/EmptyState';
+import { Header } from '@/components/Header';
+import { useBackHandler } from '@/hooks/useBackHandler';
 
 export default function WishlistScreen() {
   const router = useRouter();
+  const { fromScreen } = useLocalSearchParams<{ fromScreen?: string }>();
   const { requireAuth, isAuthenticated } = useRequireAuth();
   const { products, isLoading, refetch, toggle } = useWishlist({ loadProducts: true });
   const { showToast } = useToast();
+
+  const handleBack = useCallback(() => {
+    if (fromScreen) {
+      router.navigate(fromScreen as any);
+    } else if (router.canGoBack()) {
+      router.back();
+    } else {
+      router.replace('/profile');
+    }
+  }, [fromScreen, router]);
+  useBackHandler(handleBack);
+
+  useEffect(() => {
+    if (!isAuthenticated) {
+      requireAuth(() => {});
+    }
+  }, [isAuthenticated, requireAuth]);
 
   const handleToggle = (productId: string) => {
     toggle(
@@ -20,7 +41,6 @@ export default function WishlistScreen() {
   };
 
   if (!isAuthenticated) {
-    requireAuth(() => {});
     return (
       <EmptyState
         icon="heart-broken"
@@ -32,15 +52,7 @@ export default function WishlistScreen() {
 
   return (
     <View className="flex-1 bg-gray-50">
-      {/* Header */}
-      <View className="bg-white px-4 py-3.5 border-b border-gray-100 flex-row items-center justify-between">
-        <Text className="text-lg font-bold text-gray-900">Menu Favorit</Text>
-        {products && products.length > 0 && (
-          <View className="bg-gray-100 px-2.5 py-1 rounded-full">
-            <Text className="text-xs text-gray-500">{products.length} produk</Text>
-          </View>
-        )}
-      </View>
+      <Header title="Menu Favorit" onBack={handleBack} fallbackHref={fromScreen || '/profile'} />
 
       {/* Content */}
       {isLoading ? (
@@ -66,6 +78,7 @@ export default function WishlistScreen() {
               className="w-[48%]"
               isWishlisted={true}
               onToggleWishlist={() => handleToggle(item.id)}
+              fromScreen="/wishlist"
             />
           )}
           refreshing={isLoading}

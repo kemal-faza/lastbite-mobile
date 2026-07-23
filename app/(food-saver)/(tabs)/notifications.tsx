@@ -1,16 +1,37 @@
-import { View, FlatList, Text, ActivityIndicator } from 'react-native';
-import { useNotifications, useNotificationTap } from '@/hooks/useNotifications';
-import { NotificationCard } from '@/components/NotificationCard';
-import { useRequireAuth } from '@/hooks/useRequireAuth';
-import { EmptyState } from '@/components/EmptyState';
+import { useEffect, useCallback } from "react";
+import { View, FlatList, Text, ActivityIndicator } from "react-native";
+import { useLocalSearchParams, router } from "expo-router";
+import { useNotifications, useNotificationTap } from "@/hooks/useNotifications";
+import { NotificationCard } from "@/components/NotificationCard";
+import { useRequireAuth } from "@/hooks/useRequireAuth";
+import { EmptyState } from "@/components/EmptyState";
+import { Header } from "@/components/Header";
+import { useBackHandler } from "@/hooks/useBackHandler";
 
 export default function NotificationsScreen() {
+  const { fromScreen } = useLocalSearchParams<{ fromScreen?: string }>();
   const { requireAuth, isAuthenticated } = useRequireAuth();
   const { notifications, unreadCount, isLoading, refresh } = useNotifications();
   const handleTap = useNotificationTap();
 
+  const handleBack = useCallback(() => {
+    if (fromScreen) {
+      router.navigate(fromScreen as any);
+    } else if (router.canGoBack()) {
+      router.back();
+    } else {
+      router.replace("/");
+    }
+  }, [fromScreen]);
+  useBackHandler(handleBack);
+
+  useEffect(() => {
+    if (!isAuthenticated) {
+      requireAuth(() => {});
+    }
+  }, [isAuthenticated, requireAuth]);
+
   if (!isAuthenticated) {
-    requireAuth(() => {});
     return (
       <EmptyState
         icon="bell-sleep"
@@ -22,15 +43,11 @@ export default function NotificationsScreen() {
 
   return (
     <View className="flex-1 bg-gray-50">
-      {/* Header */}
-      <View className="bg-white px-4 py-3.5 border-b border-gray-100 flex-row items-center justify-between">
-        <Text className="text-lg font-bold text-gray-900">Notifikasi</Text>
-        {unreadCount > 0 && (
-          <View className="bg-red-500 rounded-full min-w-[22px] h-[22px] items-center justify-center px-1.5">
-            <Text className="text-white text-[11px] font-bold">{unreadCount}</Text>
-          </View>
-        )}
-      </View>
+      <Header
+        title="Notifikasi"
+        onBack={handleBack}
+        fallbackHref={fromScreen || "/"}
+      />
 
       {/* Content */}
       {isLoading ? (
@@ -48,10 +65,7 @@ export default function NotificationsScreen() {
           data={notifications}
           keyExtractor={(item) => item.id}
           renderItem={({ item }) => (
-            <NotificationCard
-              notification={item}
-              onPress={handleTap}
-            />
+            <NotificationCard notification={item} onPress={handleTap} />
           )}
           refreshing={isLoading}
           onRefresh={refresh}

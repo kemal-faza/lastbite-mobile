@@ -172,7 +172,7 @@ export default function CartScreen() {
                 <Button
                   testID={`checkout-${storeName.replace(/\s+/g, '-')}`}
                   variant="default"
-                  onPress={() => router.push(`/checkout?storeName=${encodeURIComponent(storeName)}`)}
+                  onPress={() => router.push(`/checkout?storeName=${encodeURIComponent(storeName)}&fromScreen=/cart`)}
                 >
                   <Text className="text-white font-semibold">Checkout</Text>
                 </Button>
