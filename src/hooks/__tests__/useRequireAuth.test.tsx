@@ -6,7 +6,7 @@ import { Text } from 'react-native';
 
 const defaultSegments: string[] = [];
 const mockNavState = { key: 'test' };
-const mockRouter = { push: jest.fn(), replace: jest.fn(), back: jest.fn() };
+const mockRouter = { push: jest.fn(), replace: jest.fn(), back: jest.fn(), navigate: jest.fn() };
 
 jest.mock('expo-router', () => ({
   get router() { return mockRouter; },
@@ -18,6 +18,7 @@ beforeEach(() => {
   mockRouter.push.mockClear();
   mockRouter.replace.mockClear();
   mockRouter.back.mockClear();
+  mockRouter.navigate.mockClear();
   defaultSegments.length = 0;
   (useSegments as jest.Mock).mockClear();
   (useRootNavigationState as jest.Mock).mockClear();
