@@ -40,7 +40,7 @@ describe('Button', () => {
       expect(firstChild?.type).toBe('Text');
     });
 
-    it('passes className to inner Animated.View (not outer Pressable)', async () => {
+    it('passes className to outer Pressable for touch target sizing', async () => {
       const result = await render(
         <Button variant="plain" className="flex-row p-4">
           <Text>Test</Text>
@@ -52,16 +52,12 @@ describe('Button', () => {
         throw new Error('Tree is empty');
       }
 
-      // Outer Pressable should NOT have className (avoids visual duplication)
-      expect(tree.props).not.toHaveProperty('className');
-
-      // Inner Animated.View should have the className for both styling + layout
-      const animatedView: any = tree.children[0];
-      expect(animatedView?.props?.className).toContain('flex-row');
-      expect(animatedView?.props?.className).toContain('p-4');
+      // Outer Pressable should receive className so touch hit-box matches button size
+      expect(tree.props.className).toContain('flex-row');
+      expect(tree.props.className).toContain('p-4');
     });
 
-    it('passes className to inner Animated.View for layout cascade', async () => {
+    it('passes className to outer Pressable for layout cascade', async () => {
       const result = await render(
         <Button variant="plain" className="flex-row items-center gap-2">
           <Text>Icon</Text>
@@ -74,13 +70,10 @@ describe('Button', () => {
         throw new Error('Tree is empty');
       }
 
-      // Structure: Pressable > Animated.View > children
-      const animatedView: any = tree.children[0];
-
-      // Animated.View should receive the flex layout className
-      expect(animatedView?.props?.className).toContain('flex-row');
-      expect(animatedView?.props?.className).toContain('items-center');
-      expect(animatedView?.props?.className).toContain('gap-2');
+      // Outer Pressable receives flex layout className
+      expect(tree.props.className).toContain('flex-row');
+      expect(tree.props.className).toContain('items-center');
+      expect(tree.props.className).toContain('gap-2');
     });
 
     it('preserves onPress callback', async () => {
