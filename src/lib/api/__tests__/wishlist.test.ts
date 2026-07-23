@@ -21,6 +21,18 @@ describe('wishlist API', () => {
       expect(apiFetch).toHaveBeenCalledWith('/wishlist-subscriptions', { auth: true });
       expect(result).toEqual({ productIds: ['uuid-1', 'uuid-2'] });
     });
+
+    it('handles direct productIds array payload from backend', async () => {
+      const { apiFetch } = jest.requireMock('../client') as { apiFetch: jest.Mock };
+      apiFetch.mockResolvedValueOnce({
+        productIds: ['uuid-1', 'uuid-2'],
+      });
+
+      const result = await getWishlist();
+
+      expect(apiFetch).toHaveBeenCalledWith('/wishlist-subscriptions', { auth: true });
+      expect(result).toEqual({ productIds: ['uuid-1', 'uuid-2'] });
+    });
   });
 
   describe('subscribeToProduct', () => {
