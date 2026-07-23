@@ -12,6 +12,7 @@ export function PressableOpacity({
   className,
   onPressIn,
   onPressOut,
+  style,
   ...props
 }: PressableOpacityProps) {
   const opacity = useRef(new Animated.Value(1)).current;
@@ -41,8 +42,14 @@ export function PressableOpacity({
   );
 
   return (
-    <Pressable onPressIn={handlePressIn} onPressOut={handlePressOut} {...props}>
-      <Animated.View className={className} style={[{ opacity }]}>
+    <Pressable
+      onPressIn={handlePressIn}
+      onPressOut={handlePressOut}
+      className={className}
+      style={style}
+      {...props}
+    >
+      <Animated.View style={[{ opacity }]}>
         {children}
       </Animated.View>
     </Pressable>
