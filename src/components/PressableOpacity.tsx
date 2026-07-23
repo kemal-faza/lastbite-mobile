@@ -9,6 +9,7 @@ export interface PressableOpacityProps extends Omit<PressableProps, 'children'> 
 export function PressableOpacity({
   activeOpacity = 0.2,
   children,
+  className,
   onPressIn,
   onPressOut,
   ...props
@@ -41,7 +42,9 @@ export function PressableOpacity({
 
   return (
     <Pressable onPressIn={handlePressIn} onPressOut={handlePressOut} {...props}>
-      <Animated.View style={[{ opacity }]}>{children}</Animated.View>
+      <Animated.View className={className} style={[{ opacity }]}>
+        {children}
+      </Animated.View>
     </Pressable>
   );
 }
