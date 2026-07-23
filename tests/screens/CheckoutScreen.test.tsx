@@ -66,7 +66,7 @@ jest.mock('expo-image', () => ({ Image: 'Image' }));
 
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { ToastProvider } from '@/contexts/ToastContext';
-import CheckoutScreen from '../../app/(food-saver)/(tabs)/checkout';
+import CheckoutScreen from '../../app/(food-saver)/checkout';
 import { createOrder } from '@/lib/api/orders';
 
 const queryClient = new QueryClient({ defaultOptions: { queries: { retry: false } } });
@@ -143,7 +143,7 @@ describe('CheckoutScreen', () => {
     await fireEvent.press(getByTestId('confirm-button'));
 
     await waitFor(() => {
-      expect(router.replace).toHaveBeenCalledWith('/order/ord-2?justChecked=true&fromScreen=/orders');
+      expect(router.replace).toHaveBeenCalledWith('/orders/ord-2?justChecked=true');
     });
   });
 

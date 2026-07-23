@@ -48,7 +48,7 @@ export const NotificationRouter = {
       case 'stock_alert':
         return payload.productId ? `/(food-saver)/product/${payload.productId}` : '/(food-saver)';
       case 'order_status':
-        return payload.orderId ? `/(food-saver)/order/${payload.orderId}` : '/(food-saver)';
+        return payload.orderId ? `/(food-saver)/orders/${payload.orderId}` : '/(food-saver)';
       case 'general':
       default:
         return '/(food-saver)/notifications';
@@ -114,8 +114,20 @@ export const NotificationRouter = {
       }
     }
 
-    // 3. Navigate
-    const targetRoute = this.resolveRoute(payload, options.userRole);
-    router.push(targetRoute as any);
+    // 3. Navigate — Stack per-tab: back is native pop/switch
+    if (payload.type === 'order_status' && payload.orderId) {
+      router.push({
+        pathname: '/orders/[id]',
+        params: { id: payload.orderId },
+      } as any);
+    } else if (payload.type === 'stock_alert' && payload.productId) {
+      router.push({
+        pathname: '/product/[id]',
+        params: { id: payload.productId },
+      } as any);
+    } else {
+      const targetRoute = this.resolveRoute(payload, options.userRole);
+      router.push(targetRoute as any);
+    }
   }
 };

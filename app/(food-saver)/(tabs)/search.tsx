@@ -200,7 +200,6 @@ export default function SearchScreen() {
                     className="w-[48%]"
                     isWishlisted={isWishlisted(item.id)}
                     onToggleWishlist={() => handleToggle(item.id)}
-                    fromScreen="/search"
                   />
                 )}
                 numColumns={2}

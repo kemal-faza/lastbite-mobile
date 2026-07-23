@@ -1,6 +1,6 @@
-import { useEffect, useCallback } from 'react';
+import { useEffect } from 'react';
 import { View, Text, FlatList, Alert, ActivityIndicator } from 'react-native';
-import { useRouter, useLocalSearchParams } from 'expo-router';
+import { router } from 'expo-router';
 import { useWishlist } from '@/hooks/useWishlist';
 import { useRequireAuth } from '@/hooks/useRequireAuth';
 import { useToast } from '@/contexts/ToastContext';
@@ -10,21 +10,11 @@ import { Header } from '@/components/Header';
 import { useBackHandler } from '@/hooks/useBackHandler';
 
 export default function WishlistScreen() {
-  const router = useRouter();
-  const { fromScreen } = useLocalSearchParams<{ fromScreen?: string }>();
   const { requireAuth, isAuthenticated } = useRequireAuth();
   const { products, isLoading, refetch, toggle } = useWishlist({ loadProducts: true });
   const { showToast } = useToast();
 
-  const handleBack = useCallback(() => {
-    if (fromScreen) {
-      router.navigate(fromScreen as any);
-    } else if (router.canGoBack()) {
-      router.back();
-    } else {
-      router.replace('/profile');
-    }
-  }, [fromScreen, router]);
+  const handleBack = () => router.back();
   useBackHandler(handleBack);
 
   useEffect(() => {
@@ -52,7 +42,7 @@ export default function WishlistScreen() {
 
   return (
     <View className="flex-1 bg-gray-50">
-      <Header title="Menu Favorit" onBack={handleBack} fallbackHref={fromScreen || '/profile'} />
+      <Header title="Menu Favorit" onBack={handleBack} fallbackHref="/profile" />
 
       {/* Content */}
       {isLoading ? (
@@ -78,7 +68,7 @@ export default function WishlistScreen() {
               className="w-[48%]"
               isWishlisted={true}
               onToggleWishlist={() => handleToggle(item.id)}
-              fromScreen="/wishlist"
+              
             />
           )}
           refreshing={isLoading}

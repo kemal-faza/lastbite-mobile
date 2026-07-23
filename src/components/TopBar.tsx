@@ -1,12 +1,10 @@
 import { View, Text, Image, Pressable } from 'react-native';
-import { router, useSegments } from 'expo-router';
+import { router } from 'expo-router';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { useNotifications } from '@/hooks/useNotifications';
 
 export function TopBar() {
   const { unreadCount } = useNotifications();
-  const segments = useSegments();
-  const currentPath = '/' + segments.join('/');
 
   return (
     <View
@@ -22,7 +20,7 @@ export function TopBar() {
         <Text className="ml-2 text-white text-lg font-bold">LastBite</Text>
       </View>
       <Pressable
-        onPress={() => router.push({ pathname: '/notifications', params: { fromScreen: currentPath } })}
+        onPress={() => router.push('/notifications')}
         hitSlop={10}
         accessibilityLabel="Buka notifikasi"
         accessibilityRole="button"

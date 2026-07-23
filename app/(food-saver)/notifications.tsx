@@ -1,6 +1,6 @@
-import { useEffect, useCallback } from "react";
+import { useEffect } from "react";
 import { View, FlatList, Text, ActivityIndicator } from "react-native";
-import { useLocalSearchParams, router } from "expo-router";
+import { router } from "expo-router";
 import { useNotifications, useNotificationTap } from "@/hooks/useNotifications";
 import { NotificationCard } from "@/components/NotificationCard";
 import { useRequireAuth } from "@/hooks/useRequireAuth";
@@ -9,20 +9,11 @@ import { Header } from "@/components/Header";
 import { useBackHandler } from "@/hooks/useBackHandler";
 
 export default function NotificationsScreen() {
-  const { fromScreen } = useLocalSearchParams<{ fromScreen?: string }>();
   const { requireAuth, isAuthenticated } = useRequireAuth();
   const { notifications, unreadCount, isLoading, refresh } = useNotifications();
   const handleTap = useNotificationTap();
 
-  const handleBack = useCallback(() => {
-    if (fromScreen) {
-      router.navigate(fromScreen as any);
-    } else if (router.canGoBack()) {
-      router.back();
-    } else {
-      router.replace("/");
-    }
-  }, [fromScreen]);
+  const handleBack = () => router.back();
   useBackHandler(handleBack);
 
   useEffect(() => {
@@ -46,7 +37,7 @@ export default function NotificationsScreen() {
       <Header
         title="Notifikasi"
         onBack={handleBack}
-        fallbackHref={fromScreen || "/"}
+        fallbackHref="/"
       />
 
       {/* Content */}

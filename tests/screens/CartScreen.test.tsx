@@ -111,13 +111,13 @@ describe('CartScreen', () => {
     const { router } = require('expo-router');
     const { getByTestId } = await render(<CartScreen />);
     fireEvent.press(getByTestId('checkout-Warung'));
-    expect(router.push).toHaveBeenCalledWith('/checkout?storeName=Warung&fromScreen=/cart');
+    expect(router.push).toHaveBeenCalledWith('/checkout?storeName=Warung');
   });
 
   it('navigates to checkout for second store', async () => {
     const { router } = require('expo-router');
     const { getByTestId } = await render(<CartScreen />);
     fireEvent.press(getByTestId('checkout-Bakery-Segar'));
-    expect(router.push).toHaveBeenCalledWith('/checkout?storeName=Bakery%20Segar&fromScreen=/cart');
+    expect(router.push).toHaveBeenCalledWith('/checkout?storeName=Bakery%20Segar');
   });
 });

@@ -72,7 +72,14 @@ export default function ProfileScreen() {
             Masuk untuk mendapatkan rekomendasi{"\n"}personal dan melacak
             pesanan
           </Text>
-          <PrimaryButton onPress={() => router.push({ pathname: '/login', params: { returnUrl: '/(food-saver)/(tabs)/profile' } })}>
+          <PrimaryButton
+            onPress={() =>
+              router.push({
+                pathname: "/login",
+                params: { returnUrl: "/(food-saver)/(tabs)/profile" },
+              })
+            }
+          >
             Masuk
           </PrimaryButton>
           <Button
@@ -91,7 +98,10 @@ export default function ProfileScreen() {
 
   return (
     <View className="flex-1 bg-background">
-      <ScrollView className="flex-1 p-4" contentContainerStyle={{ paddingBottom: 40 }}>
+      <ScrollView
+        className="flex-1 p-4"
+        contentContainerStyle={{ paddingBottom: 40 }}
+      >
         {/* Avatar + name */}
         <View className="items-center mt-8 mb-6">
           <View className="w-20 h-20 rounded-full bg-primary items-center justify-center mb-4">
@@ -236,12 +246,12 @@ export default function ProfileScreen() {
           <ProfileMenuItem
             icon="clipboard-list"
             label="Riwayat Pesanan"
-            onPress={() => router.push({ pathname: "/orders", params: { fromScreen: "/profile" } })}
+            onPress={() => router.push("/orders")}
           />
           <ProfileMenuItem
             icon="heart-outline"
             label="Menu Favorit"
-            onPress={() => router.push({ pathname: "/wishlist", params: { fromScreen: "/profile" } })}
+            onPress={() => router.push("/wishlist")}
           />
           <ProfileMenuItem
             icon="shield-account"

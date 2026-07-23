@@ -77,27 +77,6 @@ export default function TabsLayout() {
         }}
       />
 
-      {/* Hidden screens (tab bar visible, href: null) */}
-      <Tabs.Screen
-        name="product/[id]"
-        options={{ href: null, headerShown: false }}
-      />
-      <Tabs.Screen
-        name="checkout"
-        options={{ href: null, headerShown: false }}
-      />
-      <Tabs.Screen
-        name="order/[id]"
-        options={{ href: null, headerShown: false }}
-      />
-      <Tabs.Screen
-        name="wishlist"
-        options={{ href: null, headerShown: false }}
-      />
-      <Tabs.Screen
-        name="notifications"
-        options={{ href: null, headerShown: false }}
-      />
     </Tabs>
   );
 }

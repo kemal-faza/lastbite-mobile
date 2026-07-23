@@ -13,7 +13,6 @@ interface ProductCardProps {
 	className?: string;
 	isWishlisted?: boolean;
 	onToggleWishlist?: () => void;
-	fromScreen?: string;
 }
 
 export function ProductCard({
@@ -21,7 +20,6 @@ export function ProductCard({
 	className = '',
 	isWishlisted,
 	onToggleWishlist,
-	fromScreen,
 }: ProductCardProps) {
 	const variants = getImageVariants(product.imageVariants);
 	const imageSource = variants?.card
@@ -32,14 +30,7 @@ export function ProductCard({
 	const expiryLabel = expiresAt ? formatExpiry(expiresAt) : null;
 
 	const handleProductPress = () => {
-		if (fromScreen) {
-			router.push({
-				pathname: `/product/${product.id}`,
-				params: { fromScreen },
-			});
-		} else {
-			router.push(`/product/${product.id}`);
-		}
+		router.push(`/product/${product.id}`);
 	};
 
 	return (

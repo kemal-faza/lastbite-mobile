@@ -1,4 +1,3 @@
-import { useCallback } from 'react';
 import { View, Text, ScrollView, ActivityIndicator, TouchableOpacity, Linking } from 'react-native';
 import { useLocalSearchParams, router } from 'expo-router';
 import { useBackHandler } from '@/hooks/useBackHandler';
@@ -30,7 +29,7 @@ function calcDiscountPct(original: number, discounted: number, explicit?: number
 }
 
 export default function ProductDetailScreen() {
-  const { id, fromScreen } = useLocalSearchParams<{ id: string; fromScreen?: string }>();
+  const { id } = useLocalSearchParams<{ id: string }>();
   const { data, isLoading, isError, error, refetch } = useProduct(id);
   const { isAuthenticated } = useAuthStore();
   const product = data?.product;
@@ -40,15 +39,7 @@ export default function ProductDetailScreen() {
   const { isWishlisted, toggle: toggleWishlist, isPending: isTogglePending } = useWishlist();
   const isProductWishlisted = isWishlisted(id!);
   const { requireAuth } = useRequireAuth();
-  const handleBack = useCallback(() => {
-    if (fromScreen) {
-      router.navigate(fromScreen as any);
-    } else if (router.canGoBack()) {
-      router.back();
-    } else {
-      router.replace('/');
-    }
-  }, [fromScreen]);
+  const handleBack = () => router.back();
   useBackHandler(handleBack);
 
   if (isLoading) {
@@ -87,7 +78,7 @@ export default function ProductDetailScreen() {
 
   return (
     <View className="flex-1 bg-background">
-      <Header title="Detail Produk" onBack={handleBack} fallbackHref={fromScreen || '/'} />
+      <Header title="Detail Produk" onBack={handleBack} fallbackHref="/" />
       <ScrollView className="flex-1" contentContainerStyle={{ paddingBottom: 16 }}>
         <View className="w-full h-64 bg-gray-200 overflow-hidden">
           <Image

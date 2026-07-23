@@ -1,17 +1,24 @@
-import { View, Text, ScrollView, Pressable, TouchableOpacity, Alert } from 'react-native';
-import { useRef, useCallback } from 'react';
-import { Swipeable } from 'react-native-gesture-handler';
-import { MaterialCommunityIcons } from '@expo/vector-icons';
-import { router } from 'expo-router';
-import { Image } from 'expo-image';
-import { Button } from '@/components/ui/button';
-import { PrimaryButton } from '@/components/PrimaryButton';
-import { useCart } from '@/hooks/useCart';
-import { useAuthStore } from '@/stores/authStore';
-import type { CartItem } from '@/lib/api/cart';
-import { EmptyState } from '@/components/EmptyState';
-import { getImageVariants } from '@/lib/api/products';
-import { groupByStore, calculateCartTotal } from '@/lib/cart';
+import {
+  View,
+  Text,
+  ScrollView,
+  Pressable,
+  TouchableOpacity,
+  Alert,
+} from "react-native";
+import { useRef, useCallback } from "react";
+import { Swipeable } from "react-native-gesture-handler";
+import { MaterialCommunityIcons } from "@expo/vector-icons";
+import { router } from "expo-router";
+import { Image } from "expo-image";
+import { Button } from "@/components/ui/button";
+import { PrimaryButton } from "@/components/PrimaryButton";
+import { useCart } from "@/hooks/useCart";
+import { useAuthStore } from "@/stores/authStore";
+import type { CartItem } from "@/lib/api/cart";
+import { EmptyState } from "@/components/EmptyState";
+import { getImageVariants } from "@/lib/api/products";
+import { groupByStore, calculateCartTotal } from "@/lib/cart";
 // --- Cart item row with swipe-to-delete ---
 function CartItemRow({
   item,
@@ -26,11 +33,11 @@ function CartItemRow({
 
   const handleDelete = useCallback(() => {
     swipeableRef.current?.close();
-    Alert.alert('Hapus Item', `Hapus "${item.name}" dari keranjang?`, [
-      { text: 'Batal', style: 'cancel' },
+    Alert.alert("Hapus Item", `Hapus "${item.name}" dari keranjang?`, [
+      { text: "Batal", style: "cancel" },
       {
-        text: 'Hapus',
-        style: 'destructive',
+        text: "Hapus",
+        style: "destructive",
         onPress: () => removeItem.mutate(item.productId),
       },
     ]);
@@ -49,7 +56,11 @@ function CartItemRow({
               accessibilityRole="button"
               className="bg-red-500 justify-center items-center w-16 self-stretch"
             >
-              <MaterialCommunityIcons name="trash-can-outline" size={22} color="white" />
+              <MaterialCommunityIcons
+                name="trash-can-outline"
+                size={22}
+                color="white"
+              />
             </TouchableOpacity>
           </View>
         )}
@@ -61,28 +72,45 @@ function CartItemRow({
                 source={
                   getImageVariants(item.imageVariants)?.thumb
                     ? { uri: getImageVariants(item.imageVariants)!.thumb }
-                    : require('@/assets/placeholder.png')
+                    : require("@/assets/placeholder.png")
                 }
                 contentFit="cover"
-                style={{ width: 64, height: 64, borderRadius: 8, backgroundColor: '#e5e7eb' }}
+                style={{
+                  width: 64,
+                  height: 64,
+                  borderRadius: 8,
+                  backgroundColor: "#e5e7eb",
+                }}
               />
             </View>
             <View className="flex-1">
               <Text className="font-bold">{item.name}</Text>
               <Text className="text-gray-500">{item.storeName}</Text>
-              <Text>Rp{item.price.toLocaleString()} x {item.quantity}</Text>
+              <Text>
+                Rp{item.price.toLocaleString()} x {item.quantity}
+              </Text>
             </View>
           </View>
           <View className="flex-row items-center">
             <Pressable
-              onPress={() => updateItem.mutate({ productId: item.productId, quantity: item.quantity - 1 })}
+              onPress={() =>
+                updateItem.mutate({
+                  productId: item.productId,
+                  quantity: item.quantity - 1,
+                })
+              }
               className="px-3 py-1 bg-gray-200 rounded"
             >
               <Text>-</Text>
             </Pressable>
             <Text className="mx-3">{item.quantity}</Text>
             <Pressable
-              onPress={() => updateItem.mutate({ productId: item.productId, quantity: item.quantity + 1 })}
+              onPress={() =>
+                updateItem.mutate({
+                  productId: item.productId,
+                  quantity: item.quantity + 1,
+                })
+              }
               className="px-3 py-1 bg-gray-200 rounded"
             >
               <Text>+</Text>
@@ -106,7 +134,14 @@ export default function CartScreen() {
           title="Login untuk mengakses keranjang"
           description="Masuk atau daftar untuk mulai berbelanja"
           action={
-            <PrimaryButton onPress={() => router.push({ pathname: '/login', params: { returnUrl: '/(food-saver)/(tabs)/cart' } })}>
+            <PrimaryButton
+              onPress={() =>
+                router.push({
+                  pathname: "/login",
+                  params: { returnUrl: "/(food-saver)/(tabs)/cart" },
+                })
+              }
+            >
               Masuk
             </PrimaryButton>
           }
@@ -126,7 +161,11 @@ export default function CartScreen() {
               icon="cart-off"
               title="Keranjang Kosong"
               description="Cari makanan surplus favoritmu dan tambahkan ke keranjang"
-              action={<PrimaryButton onPress={() => router.push('/search')}>Cari Makanan</PrimaryButton>}
+              action={
+                <PrimaryButton onPress={() => router.push("/search")}>
+                  Cari Makanan
+                </PrimaryButton>
+              }
             />
           </View>
         </View>
@@ -141,7 +180,10 @@ export default function CartScreen() {
 
   return (
     <View className="flex-1 bg-background">
-      <ScrollView className="flex-1 p-4" contentContainerStyle={{ paddingBottom: 24 }}>
+      <ScrollView
+        className="flex-1 p-4"
+        contentContainerStyle={{ paddingBottom: 24 }}
+      >
         <Text className="text-xl font-bold text-primary mb-4">Keranjang</Text>
 
         {storeNames.map((storeName) => {
@@ -152,8 +194,14 @@ export default function CartScreen() {
             <View key={storeName} className="mb-6">
               {/* Store Header */}
               <View className="flex-row items-center mb-3">
-                <MaterialCommunityIcons name="store-outline" size={20} color="#374151" />
-                <Text className="text-lg font-bold text-gray-800 ml-2">{storeName}</Text>
+                <MaterialCommunityIcons
+                  name="store-outline"
+                  size={20}
+                  color="#374151"
+                />
+                <Text className="text-lg font-bold text-gray-800 ml-2">
+                  {storeName}
+                </Text>
               </View>
 
               {/* Store Items with swipe-to-delete */}
@@ -168,11 +216,17 @@ export default function CartScreen() {
 
               {/* Store subtotal & checkout */}
               <View className="flex-row justify-between items-center mt-2 pt-2 border-t border-gray-200">
-                <Text className="text-base font-semibold">Subtotal: Rp{storeTotal.toLocaleString()}</Text>
+                <Text className="text-base font-semibold">
+                  Subtotal: Rp{storeTotal.toLocaleString()}
+                </Text>
                 <Button
-                  testID={`checkout-${storeName.replace(/\s+/g, '-')}`}
+                  testID={`checkout-${storeName.replace(/\s+/g, "-")}`}
                   variant="default"
-                  onPress={() => router.push(`/checkout?storeName=${encodeURIComponent(storeName)}&fromScreen=/cart`)}
+                  onPress={() =>
+                    router.push(
+                      `/checkout?storeName=${encodeURIComponent(storeName)}`,
+                    )
+                  }
                 >
                   <Text className="text-white font-semibold">Checkout</Text>
                 </Button>
