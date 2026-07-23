@@ -63,6 +63,7 @@ export default function WishlistScreen() {
           renderItem={({ item }) => (
             <ProductCard
               product={item}
+              className="w-[48%]"
               isWishlisted={true}
               onToggleWishlist={() => handleToggle(item.id)}
             />

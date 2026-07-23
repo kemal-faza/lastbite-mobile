@@ -1,6 +1,13 @@
 import { render, fireEvent } from '@testing-library/react-native';
 import { ProductCard } from '@/components/ProductCard';
 
+jest.mock('@/components/ui/text', () => ({
+  TextClassContext: {
+    Provider: ({ children }: { children: React.ReactNode }) => <>{children}</>,
+  },
+  Text: 'Text',
+}));
+
 jest.mock('expo-router', () => ({
   router: { push: jest.fn() },
 }));
@@ -12,6 +19,8 @@ jest.mock('expo-image', () => ({
 jest.mock('@expo/vector-icons', () => ({
   MaterialCommunityIcons: 'MaterialCommunityIcons',
 }));
+
+jest.mock('react-native-reanimated');
 
 const baseProduct = {
   id: 'prod-1',
@@ -60,8 +69,8 @@ describe('ProductCard', () => {
     expect(router.push).not.toHaveBeenCalled();
   });
 
-  it('renders WishlistHeart when onToggleWishlist is provided', async () => {
-    const { getByTestId } = await render(
+  it('renders bare WishlistHeart (no nested Button) when onToggleWishlist is provided', async () => {
+    const { getByTestId, queryByTestId } = await render(
       <ProductCard
         product={baseProduct}
         isWishlisted={true}
@@ -69,7 +78,9 @@ describe('ProductCard', () => {
       />,
     );
 
-    // WishlistHeart should be rendered
-    expect(getByTestId('wishlist-heart')).toBeTruthy();
+    // Outer Pressable should exist
+    expect(getByTestId('product-card-heart')).toBeTruthy();
+    // Inner WishlistHeart should be bare — no testID="wishlist-heart" Button
+    expect(queryByTestId('wishlist-heart')).toBeNull();
   });
 });
