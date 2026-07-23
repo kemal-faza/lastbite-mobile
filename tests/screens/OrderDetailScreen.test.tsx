@@ -61,7 +61,7 @@ jest.mock('@/hooks/useBackHandler', () => ({
 }));
 
 import { useOrder, useConfirmPickup, useCancelExpired } from '@/hooks/useOrders';
-import OrderDetailScreen from '../../app/(food-saver)/(tabs)/order/[id]';
+import OrderDetailScreen from '../../app/(food-saver)/(tabs)/orders/[id]';
 
 const baseOrder = {
   id: 'order-1',

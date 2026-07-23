@@ -49,6 +49,6 @@ describe('TopBar', () => {
       }
     }
     const { router } = require('expo-router');
-    expect(router.push).toHaveBeenCalledWith({ pathname: '/notifications', params: { fromScreen: '/' } });
+    expect(router.push).toHaveBeenCalledWith('/notifications');
   });
 });

@@ -178,7 +178,10 @@ describe('useNotificationManager', () => {
         auth: true,
       });
 
-      expect(router.push).toHaveBeenCalledWith('/(food-saver)/order/ord-123');
+      expect(router.push).toHaveBeenCalledWith({
+        pathname: '/orders/[id]',
+        params: { id: 'ord-123' },
+      });
 
       unmount();
     });
@@ -200,7 +203,10 @@ describe('useNotificationManager', () => {
       });
       await act(async () => {});
 
-      expect(router.push).toHaveBeenCalledWith('/(food-saver)/product/prod-456');
+      expect(router.push).toHaveBeenCalledWith({
+        pathname: '/product/[id]',
+        params: { id: 'prod-456' },
+      });
 
       unmount();
     });

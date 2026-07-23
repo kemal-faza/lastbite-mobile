@@ -72,7 +72,7 @@ describe('NotificationRouter Unit Tests', () => {
 
     it('resolves correct route for Food Saver order status', () => {
       const payload = { type: 'order_status', orderId: 'o-1' };
-      expect(NotificationRouter.resolveRoute(payload)).toBe('/(food-saver)/order/o-1');
+      expect(NotificationRouter.resolveRoute(payload)).toBe('/(food-saver)/orders/o-1');
     });
 
     it('resolves default notifications route for general/unhandled type', () => {
@@ -128,7 +128,10 @@ describe('NotificationRouter Unit Tests', () => {
       expect(mockMarkRead).toHaveBeenCalledWith('notif-1');
       expect(queryClient.invalidateQueries).toHaveBeenCalledWith({ queryKey: ['notifications'] });
       expect(queryClient.invalidateQueries).toHaveBeenCalledWith({ queryKey: ['products'] });
-      expect(mockPush).toHaveBeenCalledWith('/(food-saver)/product/p-1');
+      expect(mockPush).toHaveBeenCalledWith({
+        pathname: '/product/[id]',
+        params: { id: 'p-1' },
+      });
     });
 
     it('uses optional custom markAsReadFn if provided', async () => {

@@ -55,7 +55,7 @@ export default function OrdersScreen() {
 						return (
 							<TouchableOpacity
 								className="bg-white p-3 rounded-xl mb-2 flex-row items-center"
-								onPress={() => router.push({ pathname: '/order/[id]', params: { id: item.id, fromScreen: '/orders' } })}
+								onPress={() => router.push({ pathname: '/orders/[id]', params: { id: item.id } })}
 								activeOpacity={0.7}
 							>
 								{firstItem && (

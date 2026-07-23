@@ -1,4 +1,4 @@
-import { useState, useCallback, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { View, Text, ScrollView, TouchableOpacity, ActivityIndicator } from 'react-native';
 import { useLocalSearchParams, router } from 'expo-router';
 import LottieView from 'lottie-react-native';
@@ -14,7 +14,7 @@ import { useToast } from '@/contexts/ToastContext';
 import { colors } from '@/theme';
 
 export default function OrderDetailScreen() {
-  const { id, justChecked, fromScreen } = useLocalSearchParams<{ id: string; justChecked?: string; fromScreen?: string }>();
+  const { id, justChecked } = useLocalSearchParams<{ id: string; justChecked?: string }>();
   const { data: orderData, isLoading, isError } = useOrder(id);
   const { mutate: doConfirmPickup, isPending } = useConfirmPickup();
   const { mutate: doCancelExpired } = useCancelExpired();
@@ -26,16 +26,7 @@ export default function OrderDetailScreen() {
   const [showReviewModal, setShowReviewModal] = useState(false);
   const [reviewProductName, setReviewProductName] = useState('');
 
-  // Hardware back & header back → navigate to fromScreen or /orders
-  const handleBack = useCallback(() => {
-    if (fromScreen) {
-      router.navigate(fromScreen as any);
-    } else if (router.canGoBack()) {
-      router.back();
-    } else {
-      router.replace('/orders');
-    }
-  }, [fromScreen]);
+  const handleBack = () => router.back();
   useBackHandler(handleBack);
 
   // Derive values at top level so all hooks are before early returns
@@ -154,7 +145,7 @@ export default function OrderDetailScreen() {
 
           <View className="w-full gap-3">
             <TouchableOpacity
-              onPress={() => router.replace('/')}
+              onPress={() => router.navigate('/')}
               className="bg-primary py-3.5 rounded-xl"
             >
               <Text className="text-white text-center font-semibold">
@@ -163,7 +154,7 @@ export default function OrderDetailScreen() {
             </TouchableOpacity>
 
             <TouchableOpacity
-              onPress={() => router.replace('/orders')}
+              onPress={() => router.back()}
               className="border-2 border-primary py-3.5 rounded-xl"
             >
               <Text className="text-primary text-center font-semibold">
@@ -198,7 +189,7 @@ export default function OrderDetailScreen() {
   // --- NORMAL PICKUP/DETAIL STATE ---
   return (
     <View className="flex-1 bg-background">
-      <Header title="Detail Pesanan" onBack={handleBack} fallbackHref={fromScreen || '/orders'} />
+      <Header title="Detail Pesanan" onBack={handleBack} fallbackHref="/orders" />
       <ScrollView className="flex-1">
         {/* Hero section (only for active non-expired orders) */}
         {!isFinal && !isExpired && (

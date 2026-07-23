@@ -68,60 +68,18 @@ describe('TabsLayout — all files declared', () => {
     declaredNames = new Set(screens.map((s) => s.name));
   });
 
-  it('parses exactly 10 screens from layout', () => {
-    expect(screens).toHaveLength(10);
+  it('parses exactly 5 screens from layout (no hidden screens)', () => {
+    expect(screens).toHaveLength(5);
   });
 
-  it('has exactly 5 visible screens + 5 hidden screens', () => {
-    const visible = screens.filter((s) => !s.hrefNull);
+  it('has no hidden (href:null) screens — all detail screens are in per-tab Stack groups', () => {
     const hidden = screens.filter((s) => s.hrefNull);
-    expect(visible).toHaveLength(5);
-    expect(hidden).toHaveLength(5);
+    expect(hidden).toHaveLength(0);
   });
 
   it('visible screens are: index, search, cart, orders, profile', () => {
     const visible = screens.filter((s) => !s.hrefNull).map((s) => s.name);
     expect(visible).toEqual(['index', 'search', 'cart', 'orders', 'profile']);
-  });
-
-  it('hidden screens are: product/[id], checkout, order/[id], wishlist, notifications', () => {
-    const hidden = screens.filter((s) => s.hrefNull).map((s) => s.name);
-    expect(hidden).toEqual([
-      'product/[id]',
-      'checkout',
-      'order/[id]',
-      'wishlist',
-      'notifications',
-    ]);
-  });
-
-  it('does NOT declare order/confirm/[id]', () => {
-    const orderConfirm = screens.find((s) => s.name === 'order/confirm/[id]');
-    expect(orderConfirm).toBeUndefined();
-  });
-
-  it('every file in (tabs)/ has a corresponding Tabs.Screen declaration', () => {
-    const tabsDir = path.resolve(__dirname, '../../', TABS_DIR);
-
-    // Find all .tsx files in (tabs)/ directory (recursive through subdirs)
-    const files = fs.readdirSync(tabsDir, { recursive: true }) as string[];
-    const tsxFiles = files.filter(
-      (f) => f.endsWith('.tsx') && f !== '_layout.tsx',
-    );
-
-    const orphanFiles: string[] = [];
-
-    for (const file of tsxFiles) {
-      const screenName = filePathToScreenName(file);
-      if (screenName === null) continue;
-      if (!declaredNames.has(screenName)) {
-        orphanFiles.push(file);
-      }
-    }
-
-    // If there are orphan files (like order/confirm/[id].tsx before fix),
-    // they will appear here. This test should pass only after fixing.
-    expect(orphanFiles).toEqual([]);
   });
 
   it('layout file compiles and exports a component', () => {

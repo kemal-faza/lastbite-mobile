@@ -1,19 +1,23 @@
-import { useCallback } from 'react';
-import { View, Text, ScrollView, ActivityIndicator, TouchableOpacity } from 'react-native';
+import { useCallback } from "react";
+import {
+  View,
+  Text,
+  ScrollView,
+  ActivityIndicator,
+  TouchableOpacity,
+} from "react-native";
 
-import { useProductFilter } from '@/hooks/useProductFilter';
-import type { Product } from '@/lib/api/products';
-import { ProductCard } from '@/components/ProductCard';
-import { CategoryFilter } from '@/components/CategoryFilter';
-import { SkeletonList } from '@/components/SkeletonCard';
-import { SortPills, type SortOption } from '@/components/SortPills';
-import { FilterModal, type FilterState } from '@/components/FilterModal';
-import { MaterialCommunityIcons } from '@expo/vector-icons';
-import { colors } from '@/theme';
-import { useAuthStore } from '@/stores/authStore';
-import { useWishlist } from '@/hooks/useWishlist';
-import { useToast } from '@/contexts/ToastContext';
-
+import { useProductFilter } from "@/hooks/useProductFilter";
+import { ProductCard } from "@/components/ProductCard";
+import { CategoryFilter } from "@/components/CategoryFilter";
+import { SkeletonList } from "@/components/SkeletonCard";
+import { SortPills, type SortOption } from "@/components/SortPills";
+import { FilterModal, type FilterState } from "@/components/FilterModal";
+import { MaterialCommunityIcons } from "@expo/vector-icons";
+import { colors } from "@/theme";
+import { useAuthStore } from "@/stores/authStore";
+import { useWishlist } from "@/hooks/useWishlist";
+import { useToast } from "@/contexts/ToastContext";
 
 export default function HomeScreen() {
   const { isAuthenticated } = useAuthStore();
@@ -32,19 +36,28 @@ export default function HomeScreen() {
     productsQuery,
   } = useProductFilter();
 
-  const { data, isLoading, isError, error, refetch, isRefetching, isPlaceholderData, isFetching } = productsQuery;
+  const {
+    data,
+    isLoading,
+    isError,
+    error,
+    refetch,
+    isRefetching,
+    isPlaceholderData,
+    isFetching,
+  } = productsQuery;
   const filteredProducts = data?.products ?? [];
 
   const handleToggle = useCallback(
     (productId: string) => {
       if (!isAuthenticated) {
-        showToast('Login untuk menambah favorit');
+        showToast("Login untuk menambah favorit");
         return;
       }
       const isCurrentlyWishlisted = isWishlisted(productId);
       toggle(
         { productId, isWishlisted: isCurrentlyWishlisted },
-        { onError: () => showToast('Gagal memperbarui favorit') }
+        { onError: () => showToast("Gagal memperbarui favorit") },
       ).catch(() => {});
     },
     [isAuthenticated, isWishlisted, toggle, showToast],
@@ -52,9 +65,14 @@ export default function HomeScreen() {
 
   return (
     <View className="flex-1 bg-background">
-      <ScrollView className="flex-1" contentContainerStyle={{ paddingBottom: 24 }}>
+      <ScrollView
+        className="flex-1"
+        contentContainerStyle={{ paddingBottom: 24 }}
+      >
         <Text className="text-xl font-bold text-primary p-4">
-          {isAuthenticated ? 'Rekomendasi Buat Kamu' : 'Temukan Produk Terdekat'}
+          {isAuthenticated
+            ? "Rekomendasi Buat Kamu"
+            : "Temukan Produk Terdekat"}
         </Text>
 
         <CategoryFilter selected={category} onSelect={setCategory} />
@@ -68,10 +86,19 @@ export default function HomeScreen() {
             onPress={() => setShowFilter(true)}
             className="flex-shrink-0 flex-row items-center ml-2 px-3 py-1.5 rounded-full border border-gray-300 bg-white"
           >
-            <MaterialCommunityIcons name="tune" size={16} color={colors.textSecondary} />
+            <MaterialCommunityIcons
+              name="tune"
+              size={16}
+              color={colors.textSecondary}
+            />
             <Text className="text-sm text-gray-600 ml-1">Filter</Text>
-            {(filters.maxDistance > 0 || filters.maxPrice > 0 || filters.expiry !== 'Hari Ini') && (
-              <View className="w-2 h-2 rounded-full ml-1" style={{ backgroundColor: colors.destructive }} />
+            {(filters.maxDistance > 0 ||
+              filters.maxPrice > 0 ||
+              filters.expiry !== "Hari Ini") && (
+              <View
+                className="w-2 h-2 rounded-full ml-1"
+                style={{ backgroundColor: colors.destructive }}
+              />
             )}
           </TouchableOpacity>
         </View>
@@ -85,7 +112,7 @@ export default function HomeScreen() {
                 Gagal memuat produk
               </Text>
               <Text className="text-gray-400 text-sm text-center mb-4">
-                {error?.message || 'Terjadi kesalahan koneksi'}
+                {error?.message || "Terjadi kesalahan koneksi"}
               </Text>
               <TouchableOpacity
                 onPress={() => refetch()}
@@ -115,7 +142,9 @@ export default function HomeScreen() {
                   </Text>
                 </View>
               )}
-              <View className={`flex-row flex-wrap justify-between ${isPlaceholderData && isFetching ? 'opacity-50' : ''}`}>
+              <View
+                className={`flex-row flex-wrap justify-between ${isPlaceholderData && isFetching ? "opacity-50" : ""}`}
+              >
                 {filteredProducts.map((p) => (
                   <ProductCard
                     key={p.id}
