@@ -15,20 +15,18 @@ export default function OrdersScreen() {
 
 	if (!isAuthenticated) {
 		return (
-			<View className="flex-1 bg-background">
-				<View className="flex-1 justify-center">
-					<EmptyState
-						icon="clipboard-list-outline"
-						title="Login untuk melihat pesanan"
-						description="Riwayat pesanan akan muncul di sini"
-						action={
-							<PrimaryButton
-								onPress={() => router.push('/login')}>
-								Masuk
-							</PrimaryButton>
-						}
-					/>
-				</View>
+			<View className="flex-1 bg-background justify-center items-center px-4">
+				<EmptyState
+					icon="clipboard-list-outline"
+					title="Login untuk melihat pesanan"
+					description="Riwayat pesanan akan muncul di sini"
+					action={
+						<PrimaryButton
+							onPress={() => router.push({ pathname: '/login', params: { returnUrl: '/(food-saver)/(tabs)/orders' } })}>
+							Masuk
+						</PrimaryButton>
+					}
+				/>
 			</View>
 		);
 	}

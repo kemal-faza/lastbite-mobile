@@ -72,7 +72,7 @@ export default function ProfileScreen() {
             Masuk untuk mendapatkan rekomendasi{"\n"}personal dan melacak
             pesanan
           </Text>
-          <PrimaryButton onPress={() => router.push("/login")}>
+          <PrimaryButton onPress={() => router.push({ pathname: '/login', params: { returnUrl: '/(food-saver)/(tabs)/profile' } })}>
             Masuk
           </PrimaryButton>
           <Button

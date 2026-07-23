@@ -5,8 +5,11 @@ import {
   ScrollView,
   KeyboardAvoidingView,
   Platform,
+  Pressable,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import { router } from 'expo-router';
+import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { Logo } from './Logo';
 import { colors } from '@/theme';
 
@@ -15,6 +18,7 @@ interface AuthScreenLayoutProps {
   subtitle?: string;
   children: ReactNode;
   footer?: ReactNode;
+  showBackButton?: boolean;
 }
 
 export function AuthScreenLayout({
@@ -22,9 +26,31 @@ export function AuthScreenLayout({
   subtitle,
   children,
   footer,
+  showBackButton = true,
 }: AuthScreenLayoutProps) {
+  const handleBack = () => {
+    if (router.canGoBack()) {
+      router.back();
+    } else {
+      router.replace('/(food-saver)');
+    }
+  };
+
   return (
     <SafeAreaView className="flex-1 bg-background">
+      {showBackButton && (
+        <View className="px-4 pt-2">
+          <Pressable
+            onPress={handleBack}
+            className="p-2 -ml-2 self-start flex-row items-center"
+            hitSlop={10}
+            accessibilityLabel="Kembali"
+            accessibilityRole="button"
+          >
+            <MaterialCommunityIcons name="arrow-left" size={24} color={colors.primary} />
+          </Pressable>
+        </View>
+      )}
       <KeyboardAvoidingView
         behavior={Platform.OS === 'ios' ? 'padding' : undefined}
         className="flex-1"
