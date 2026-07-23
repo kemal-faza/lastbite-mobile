@@ -91,7 +91,7 @@ export default function ProfileScreen() {
 
   return (
     <View className="flex-1 bg-background">
-      <ScrollView className="flex-1 p-4">
+      <ScrollView className="flex-1 p-4" contentContainerStyle={{ paddingBottom: 40 }}>
         {/* Avatar + name */}
         <View className="items-center mt-8 mb-6">
           <View className="w-20 h-20 rounded-full bg-primary items-center justify-center mb-4">
@@ -271,18 +271,19 @@ export default function ProfileScreen() {
           </View>
         )}
 
-        <View className="pb-4">
+        <View className="mt-2 mb-4">
           <Button
             variant="outline"
+            size="lg"
             onPress={logout}
-            className="border-destructive"
+            className="border-destructive flex-row items-center justify-center w-full h-11"
           >
             <MaterialCommunityIcons
               name="logout"
               size={18}
               color={colors.destructive}
             />
-            <Text className="text-destructive font-medium ml-1">Keluar</Text>
+            <Text className="text-destructive font-medium ml-2">Keluar</Text>
           </Button>
         </View>
       </ScrollView>

@@ -20,4 +20,15 @@ describe('mapWishlistResponse', () => {
     const result = mapWishlistResponse(raw);
     expect(result).toEqual({ productIds: [] });
   });
+
+  it('maps direct productIds array shape from backend', () => {
+    const raw = { productIds: ['uuid-1', 'uuid-2'] };
+    const result = mapWishlistResponse(raw as any);
+    expect(result).toEqual({ productIds: ['uuid-1', 'uuid-2'] });
+  });
+
+  it('returns empty productIds if raw data is null or unknown format', () => {
+    expect(mapWishlistResponse(null as any)).toEqual({ productIds: [] });
+    expect(mapWishlistResponse({} as any)).toEqual({ productIds: [] });
+  });
 });

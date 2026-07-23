@@ -15,10 +15,14 @@ export interface WishlistResponse {
 // Exported for testing
 export type { RawWishlistResponse };
 
-export function mapWishlistResponse(raw: RawWishlistResponse): WishlistResponse {
-  return {
-    productIds: raw.subscriptions.map(s => s.productId),
-  };
+export function mapWishlistResponse(raw: RawWishlistResponse | { productIds?: string[] } | any): WishlistResponse {
+  if (Array.isArray(raw?.productIds)) {
+    return { productIds: raw.productIds };
+  }
+  if (Array.isArray(raw?.subscriptions)) {
+    return { productIds: raw.subscriptions.map((s: any) => s.productId) };
+  }
+  return { productIds: [] };
 }
 
 export async function getWishlist(): Promise<WishlistResponse> {
