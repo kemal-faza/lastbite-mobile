@@ -12,7 +12,7 @@ interface EmptyStateProps {
 
 export function EmptyState({ icon, title, description, action, testID }: EmptyStateProps) {
   return (
-    <View testID={testID} className="items-center justify-center py-12 px-4">
+    <View testID={testID} className="items-center justify-center py-12 px-4 w-full">
       <View className="w-24 h-24 rounded-full bg-gray-100 items-center justify-center mb-4">
         <MaterialCommunityIcons name={icon} size={48} color={colors.textSecondary} />
       </View>
@@ -20,7 +20,7 @@ export function EmptyState({ icon, title, description, action, testID }: EmptySt
       {description ? (
         <Text className="text-sm text-gray-500 text-center mb-6">{description}</Text>
       ) : null}
-      {action ? <View className="mt-4">{action}</View> : null}
+      {action ? <View className="mt-4 w-full">{action}</View> : null}
     </View>
   );
 }

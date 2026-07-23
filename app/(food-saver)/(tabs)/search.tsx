@@ -91,7 +91,16 @@ export default function SearchScreen() {
 
       {/* Suggestions or Results */}
       {showSuggestions ? (
-        <ScrollView className="flex-1 px-4">
+        <ScrollView
+          className="flex-1 px-4"
+          contentContainerStyle={{
+            flexGrow: 1,
+            justifyContent:
+              trending.length === 0 && recent.length === 0
+                ? "center"
+                : "flex-start",
+          }}
+        >
           {/* Trending */}
           {trending.length > 0 && (
             <View className="mb-5">
@@ -145,7 +154,7 @@ export default function SearchScreen() {
 
           {/* No suggestions state */}
           {trending.length === 0 && recent.length === 0 && (
-            <View className="flex-1 items-center justify-center mt-16">
+            <View className="items-center justify-center">
               <EmptyState
                 icon="magnify"
                 title="Cari makanan favoritmu"
@@ -169,11 +178,13 @@ export default function SearchScreen() {
             </View>
           )}
           {!isLoading && !isError && products.length === 0 && (
-            <EmptyState
-              icon="magnify-close"
-              title="Tidak ditemukan"
-              description={`Tidak ada hasil untuk "${query}"`}
-            />
+            <View className="flex-1 items-center justify-center">
+              <EmptyState
+                icon="magnify-close"
+                title="Tidak ditemukan"
+                description={`Tidak ada hasil untuk "${query}"`}
+              />
+            </View>
           )}
           {!isLoading && !isError && products.length > 0 && (
             <>
