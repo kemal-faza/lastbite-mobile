@@ -48,6 +48,8 @@ jest.mock('@expo/vector-icons', () => ({
   MaterialCommunityIcons: 'MaterialCommunityIcons',
 }));
 
+jest.mock('react-native-reanimated');
+
 const baseProduct: Product = {
   id: 'prod-1',
   name: 'Nasi Goreng Spesial',
@@ -83,7 +85,7 @@ jest.mock('@/stores/authStore', () => ({
 jest.mock('expo-router', () => ({
   useLocalSearchParams: jest.fn(() => ({ id: 'prod-1' })),
   useSegments: jest.fn(() => ['product', 'prod-1']),
-  router: { push: jest.fn(), replace: jest.fn() },
+  router: { push: jest.fn(), replace: jest.fn(), navigate: jest.fn() },
 }));
 
 // --- Helpers ---
