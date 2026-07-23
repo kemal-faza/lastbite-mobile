@@ -5,6 +5,7 @@ import LottieView from 'lottie-react-native';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { useOrder, useConfirmPickup, useCancelExpired } from '@/hooks/useOrders';
 import { useBackHandler } from '@/hooks/useBackHandler';
+import { Header } from '@/components/Header';
 import { CountdownTimer } from '@/components/CountdownTimer';
 import { ConfirmDialog } from '@/components/ConfirmDialog';
 import { ReviewModal } from '@/components/ReviewModal';
@@ -13,7 +14,7 @@ import { useToast } from '@/contexts/ToastContext';
 import { colors } from '@/theme';
 
 export default function OrderDetailScreen() {
-  const { id, justChecked } = useLocalSearchParams<{ id: string; justChecked?: string }>();
+  const { id, justChecked, fromScreen } = useLocalSearchParams<{ id: string; justChecked?: string; fromScreen?: string }>();
   const { data: orderData, isLoading, isError } = useOrder(id);
   const { mutate: doConfirmPickup, isPending } = useConfirmPickup();
   const { mutate: doCancelExpired } = useCancelExpired();
@@ -25,10 +26,16 @@ export default function OrderDetailScreen() {
   const [showReviewModal, setShowReviewModal] = useState(false);
   const [reviewProductName, setReviewProductName] = useState('');
 
-  // Hardware back → navigate to /orders (Pesanan tab)
+  // Hardware back & header back → navigate to fromScreen or /orders
   const handleBack = useCallback(() => {
-    try { router.back(); } catch { router.replace('/orders'); }
-  }, []);
+    if (fromScreen) {
+      router.navigate(fromScreen as any);
+    } else if (router.canGoBack()) {
+      router.back();
+    } else {
+      router.replace('/orders');
+    }
+  }, [fromScreen]);
   useBackHandler(handleBack);
 
   // Derive values at top level so all hooks are before early returns
@@ -191,6 +198,7 @@ export default function OrderDetailScreen() {
   // --- NORMAL PICKUP/DETAIL STATE ---
   return (
     <View className="flex-1 bg-background">
+      <Header title="Detail Pesanan" onBack={handleBack} fallbackHref={fromScreen || '/orders'} />
       <ScrollView className="flex-1">
         {/* Hero section (only for active non-expired orders) */}
         {!isFinal && !isExpired && (

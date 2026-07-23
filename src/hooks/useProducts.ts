@@ -27,7 +27,18 @@ export function useProducts(filters?: ProductFilters) {
         }
       }
 
-      // 3. Sorting
+      // 3. Client-side search filtering fallback
+      if (filters?.search && filters.search.trim().length > 0) {
+        const searchTerm = filters.search.toLowerCase().trim();
+        products = products.filter(
+          (p) =>
+            p.name.toLowerCase().includes(searchTerm) ||
+            p.storeName.toLowerCase().includes(searchTerm) ||
+            (p.description && p.description.toLowerCase().includes(searchTerm))
+        );
+      }
+
+      // 4. Sorting
       if (filters?.sort) {
         if (filters.sort === 'price_asc') {
           products.sort((a, b) => a.discountedPrice - b.discountedPrice);

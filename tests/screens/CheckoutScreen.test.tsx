@@ -143,7 +143,7 @@ describe('CheckoutScreen', () => {
     await fireEvent.press(getByTestId('confirm-button'));
 
     await waitFor(() => {
-      expect(router.replace).toHaveBeenCalledWith('/order/ord-2?just-checked=true');
+      expect(router.replace).toHaveBeenCalledWith('/order/ord-2?justChecked=true&fromScreen=/orders');
     });
   });
 

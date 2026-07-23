@@ -197,12 +197,17 @@ export default function SearchScreen() {
                 renderItem={({ item }) => (
                   <ProductCard
                     product={item}
+                    className="w-[48%]"
                     isWishlisted={isWishlisted(item.id)}
                     onToggleWishlist={() => handleToggle(item.id)}
+                    fromScreen="/search"
                   />
                 )}
                 numColumns={2}
-                columnWrapperStyle={{ gap: 10, marginBottom: 10 }}
+                columnWrapperStyle={{
+                  justifyContent: "space-between",
+                  marginBottom: 12,
+                }}
                 showsVerticalScrollIndicator={false}
               />
             </>

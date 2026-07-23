@@ -20,14 +20,20 @@ const NOTES_MAX = 500;
 export default function CheckoutScreen() {
   const { isAuthenticated, user } = useAuthStore();
   const { cart } = useCart(isAuthenticated);
-  const { storeName } = useLocalSearchParams<{ storeName?: string }>();
+  const { storeName, fromScreen } = useLocalSearchParams<{ storeName?: string; fromScreen?: string }>();
   const queryClient = useQueryClient();
   const [notes, setNotes] = useState('');
   const [loading, setLoading] = useState(false);
   const { showToast } = useToast();
   const handleBack = useCallback(() => {
-    try { router.back(); } catch { router.replace('/cart'); }
-  }, []);
+    if (fromScreen) {
+      router.navigate(fromScreen as any);
+    } else if (router.canGoBack()) {
+      router.back();
+    } else {
+      router.replace('/cart');
+    }
+  }, [fromScreen]);
   useBackHandler(handleBack);
 
   if (!isAuthenticated) return <Redirect href="/login" />;
@@ -44,7 +50,7 @@ export default function CheckoutScreen() {
       const res = await createOrder(user.name, user.phone, notes || undefined, storeName);
       queryClient.invalidateQueries({ queryKey: ['cart'] });
       showToast('Pesanan berhasil dibuat!');
-      router.replace(`/order/${res.order.id}?just-checked=true`);
+      router.replace(`/order/${res.order.id}?justChecked=true&fromScreen=/orders`);
     } catch (e: any) {
       alert(e.message || 'Gagal membuat pesanan. Silakan coba lagi.');
     } finally {
@@ -54,7 +60,7 @@ export default function CheckoutScreen() {
 
   return (
     <View className="flex-1 bg-background">
-      <Header title="Checkout" onBack={handleBack} />
+      <Header title="Checkout" onBack={handleBack} fallbackHref={fromScreen || '/cart'} />
       <ScrollView className="flex-1 p-4" contentContainerStyle={{ paddingBottom: 24 }}>
         <Text className="text-xl font-bold text-primary mb-4">
           {storeName ? `Checkout - ${storeName}` : 'Checkout'}

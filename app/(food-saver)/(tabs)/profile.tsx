@@ -236,12 +236,12 @@ export default function ProfileScreen() {
           <ProfileMenuItem
             icon="clipboard-list"
             label="Riwayat Pesanan"
-            onPress={() => router.push("/orders")}
+            onPress={() => router.push({ pathname: "/orders", params: { fromScreen: "/profile" } })}
           />
           <ProfileMenuItem
             icon="heart-outline"
             label="Menu Favorit"
-            onPress={() => router.push("/wishlist")}
+            onPress={() => router.push({ pathname: "/wishlist", params: { fromScreen: "/profile" } })}
           />
           <ProfileMenuItem
             icon="shield-account"

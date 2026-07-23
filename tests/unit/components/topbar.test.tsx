@@ -7,6 +7,7 @@ jest.mock('expo-router', () => ({
   router: {
     push: jest.fn(),
   },
+  useSegments: jest.fn(() => []),
 }));
 
 jest.mock('@/lib/api/client', () => ({ apiFetch: jest.fn() }));
@@ -48,6 +49,6 @@ describe('TopBar', () => {
       }
     }
     const { router } = require('expo-router');
-    expect(router.push).toHaveBeenCalledWith('/notifications');
+    expect(router.push).toHaveBeenCalledWith({ pathname: '/notifications', params: { fromScreen: '/' } });
   });
 });
