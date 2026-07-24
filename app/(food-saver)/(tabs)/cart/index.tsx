@@ -95,6 +95,7 @@ function CartItemRow({
           </View>
           <View className="flex-row items-center">
             <Pressable
+              accessibilityLabel="Kurangi quantity"
               onPress={() =>
                 updateItem.mutate({
                   productId: item.productId,
@@ -107,6 +108,7 @@ function CartItemRow({
             </Pressable>
             <Text className="mx-3">{item.quantity}</Text>
             <Pressable
+              accessibilityLabel="Tambah quantity"
               onPress={() =>
                 updateItem.mutate({
                   productId: item.productId,
@@ -242,6 +244,7 @@ export default function CartScreen() {
                       `/checkout?storeName=${encodeURIComponent(storeName)}`,
                     )
                   }
+                  accessibilityLabel="Checkout"
                 >
                   <Text className="text-white font-semibold">Checkout</Text>
                 </Button>

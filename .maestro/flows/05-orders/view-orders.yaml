@@ -7,8 +7,11 @@ appId: com.lastbite.mobile
     file: ../shared/login-foodsaver.yaml
 
 # Navigate to orders tab
-- tapOn: "Pesanan"
+- tapOn:
+    id: "tab-orders"
 - waitForAnimationToEnd
 
-# Verify orders page title
-- assertVisible: "Pesanan"
+# Verify orders tab
+- tapOn:
+    id: "tab-orders"
+

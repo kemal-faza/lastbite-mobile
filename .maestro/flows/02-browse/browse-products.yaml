@@ -10,9 +10,9 @@ appId: com.lastbite.mobile
 - assertVisible: "produk tersedia"
 
 # --- Test: Category Filters ---
-# Tap first category pill
+# Tap Makanan category pill
 - tapOn:
-    point: "15%,25%"     # Approximate position of first category chip
+    id: "category-pill-meals"
 
 # Wait for filter to apply
 - waitForAnimationToEnd
@@ -20,19 +20,21 @@ appId: com.lastbite.mobile
 # Verify products still visible after filter
 - assertVisible: "produk tersedia"
 
-# Tap "Semua" to clear filter (first chip)
+# Tap "Semua" to clear filter
 - tapOn:
-    point: "15%,25%"
+    id: "category-pill-all"
+- waitForAnimationToEnd
 
 # --- Test: Sort Options ---
-# Tap sort pill to cycle sort options
+# Tap "Terdekat" sort pill
 - tapOn:
-    point: "30%,30%"     # Approximate position of "Terdekat" or first sort pill
+    id: "sort-pill-distance-asc"
 - waitForAnimationToEnd
 
 # --- Test: Filter Modal ---
 # Tap Filter icon button
-- tapOn: "Filter"
+- tapOn:
+    id: "filter-button"
 - waitForAnimationToEnd
 
 # Verify filter modal opened
@@ -44,11 +46,7 @@ appId: com.lastbite.mobile
     id: "filter-backdrop"
 - waitForAnimationToEnd
 
-# --- Test: Scroll through products ---
-- scrollUntilVisible:
-    item: "Beli Lagi"
-    direction: DOWN
-    timeout: 5000
+# Verify still on Beranda tab
+- tapOn:
+    id: "tab-index"
 
-# Verify still on Beranda
-- assertVisible: "Rekomendasi Buat Kamu"

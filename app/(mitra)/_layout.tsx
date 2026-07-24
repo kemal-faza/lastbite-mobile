@@ -1,11 +1,32 @@
 import { Drawer } from 'expo-router/drawer';
-import { Redirect, router } from 'expo-router';
+import { Redirect, router, useNavigation } from 'expo-router';
 import { View, TouchableOpacity } from 'react-native';
-import { FontAwesome } from '@expo/vector-icons';
+import { FontAwesome, MaterialCommunityIcons } from '@expo/vector-icons';
 import { useAuthStore } from '@/stores/authStore';
 import { OfflineBanner } from '@/components/OfflineBanner';
 import { useNetworkStatus } from '@/hooks/useNetworkStatus';
 import { MitraDrawerContent } from '@/components/MitraDrawerContent';
+
+function CustomDrawerToggleButton() {
+  const navigation = useNavigation<any>();
+  return (
+    <TouchableOpacity
+      testID="drawer-toggle-button"
+      onPress={() => {
+        if (typeof navigation.toggleDrawer === 'function') {
+          navigation.toggleDrawer();
+        } else {
+          navigation.dispatch({ type: 'TOGGLE_DRAWER' });
+        }
+      }}
+      className="ml-4 p-1"
+      accessibilityLabel="Open drawer"
+      accessibilityRole="button"
+    >
+      <MaterialCommunityIcons name="menu" size={24} color="#000" />
+    </TouchableOpacity>
+  );
+}
 
 export default function MitraLayout() {
   const { user, isAuthenticated } = useAuthStore();
@@ -19,7 +40,18 @@ export default function MitraLayout() {
       {!isConnected && <OfflineBanner />}
       <Drawer
         drawerContent={(props) => <MitraDrawerContent {...props} />}
-        screenOptions={{ headerShown: true }}
+        screenOptions={{
+          headerShown: true,
+          headerLeft: () => <CustomDrawerToggleButton />,
+          drawerStyle: {
+            marginTop: '8%',
+            marginBottom: '4%',
+            height: '88%',
+            borderTopRightRadius: 16,
+            borderBottomRightRadius: 16,
+            overflow: 'hidden',
+          },
+        }}
       >
         <Drawer.Screen name="index" options={{ title: 'Dashboard' }} />
         <Drawer.Screen name="analytics" options={{ title: 'Analisis' }} />

@@ -63,6 +63,7 @@ function TabBarWrapper({ state, descriptors, navigation }: any) {
           <Pressable
             key={route.key}
             onPress={onPress}
+            testID={`tab-${route.name}`}
             style={{ flex: 1, alignItems: 'center', justifyContent: 'center', overflow: 'visible' }}
             accessibilityRole="button"
             accessibilityState={isFocused ? { selected: true } : {}}
@@ -107,6 +108,7 @@ export default function TabsLayout() {
         name="index"
         options={{
           title: 'Beranda',
+          tabBarAccessibilityLabel: 'Tab Beranda',
           tabBarIcon: ({ color }) => (
             <MaterialCommunityIcons name="home" size={24} color={color} />
           ),
@@ -116,6 +118,7 @@ export default function TabsLayout() {
         name="search"
         options={{
           title: 'Cari',
+          tabBarAccessibilityLabel: 'Tab Cari',
           tabBarIcon: ({ color }) => (
             <MaterialCommunityIcons name="magnify" size={24} color={color} />
           ),
@@ -125,6 +128,7 @@ export default function TabsLayout() {
         name="cart"
         options={{
           title: 'Keranjang',
+          tabBarAccessibilityLabel: 'Tab Keranjang',
           tabBarIcon: ({ focused }) => (
             <View className="items-center justify-center -mt-4">
               <View className={`items-center justify-center rounded-full w-14 h-14 shadow-lg ${focused ? 'bg-primary' : 'bg-primary/80'}`}>
@@ -143,6 +147,7 @@ export default function TabsLayout() {
         name="orders"
         options={{
           title: 'Pesanan',
+          tabBarAccessibilityLabel: 'Tab Pesanan',
           tabBarIcon: ({ color }) => (
             <MaterialCommunityIcons
               name="clipboard-list"
@@ -156,6 +161,7 @@ export default function TabsLayout() {
         name="profile"
         options={{
           title: 'Profil',
+          tabBarAccessibilityLabel: 'Tab Profil',
           tabBarIcon: ({ color }) => (
             <MaterialCommunityIcons name="account" size={24} color={color} />
           ),

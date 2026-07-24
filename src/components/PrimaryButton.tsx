@@ -5,6 +5,7 @@ import { ActivityIndicator, type PressableProps } from 'react-native';
 interface PrimaryButtonProps extends PressableProps {
   loading?: boolean;
   children: React.ReactNode;
+  accessibilityLabel?: string;
 }
 
 export function PrimaryButton({ loading, children, disabled, ...rest }: PrimaryButtonProps) {

@@ -92,6 +92,8 @@ export default function HomeScreen() {
             <SortPills selected={sort} onSelect={setSort} />
           </View>
           <TouchableOpacity
+            testID="filter-button"
+            accessibilityLabel="Buka Filter"
             onPress={() => setShowFilter(true)}
             className="flex-shrink-0 flex-row items-center ml-2 px-3 py-1.5 rounded-full border border-gray-300 bg-white"
           >

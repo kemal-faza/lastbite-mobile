@@ -1,0 +1,29 @@
+appId: com.lastbite.mobile
+---
+# Logout from current session
+# Works for both Food Saver and Mitra roles
+# Post-conditions: back on login screen or home screen
+
+# --- Step 1: Open drawer first (Mitra role) ---
+- tapOn:
+    id: "drawer-toggle-button"
+    optional: true
+- waitForAnimationToEnd
+
+# --- Step 2: Navigate to profile tab (Food Saver role) ---
+- tapOn:
+    id: "tab-profile"
+    optional: true
+- waitForAnimationToEnd
+
+# --- Step 3: Tap Keluar (in drawer for Mitra, in profile for Food Saver) ---
+- tapOn:
+    id: "logout-button"
+    optional: true
+- tapOn:
+    text: "Keluar"
+    optional: true
+
+# Wait for logout to complete
+- waitForAnimationToEnd
+

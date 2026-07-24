@@ -11,7 +11,7 @@ export function TopBar() {
       className="bg-primary flex-row items-center justify-between px-4"
       style={{ height: 60 }}
     >
-      <View className="flex-row items-center">
+      <View testID="topbar-logo" className="flex-row items-center">
         <Image
           source={require('../../assets/icon.png')}
           style={{ width: 28, height: 28 }}
@@ -20,6 +20,7 @@ export function TopBar() {
         <Text className="ml-2 text-white text-lg font-bold">LastBite</Text>
       </View>
       <Pressable
+        testID="topbar-notifications"
         onPress={() => router.push('/notifications')}
         hitSlop={10}
         accessibilityLabel="Buka notifikasi"

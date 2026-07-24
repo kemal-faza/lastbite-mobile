@@ -78,6 +78,7 @@ export default function ProfileScreen() {
             pesanan
           </Text>
           <PrimaryButton
+            accessibilityLabel="Tombol Masuk"
             onPress={() =>
               router.push({
                 pathname: "/login",
@@ -105,7 +106,10 @@ export default function ProfileScreen() {
     <View className="flex-1 bg-background">
       <ScrollView
         className="flex-1 p-4"
-        contentContainerStyle={{ paddingTop: headerHeight, paddingBottom: 80 }}
+        contentContainerStyle={{
+          paddingTop: headerHeight,
+          paddingBottom: 90 + insets.bottom,
+        }}
         onScroll={handleScroll}
         scrollEventThrottle={16}
       >
@@ -150,6 +154,7 @@ export default function ProfileScreen() {
               <View className="flex-row gap-2 mt-2.5">
                 <TouchableOpacity
                   onPress={cancelEdit}
+                  accessibilityLabel="Batal Edit"
                   className="flex-1 bg-gray-100 rounded-lg py-2.5 items-center"
                 >
                   <Text className="text-sm font-semibold text-gray-600">
@@ -158,6 +163,7 @@ export default function ProfileScreen() {
                 </TouchableOpacity>
                 <TouchableOpacity
                   onPress={saveEdit}
+                  accessibilityLabel="Simpan Edit"
                   className="flex-1 bg-primary rounded-lg py-2.5 items-center"
                   disabled={updateProfile.isPending}
                 >
@@ -173,6 +179,7 @@ export default function ProfileScreen() {
             </View>
           ) : (
             <TouchableOpacity
+              accessibilityLabel="Edit Nama"
               onPress={() => startEdit("name", user?.name || "")}
               className="flex-row items-center justify-between px-3.5 py-3 border-b border-gray-100"
             >
@@ -207,6 +214,7 @@ export default function ProfileScreen() {
               <View className="flex-row gap-2 mt-2.5">
                 <TouchableOpacity
                   onPress={cancelEdit}
+                  accessibilityLabel="Batal Edit"
                   className="flex-1 bg-gray-100 rounded-lg py-2.5 items-center"
                 >
                   <Text className="text-sm font-semibold text-gray-600">
@@ -215,6 +223,7 @@ export default function ProfileScreen() {
                 </TouchableOpacity>
                 <TouchableOpacity
                   onPress={saveEdit}
+                  accessibilityLabel="Simpan Edit"
                   className="flex-1 bg-primary rounded-lg py-2.5 items-center"
                   disabled={updateProfile.isPending}
                 >
@@ -230,6 +239,7 @@ export default function ProfileScreen() {
             </View>
           ) : (
             <TouchableOpacity
+              accessibilityLabel="Edit Telepon"
               onPress={() => startEdit("phone", user?.phone || "")}
               className="flex-row items-center justify-between px-3.5 py-3"
             >
@@ -279,7 +289,10 @@ export default function ProfileScreen() {
         </View>
 
         {user?.role === "MITRA" && (
-          <View className="bg-white rounded-xl mb-4">
+          <View
+            className="bg-white rounded-xl mb-4"
+            accessibilityLabel="Tombol Dashboard Mitra"
+          >
             <ProfileMenuItem
               icon="store"
               label="Dashboard Mitra"
@@ -290,9 +303,11 @@ export default function ProfileScreen() {
 
         <View className="mt-2 mb-4">
           <Button
+            testID="logout-button"
             variant="outline"
             size="lg"
             onPress={logout}
+            accessibilityLabel="Keluar"
             className="border-destructive flex-row items-center justify-center w-full h-11"
           >
             <MaterialCommunityIcons

@@ -25,6 +25,7 @@ export function SortPills({ selected, onSelect, testID }: SortPillsProps) {
       {sortOptions.map((opt) => (
         <TouchableOpacity
           key={opt.key}
+          testID={`sort-pill-${opt.key}`}
           onPress={() => onSelect(opt.key)}
           className={`px-4 py-1.5 rounded-full mr-2 ${
             selected === opt.key

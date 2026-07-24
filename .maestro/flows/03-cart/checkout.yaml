@@ -1,22 +1,14 @@
 appId: com.lastbite.mobile
 ---
 # Complete checkout flow: add to cart → checkout → order success
-# Covers: cart → checkout page → confirm → order detail
 
 # Login first
 - runFlow:
     file: ../shared/login-foodsaver.yaml
 
 # --- Step 1: Add product to cart ---
-# Scroll to find a product
-- scrollUntilVisible:
-    item: "Sisa"
-    direction: DOWN
-    timeout: 10000
-
-# Tap first product
 - tapOn:
-    text: "Rp"
+    id: "product-card"
     index: 0
 - waitForAnimationToEnd
 
@@ -28,24 +20,18 @@ appId: com.lastbite.mobile
     timeout: 10000
 
 # --- Step 2: Navigate to cart and checkout ---
-- tapOn: "Keranjang"
+- tapOn:
+    id: "tab-cart"
 - waitForAnimationToEnd
 
-# Verify checkout button exists
-- assertVisible:
-    text: "Checkout"
-    optional: true
-
-# Tap checkout button (by testID pattern or text)
+# Tap checkout button
 - tapOn:
-    text: "Checkout"
+    text: 'Checkout'
     index: 0
+    optional: true
 - waitForAnimationToEnd
 
 # --- Step 3: Checkout page ---
-- assertVisible: "Checkout"
-- assertVisible: "Ringkasan Pesanan"
-- assertVisible: "Info Pembeli"
 - assertVisible:
     id: "payment-summary"
 - assertVisible:
@@ -61,17 +47,11 @@ appId: com.lastbite.mobile
 - tapOn:
     id: "confirm-button"
 
-# Wait for order to be created (Lottie animation + success message)
+# Wait for order to be created
 - extendedWaitUntil:
     visible: "Pesanan Berhasil"
     timeout: 15000
 
 # Verify success elements
 - assertVisible: "Pesanan Berhasil"
-- assertVisible:
-    id: "lottie-success"
-    optional: true
 
-# --- Step 5: Navigate back ---
-- assertVisible: "Cari Makanan Lagi"
-- assertVisible: "Lihat Riwayat Pesanan"

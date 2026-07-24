@@ -21,6 +21,7 @@ export function SearchBar({
     <View className="flex-row items-center bg-white border border-gray-300 rounded-full px-4 py-2.5 gap-2.5">
       <MaterialCommunityIcons name="magnify" size={20} color={value ? colors.primary : '#9ca3af'} />
       <TextInput
+        testID="search-input"
         className="flex-1 text-sm text-gray-700"
         placeholder={placeholder}
         placeholderTextColor="#9ca3af"

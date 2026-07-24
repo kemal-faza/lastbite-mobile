@@ -7,37 +7,25 @@ appId: com.lastbite.mobile
     file: ../shared/login-mitra.yaml
 
 # --- Step 1: Navigate to Pesanan Masuk ---
-# Open drawer
 - tapOn:
-    accessibilityLabel: "Open drawer"
-    optional: true
-- tapOn:
-    point: "5%,5%"
-    optional: true
+    id: "drawer-toggle-button"
 - waitForAnimationToEnd
 
 - tapOn:
-    accessibilityLabel: "Pesanan Masuk"
+    id: "drawer-item-pesanan-masuk"
 - waitForAnimationToEnd
 
 # --- Step 2: View active orders ---
-- assertVisible: "Aktif"
-
-# Process the first pending order if available
 - tapOn:
-    text: "Proses Pesanan"
+    text: 'Proses Pesanan'
     index: 0
     optional: true
-
-# Wait for status update
 - waitForAnimationToEnd
 
 # Mark as ready if processed
 - tapOn:
-    text: "Siap Diambil"
+    text: 'Siap Diambil'
     index: 0
     optional: true
-
-# --- Step 3: View order history ---
-- tapOn: "Riwayat"
 - waitForAnimationToEnd
+

@@ -18,6 +18,7 @@ export function CategoryFilter({ selected, onSelect }: Props) {
       {CATEGORIES.map((cat) => (
         <Pressable
           key={cat.key}
+          testID={`category-pill-${cat.key || 'all'}`}
           onPress={() => onSelect(cat.key)}
           className={`px-4 py-2 rounded-full mr-2 ${selected === cat.key ? 'bg-primary' : 'bg-white'}`}
         >

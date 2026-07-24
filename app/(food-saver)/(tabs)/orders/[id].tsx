@@ -145,6 +145,7 @@ export default function OrderDetailScreen() {
 
           <View className="w-full gap-3">
             <TouchableOpacity
+              accessibilityLabel="Cari Makanan Lagi"
               onPress={() => router.navigate('/')}
               className="bg-primary py-3.5 rounded-xl"
             >
@@ -154,6 +155,7 @@ export default function OrderDetailScreen() {
             </TouchableOpacity>
 
             <TouchableOpacity
+              accessibilityLabel="Lihat Riwayat Pesanan"
               onPress={() => router.back()}
               className="border-2 border-primary py-3.5 rounded-xl"
             >
@@ -163,6 +165,7 @@ export default function OrderDetailScreen() {
             </TouchableOpacity>
 
             <TouchableOpacity
+              accessibilityLabel="Tulis Ulasan"
               onPress={() => {
                 setReviewProductName(productName);
                 setShowReviewModal(true);

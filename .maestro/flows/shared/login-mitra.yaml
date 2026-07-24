@@ -1,0 +1,30 @@
+appId: com.lastbite.mobile
+---
+# Login as Mitra via dev button
+# Post-conditions: on Mitra dashboard
+
+# Open app & handle launcher
+- runFlow:
+    file: open-app.yaml
+
+- tapOn: "Tab Profil"
+- assertVisible: "Masuk LastBite"
+
+- tapOn: "Tombol Masuk"
+- assertVisible: "Selamat datang kembali"
+
+- tapOn: "email field"
+- inputText: ${MITRA_EMAIL}
+
+- hideKeyboard
+
+- tapOn: "password label"
+- inputText: ${MITRA_PASSWORD}
+
+- hideKeyboard
+
+- tapOn: "Tombol Masuk"
+- assertVisible: "Info Akun"
+
+- tapOn: "Tombol Dashboard Mitra"
+- assertVisible: "Dashboard"

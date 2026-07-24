@@ -70,6 +70,7 @@ export default function MitraOrdersScreen() {
       {/* Custom Top Tabs */}
       <View className="flex-row px-4 pt-4 pb-0">
         <TouchableOpacity
+          accessibilityLabel="Tab Aktif"
           className="mr-6 pb-3"
           onPress={() => setActiveTab('aktif')}
         >
@@ -86,6 +87,7 @@ export default function MitraOrdersScreen() {
         </TouchableOpacity>
 
         <TouchableOpacity
+          accessibilityLabel="Tab Riwayat"
           className="pb-3"
           onPress={() => setActiveTab('riwayat')}
         >

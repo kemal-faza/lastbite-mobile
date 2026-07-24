@@ -163,6 +163,7 @@ export default function MitraOrderDetailScreen() {
           <Button
             onPress={handleAction}
             disabled={isMutating}
+            accessibilityLabel={actionLabel}
             className="w-full"
           >
             <Text className="text-white font-semibold text-center">

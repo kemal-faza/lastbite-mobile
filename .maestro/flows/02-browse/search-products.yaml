@@ -7,13 +7,13 @@ appId: com.lastbite.mobile
     file: ../shared/login-foodsaver.yaml
 
 # Navigate to search tab
-- tapOn: "Cari"
-- assertVisible: "Cari produk"
+- tapOn:
+    id: "tab-search"
 - waitForAnimationToEnd
 
 # Type a search term
 - tapOn:
-    point: "50%,20%"      # Approximate position of search input
+    id: "search-input"
 - inputText: "Nasi"
 
 # Verify search results appear
@@ -28,7 +28,7 @@ appId: com.lastbite.mobile
 
 # Search another term
 - tapOn:
-    point: "50%,20%"
+    id: "search-input"
 - inputText: "Ayam"
 
 # Verify new results
@@ -36,7 +36,8 @@ appId: com.lastbite.mobile
     visible: "produk"
     timeout: 10000
 
-# Clear and verify empty state
+# Clear search
 - tapOn:
     id: "searchbar-clear"
     optional: true
+

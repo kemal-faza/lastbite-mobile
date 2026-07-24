@@ -35,7 +35,9 @@ export function ProductCard({
 
 	return (
 		<Pressable
+			testID="product-card"
 			onPress={handleProductPress}
+			accessibilityLabel="Kartu produk"
 			className={`bg-white rounded-xl shadow-sm overflow-hidden ${className}`}>
 			{/* Image with overlay badges */}
 			<View className="relative w-full aspect-square bg-gray-200">

@@ -1,0 +1,34 @@
+appId: com.lastbite.mobile
+---
+# View and edit profile information
+
+# Login first
+- runFlow:
+    file: ../shared/login-foodsaver.yaml
+
+# Navigate to profile tab
+- tapOn:
+    id: "tab-profile"
+- waitForAnimationToEnd
+
+# Verify profile elements
+- assertVisible: "Info Akun"
+- assertVisible: "Nama"
+- assertVisible: "Telepon"
+
+# --- Test: Tap edit on name field ---
+- tapOn:
+    text: 'Edit Nama'
+    optional: true
+- waitForAnimationToEnd
+
+# Cancel edit
+- tapOn:
+    text: 'Batal Edit'
+    optional: true
+- waitForAnimationToEnd
+
+# --- Test: Menu items ---
+- assertVisible:
+    text: 'Pusat Bantuan'
+

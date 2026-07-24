@@ -1,0 +1,30 @@
+appId: com.lastbite.mobile
+---
+# Mitra views product list
+
+# Login first
+- runFlow:
+    file: ../shared/login-mitra.yaml
+
+# --- Step 1: Navigate to Daftar Produk ---
+- tapOn:
+    id: "drawer-toggle-button"
+- waitForAnimationToEnd
+
+- tapOn:
+    id: "drawer-item-daftar-produk"
+- waitForAnimationToEnd
+
+# --- Step 2: Verify products page ---
+- assertVisible: "Daftar Produk"
+
+# --- Step 3: Navigate back to dashboard ---
+- tapOn:
+    id: "drawer-toggle-button"
+- waitForAnimationToEnd
+
+- tapOn:
+    id: "drawer-item-dashboard"
+- waitForAnimationToEnd
+- assertVisible: "Dashboard"
+

@@ -16,6 +16,7 @@ export function ProfileMenuItem({ icon, label, onPress, showArrow = true }: Prof
       variant="plain"
       onPress={onPress}
       className="flex-row items-center justify-between py-3.5 px-4 border-b border-gray-100 w-full"
+      accessibilityLabel={label}
     >
       <View className="flex-row items-center flex-1 mr-2">
         <MaterialCommunityIcons name={icon} size={20} color={colors.textSecondary} />

@@ -1,0 +1,20 @@
+appId: com.lastbite.mobile
+---
+# Test full auth cycle: Food Saver login → logout → Mitra login → logout
+
+# --- Phase 1: Food Saver Login ---
+- runFlow:
+    file: ../shared/login-foodsaver.yaml
+
+# --- Phase 2: Logout ---
+- runFlow:
+    file: ../shared/logout.yaml
+
+# --- Phase 3: Mitra Login ---
+- runFlow: 
+    file: ../shared/login-mitra.yaml
+
+# --- Phase 4: Logout ---
+- runFlow:
+    file: ../shared/logout.yaml
+

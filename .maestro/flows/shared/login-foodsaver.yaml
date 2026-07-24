@@ -1,0 +1,30 @@
+appId: com.lastbite.mobile
+---
+# Login as Food Saver via dev button
+# Post-conditions: on Beranda tab
+
+# Open app & handle launcher
+- runFlow:
+    file: open-app.yaml
+
+- tapOn: "Tab Profil"
+- assertVisible: "Masuk LastBite"
+
+- tapOn: "Tombol Masuk"
+- assertVisible: "Selamat datang kembali"
+
+- tapOn: "email field"
+- inputText: ${FOODSAVER_EMAIL}
+
+- hideKeyboard
+
+- tapOn: "password label"
+- inputText: ${FOODSAVER_PASSWORD}
+
+- hideKeyboard
+
+- tapOn: "Tombol Masuk"
+- assertVisible: "Info Akun"
+
+- tapOn: "Tab Beranda"
+- assertVisible: "Rekomendasi Buat Kamu"

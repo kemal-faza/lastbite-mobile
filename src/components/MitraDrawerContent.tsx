@@ -57,6 +57,7 @@ export function MitraDrawerContent(_props: Record<string, unknown>) {
           return (
             <Pressable
               key={item.route}
+              testID={`drawer-item-${item.label.toLowerCase().replace(/\s+/g, '-')}`}
               onPress={() => {
                 router.push(item.route as any);
               }}
@@ -86,6 +87,7 @@ export function MitraDrawerContent(_props: Record<string, unknown>) {
       {/* Logout button */}
       <View className="border-t border-gray-200 pt-2 pb-6 px-4">
         <Pressable
+          testID="logout-button"
           onPress={handleLogout}
           className="flex-row items-center py-3.5 rounded-lg"
           accessibilityLabel="Keluar"
