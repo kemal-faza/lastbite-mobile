@@ -1,6 +1,7 @@
 import { View, Text, TouchableOpacity } from 'react-native';
 import { router } from 'expo-router';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 interface HeaderProps {
   title: string;
@@ -9,6 +10,8 @@ interface HeaderProps {
 }
 
 export function Header({ title, onBack, fallbackHref = '/' }: HeaderProps) {
+  const insets = useSafeAreaInsets();
+
   const handleBack = () => {
     if (onBack) {
       onBack();
@@ -20,7 +23,10 @@ export function Header({ title, onBack, fallbackHref = '/' }: HeaderProps) {
   };
 
   return (
-    <View className="bg-primary flex-row items-center px-4" style={{ height: 56 }}>
+    <View
+      className="bg-primary flex-row items-center px-4"
+      style={{ paddingTop: insets.top, height: 56 + insets.top }}
+    >
       <TouchableOpacity
         onPress={handleBack}
         hitSlop={8}

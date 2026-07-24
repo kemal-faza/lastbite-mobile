@@ -1,5 +1,5 @@
 import { View } from "react-native";
-import { Stack } from "expo-router";
+import { Stack, useSegments } from "expo-router";
 import { StatusBar } from "expo-status-bar";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import Animated, { useAnimatedStyle, interpolate, Extrapolation } from "react-native-reanimated";
@@ -17,6 +17,11 @@ function AnimatedHeader() {
   const isConnected = useNetworkStatus();
   const insets = useSafeAreaInsets();
   const { headerTranslateY } = useScrollVisibility();
+  const segments = useSegments();
+
+  const isHomeScreen =
+    (segments.length === 2 && segments[0] === "(food-saver)" && segments[1] === "(tabs)") ||
+    (segments.length === 3 && segments[0] === "(food-saver)" && segments[1] === "(tabs)" && segments[2] === "index");
 
   const animatedTopBarStyle = useAnimatedStyle(() => ({
     transform: [
@@ -45,24 +50,26 @@ function AnimatedHeader() {
         {!isConnected && <OfflineBanner />}
       </View>
 
-      {/* 2. Animated TopBar Overlay - zIndex 50 (Slides smoothly under status bar) */}
-      <Animated.View
-        style={[
-          {
-            position: "absolute",
-            top: insets.top,
-            left: 0,
-            right: 0,
-            height: 60,
-            backgroundColor: colors.primary,
-            zIndex: 50,
-            overflow: "hidden",
-          },
-          animatedTopBarStyle,
-        ]}
-      >
-        <TopBar />
-      </Animated.View>
+      {/* 2. Animated TopBar Overlay - zIndex 50 (Rendered ONLY on Homepage) */}
+      {isHomeScreen && (
+        <Animated.View
+          style={[
+            {
+              position: "absolute",
+              top: insets.top,
+              left: 0,
+              right: 0,
+              height: 60,
+              backgroundColor: colors.primary,
+              zIndex: 50,
+              overflow: "hidden",
+            },
+            animatedTopBarStyle,
+          ]}
+        >
+          <TopBar />
+        </Animated.View>
+      )}
     </>
   );
 }

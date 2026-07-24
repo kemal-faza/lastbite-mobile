@@ -22,7 +22,7 @@ import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 export default function SearchScreen() {
   const insets = useSafeAreaInsets();
-  const headerHeight = insets.top + 60;
+  const headerHeight = insets.top + 16;
   const [trending, setTrending] = useState<
     Array<{ query: string; count: number }>
   >([]);
@@ -95,6 +95,7 @@ export default function SearchScreen() {
   // Show suggestions when query is empty
   const showSuggestions = query.trim().length < 1;
   const isBusy = isLoading || isDebouncing || (isFetching && products.length === 0);
+  const isEmptySuggestions = trending.length === 0 && recent.length === 0;
 
   return (
     <View className="flex-1 bg-gray-50">
@@ -112,7 +113,11 @@ export default function SearchScreen() {
       {showSuggestions ? (
         <ScrollView
           className="flex-1 px-4"
-          contentContainerStyle={{ paddingBottom: 80 }}
+          contentContainerStyle={
+            isEmptySuggestions
+              ? { flexGrow: 1, justifyContent: "center", paddingBottom: 80 }
+              : { paddingBottom: 80 }
+          }
           keyboardShouldPersistTaps="handled"
           onScroll={handleScroll}
           onScrollEndDrag={handleScrollEnd}
@@ -171,8 +176,8 @@ export default function SearchScreen() {
           )}
 
           {/* No suggestions state */}
-          {trending.length === 0 && recent.length === 0 && (
-            <View className="items-center justify-center">
+          {isEmptySuggestions && (
+            <View className="flex-1 items-center justify-center">
               <EmptyState
                 icon="magnify"
                 title="Cari makanan favoritmu"

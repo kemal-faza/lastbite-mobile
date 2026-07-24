@@ -24,7 +24,7 @@ import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 export default function ProfileScreen() {
   const insets = useSafeAreaInsets();
-  const headerHeight = insets.top + 60;
+  const headerHeight = insets.top + 16;
   const { user, isAuthenticated, logout } = useAuthStore();
   const { handleScroll } = useScrollVisibility();
   const [editingField, setEditingField] = useState<"name" | "phone" | null>(
