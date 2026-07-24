@@ -1,6 +1,6 @@
 import { render } from '@testing-library/react-native';
 import React from 'react';
-import MitraOrderDetailScreen from '../../app/(mitra)/orders/[id]';
+import MitraOrderDetailScreen from '../../app/(mitra)/(tabs)/orders/[id]';
 import { useLocalSearchParams } from 'expo-router';
 
 // --- Mock components ---

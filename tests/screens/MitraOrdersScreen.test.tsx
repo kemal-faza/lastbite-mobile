@@ -1,6 +1,6 @@
 import { render, act } from '@testing-library/react-native';
 import React from 'react';
-import MitraOrdersScreen from '../../app/(mitra)/orders';
+import MitraOrdersScreen from '../../app/(mitra)/(tabs)/orders';
 import { router } from 'expo-router';
 
 // Override jest.setup.js mock for react-native with functional FlatList
