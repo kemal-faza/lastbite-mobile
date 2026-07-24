@@ -179,8 +179,7 @@ export function FilterModal({
 					{ height: '50%' },
 					{ transform: [{ translateY: sheetTranslateY }] },
 				]}>
-				<Pressable
-					onPress={() => {}}
+				<View
 					testID="filter-sheet"
 					className="bg-white rounded-t-3xl px-4 pt-4 pb-4"
 					style={{ flex: 1 }}>
@@ -195,8 +194,10 @@ export function FilterModal({
 						</View>
 
 						<ScrollView
+							testID="filter-scroll-view"
 							bounces={false}
 							showsVerticalScrollIndicator={false}
+							contentContainerStyle={{ paddingBottom: 24 }}
 							className="flex-1">
 							<Text className="text-sm font-semibold mb-2">
 								Jarak Maksimal
@@ -273,7 +274,7 @@ export function FilterModal({
 								</Text>
 							</TouchableOpacity>
 						</View>
-				</Pressable>
+				</View>
 		</Animated.View>
 		</Animated.View>
 	);

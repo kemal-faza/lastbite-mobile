@@ -180,4 +180,12 @@ describe('FilterModal', () => {
     );
     expect(hasTransform).toBe(true);
   });
+
+  it('ScrollView applies contentContainerStyle with bottom padding', async () => {
+    const { getByTestId } = await render(
+      <FilterModal visible={true} onClose={jest.fn()} filters={defaultFilters} onApply={jest.fn()} />
+    );
+    const scrollView = getByTestId('filter-scroll-view');
+    expect(scrollView.props.contentContainerStyle).toEqual({ paddingBottom: 24 });
+  });
 });
