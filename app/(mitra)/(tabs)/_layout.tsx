@@ -2,37 +2,28 @@ import { Tabs } from 'expo-router';
 import { View, Text, Pressable } from 'react-native';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import Animated, { useAnimatedStyle } from 'react-native-reanimated';
 import { colors } from '@/theme';
 
 function TabBarWrapper({ state, descriptors, navigation }: any) {
   const insets = useSafeAreaInsets();
   const totalTabBarHeight = 60 + insets.bottom;
 
-  const animatedStyle = useAnimatedStyle(() => ({
-    transform: [{ translateY: 0 }],
-    opacity: 1,
-  }));
-
   return (
-    <Animated.View
-      style={[
-        {
-          position: 'absolute',
-          bottom: 0,
-          left: 0,
-          right: 0,
-          height: totalTabBarHeight,
-          backgroundColor: '#ffffff',
-          flexDirection: 'row',
-          borderTopWidth: 1,
-          borderTopColor: '#e5e7eb',
-          zIndex: 40,
-          overflow: 'visible',
-          paddingBottom: insets.bottom,
-        },
-        animatedStyle,
-      ]}
+    <View
+      style={{
+        position: 'absolute',
+        bottom: 0,
+        left: 0,
+        right: 0,
+        height: totalTabBarHeight,
+        backgroundColor: '#ffffff',
+        flexDirection: 'row',
+        borderTopWidth: 1,
+        borderTopColor: '#e5e7eb',
+        zIndex: 40,
+        overflow: 'visible',
+        paddingBottom: insets.bottom,
+      }}
     >
       {state.routes.map((route: any, index: number) => {
         const { options } = descriptors[route.key];
@@ -80,7 +71,7 @@ function TabBarWrapper({ state, descriptors, navigation }: any) {
           </Pressable>
         );
       })}
-    </Animated.View>
+    </View>
   );
 }
 
