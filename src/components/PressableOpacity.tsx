@@ -49,7 +49,7 @@ export function PressableOpacity({
       style={style}
       {...props}
     >
-      <Animated.View style={[{ opacity }]} className="flex-row items-center justify-center w-full h-full">
+      <Animated.View style={[{ opacity }]} className="flex-row items-center justify-center">
         {children}
       </Animated.View>
     </Pressable>

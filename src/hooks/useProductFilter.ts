@@ -36,7 +36,7 @@ export function useProductFilter(initialCategory = '') {
     lat: lat ?? undefined,
     lng: lng ?? undefined,
     radius: filters.maxDistance > 0 ? filters.maxDistance : undefined,
-    search: debouncedQuery.trim().length >= 2 ? debouncedQuery : undefined,
+    search: debouncedQuery.trim().length >= 1 ? debouncedQuery : undefined,
   };
 
   const productsQuery = useProducts(apiFilters);
@@ -51,6 +51,8 @@ export function useProductFilter(initialCategory = '') {
     });
   };
 
+  const isDebouncing = query.trim().length >= 1 && query.trim() !== debouncedQuery.trim();
+
   return {
     category,
     setCategory,
@@ -59,6 +61,8 @@ export function useProductFilter(initialCategory = '') {
     showFilter,
     setShowFilter,
     query,
+    debouncedQuery,
+    isDebouncing,
     setQuery,
     filters,
     setFilters,

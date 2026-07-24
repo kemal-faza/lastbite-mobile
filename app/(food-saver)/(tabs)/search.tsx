@@ -28,9 +28,10 @@ export default function SearchScreen() {
   const { showToast } = useToast();
   const { isWishlisted, toggle } = useWishlist();
 
-  const { query, setQuery, productsQuery } = useProductFilter();
+  const { query, setQuery, productsQuery, debouncedQuery, isDebouncing } =
+    useProductFilter();
 
-  const { data, isLoading, isError } = productsQuery;
+  const { data, isLoading, isError, isFetching } = productsQuery;
   const products = data?.products ?? [];
 
   // Load trending on mount
@@ -42,18 +43,30 @@ export default function SearchScreen() {
 
   // Refresh recent when query changes to results
   const handleSubmit = useCallback(async () => {
-    if (query.trim().length >= 2) {
+    if (query.trim().length >= 1) {
       await addQuery(query);
     }
   }, [query, addQuery]);
 
-  const handleTrendingTap = useCallback((q: string) => {
-    setQuery(q);
-  }, []);
+  const handleTrendingTap = useCallback(
+    async (q: string) => {
+      setQuery(q);
+      if (q.trim().length >= 1) {
+        await addQuery(q);
+      }
+    },
+    [setQuery, addQuery],
+  );
 
-  const handleRecentTap = useCallback((q: string) => {
-    setQuery(q);
-  }, []);
+  const handleRecentTap = useCallback(
+    async (q: string) => {
+      setQuery(q);
+      if (q.trim().length >= 1) {
+        await addQuery(q);
+      }
+    },
+    [setQuery, addQuery],
+  );
 
   const handleClearRecent = useCallback(async () => {
     await clearAll();
@@ -75,7 +88,8 @@ export default function SearchScreen() {
   );
 
   // Show suggestions when query is empty
-  const showSuggestions = query.length < 2;
+  const showSuggestions = query.trim().length < 1;
+  const isBusy = isLoading || isDebouncing || (isFetching && products.length === 0);
 
   return (
     <View className="flex-1 bg-gray-50">
@@ -166,10 +180,10 @@ export default function SearchScreen() {
       ) : (
         // Results
         <View className="flex-1 px-4">
-          {isLoading && (
+          {isBusy && (
             <ActivityIndicator className="mt-4" size="small" color="#166534" />
           )}
-          {isError && (
+          {isError && !isBusy && (
             <View className="flex-1 justify-center items-center">
               <Text className="text-gray-500 mb-2">Gagal memuat hasil</Text>
               <TouchableOpacity onPress={() => productsQuery.refetch()}>
@@ -177,19 +191,19 @@ export default function SearchScreen() {
               </TouchableOpacity>
             </View>
           )}
-          {!isLoading && !isError && products.length === 0 && (
+          {!isBusy && !isError && products.length === 0 && (
             <View className="flex-1 items-center justify-center">
               <EmptyState
                 icon="magnify-close"
                 title="Tidak ditemukan"
-                description={`Tidak ada hasil untuk "${query}"`}
+                description={`Tidak ada hasil untuk "${debouncedQuery}"`}
               />
             </View>
           )}
-          {!isLoading && !isError && products.length > 0 && (
+          {!isBusy && !isError && products.length > 0 && (
             <>
               <Text className="text-xs text-gray-500 mb-2">
-                {products.length} hasil untuk "{query}"
+                {products.length} hasil untuk "{debouncedQuery}"
               </Text>
               <FlatList
                 data={products}

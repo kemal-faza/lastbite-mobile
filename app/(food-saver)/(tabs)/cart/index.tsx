@@ -215,8 +215,8 @@ export default function CartScreen() {
               ))}
 
               {/* Store subtotal & checkout */}
-              <View className="flex-row justify-between items-center mt-2 pt-2 border-t border-gray-200">
-                <Text className="text-base font-semibold">
+              <View className="flex-row justify-between items-center mt-3 pt-3 border-t border-gray-200">
+                <Text className="text-base font-semibold text-gray-800">
                   Subtotal: Rp{storeTotal.toLocaleString()}
                 </Text>
                 <Button

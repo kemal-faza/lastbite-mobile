@@ -1,5 +1,6 @@
 import { View, Text } from 'react-native';
 import { StarRating } from './StarRating';
+import { formatDate } from '@/lib/utils/formatSafeDate';
 
 export interface Review {
   id: string;
@@ -12,11 +13,6 @@ export interface Review {
 interface ReviewCardProps {
   review: Review;
   testID?: string;
-}
-
-function formatDate(isoString: string): string {
-  const d = new Date(isoString);
-  return d.toLocaleDateString('id-ID', { day: 'numeric', month: 'short', year: 'numeric' });
 }
 
 export function ReviewCard({ review, testID }: ReviewCardProps) {

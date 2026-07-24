@@ -43,7 +43,7 @@ export function mapProductReviewsResponse(raw: any): ProductReviewsResponse {
 }
 
 export async function getProductReviews(productId: string): Promise<ProductReviewsResponse> {
-  const res = await apiFetch<any>(`/reviews/${productId}`);
+  const res = await apiFetch<any>(`/reviews/products/${productId}/reviews`);
   return mapProductReviewsResponse(res);
 }
 

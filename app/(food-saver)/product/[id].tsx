@@ -20,6 +20,7 @@ import { useToast } from '@/contexts/ToastContext';
 import { useRequireAuth } from '@/hooks/useRequireAuth';
 import { WishlistHeart } from '@/components/WishlistHeart';
 import { useWishlist } from '@/hooks/useWishlist';
+import { formatTime } from '@/lib/utils/formatSafeDate';
 
 /** Calculate discount percentage, returns 0 if prices are equal or invalid. */
 function calcDiscountPct(original: number, discounted: number, explicit?: number): number {
@@ -154,9 +155,7 @@ export default function ProductDetailScreen() {
             <View className="bg-secondary/10 rounded-lg p-3 mt-4 flex-row items-center">
               <MaterialCommunityIcons name="clock-outline" size={18} color={colors.secondary} />
               <Text className="text-sm text-secondary font-medium ml-2">
-                Berlaku hingga: {new Date(product.expiresAt).toLocaleTimeString('id-ID', {
-                  hour: '2-digit', minute: '2-digit',
-                })}
+                Berlaku hingga: {formatTime(product.expiresAt)}
               </Text>
             </View>
           )}

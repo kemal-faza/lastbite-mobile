@@ -62,6 +62,7 @@ export function WishlistHeart({ isWishlisted, onToggle, loading, iconSize = 24, 
     <Button
       variant="plain"
       testID="wishlist-heart"
+      className="w-8 h-8 items-center justify-center"
       onPress={loading ? undefined : onToggle}
       hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
     >

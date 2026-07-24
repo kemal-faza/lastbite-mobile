@@ -1,9 +1,28 @@
 import { apiFetch } from '@/lib/api/client';
-import { createReview } from '@/lib/api/reviews';
+import { getProductReviews, createReview } from '@/lib/api/reviews';
 
 jest.mock('@/lib/api/client', () => ({
   apiFetch: jest.fn(),
 }));
+
+describe('getProductReviews', () => {
+  beforeEach(() => {
+    jest.clearAllMocks();
+  });
+
+  it('calls GET /reviews/products/:id/reviews with product id', async () => {
+    (apiFetch as jest.Mock).mockResolvedValue({
+      reviews: [],
+      avgRating: null,
+      totalReviews: 0,
+      ratingDistribution: {},
+    });
+
+    await getProductReviews('prod-42');
+
+    expect(apiFetch).toHaveBeenCalledWith('/reviews/products/prod-42/reviews');
+  });
+});
 
 describe('createReview', () => {
   beforeEach(() => {
