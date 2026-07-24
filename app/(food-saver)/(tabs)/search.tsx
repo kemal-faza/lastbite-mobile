@@ -17,8 +17,12 @@ import { EmptyState } from "@/components/EmptyState";
 import { useWishlist } from "@/hooks/useWishlist";
 import { useAuthStore } from "@/stores/authStore";
 import { useToast } from "@/contexts/ToastContext";
+import { useScrollVisibility } from "@/contexts/ScrollVisibilityContext";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 export default function SearchScreen() {
+  const insets = useSafeAreaInsets();
+  const headerHeight = insets.top + 60;
   const [trending, setTrending] = useState<
     Array<{ query: string; count: number }>
   >([]);
@@ -27,6 +31,7 @@ export default function SearchScreen() {
   const { isAuthenticated } = useAuthStore();
   const { showToast } = useToast();
   const { isWishlisted, toggle } = useWishlist();
+  const { handleScroll, handleScrollEnd } = useScrollVisibility();
 
   const { query, setQuery, productsQuery, debouncedQuery, isDebouncing } =
     useProductFilter();
@@ -94,7 +99,7 @@ export default function SearchScreen() {
   return (
     <View className="flex-1 bg-gray-50">
       {/* Search Bar */}
-      <View className="px-4 pt-3 pb-2">
+      <View className="px-4 pb-2" style={{ paddingTop: headerHeight + 12 }}>
         <SearchBar
           value={query}
           onChangeText={setQuery}
@@ -107,13 +112,12 @@ export default function SearchScreen() {
       {showSuggestions ? (
         <ScrollView
           className="flex-1 px-4"
-          contentContainerStyle={{
-            flexGrow: 1,
-            justifyContent:
-              trending.length === 0 && recent.length === 0
-                ? "center"
-                : "flex-start",
-          }}
+          contentContainerStyle={{ paddingBottom: 80 }}
+          keyboardShouldPersistTaps="handled"
+          onScroll={handleScroll}
+          onScrollEndDrag={handleScrollEnd}
+          onMomentumScrollEnd={handleScrollEnd}
+          scrollEventThrottle={16}
         >
           {/* Trending */}
           {trending.length > 0 && (
@@ -208,6 +212,11 @@ export default function SearchScreen() {
               <FlatList
                 data={products}
                 keyExtractor={(item) => item.id}
+                contentContainerStyle={{ paddingBottom: 80 }}
+                onScroll={handleScroll}
+                onScrollEndDrag={handleScrollEnd}
+                onMomentumScrollEnd={handleScrollEnd}
+                scrollEventThrottle={16}
                 renderItem={({ item }) => (
                   <ProductCard
                     product={item}

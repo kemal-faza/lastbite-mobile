@@ -7,11 +7,13 @@ import { useRequireAuth } from "@/hooks/useRequireAuth";
 import { EmptyState } from "@/components/EmptyState";
 import { Header } from "@/components/Header";
 import { useBackHandler } from "@/hooks/useBackHandler";
+import { useScrollVisibility } from "@/contexts/ScrollVisibilityContext";
 
 export default function NotificationsScreen() {
   const { requireAuth, isAuthenticated } = useRequireAuth();
   const { notifications, unreadCount, isLoading, refresh } = useNotifications();
   const handleTap = useNotificationTap();
+  const { handleScroll } = useScrollVisibility();
 
   const handleBack = () => router.back();
   useBackHandler(handleBack);
@@ -55,6 +57,8 @@ export default function NotificationsScreen() {
         <FlatList
           data={notifications}
           keyExtractor={(item) => item.id}
+          onScroll={handleScroll}
+          scrollEventThrottle={16}
           renderItem={({ item }) => (
             <NotificationCard notification={item} onPress={handleTap} />
           )}

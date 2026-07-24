@@ -21,6 +21,7 @@ import { useRequireAuth } from '@/hooks/useRequireAuth';
 import { WishlistHeart } from '@/components/WishlistHeart';
 import { useWishlist } from '@/hooks/useWishlist';
 import { formatTime } from '@/lib/utils/formatSafeDate';
+import { useScrollVisibility } from '@/contexts/ScrollVisibilityContext';
 
 /** Calculate discount percentage, returns 0 if prices are equal or invalid. */
 function calcDiscountPct(original: number, discounted: number, explicit?: number): number {
@@ -40,6 +41,7 @@ export default function ProductDetailScreen() {
   const { isWishlisted, toggle: toggleWishlist, isPending: isTogglePending } = useWishlist();
   const isProductWishlisted = isWishlisted(id!);
   const { requireAuth } = useRequireAuth();
+  const { handleScroll } = useScrollVisibility();
   const handleBack = () => router.back();
   useBackHandler(handleBack);
 
@@ -80,7 +82,12 @@ export default function ProductDetailScreen() {
   return (
     <View className="flex-1 bg-background">
       <Header title="Detail Produk" onBack={handleBack} fallbackHref="/" />
-      <ScrollView className="flex-1" contentContainerStyle={{ paddingBottom: 16 }}>
+      <ScrollView
+        className="flex-1"
+        contentContainerStyle={{ paddingBottom: 16 }}
+        onScroll={handleScroll}
+        scrollEventThrottle={16}
+      >
         <View className="w-full h-64 bg-gray-200 overflow-hidden">
           <Image
             source={

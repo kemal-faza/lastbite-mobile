@@ -18,11 +18,16 @@ import { colors } from "@/theme";
 import { useAuthStore } from "@/stores/authStore";
 import { useWishlist } from "@/hooks/useWishlist";
 import { useToast } from "@/contexts/ToastContext";
+import { useScrollVisibility } from "@/contexts/ScrollVisibilityContext";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 export default function HomeScreen() {
+  const insets = useSafeAreaInsets();
+  const headerHeight = insets.top + 60;
   const { isAuthenticated } = useAuthStore();
   const { showToast } = useToast();
   const { isWishlisted, toggle } = useWishlist();
+  const { handleScroll, handleScrollEnd } = useScrollVisibility();
 
   const {
     category,
@@ -67,7 +72,11 @@ export default function HomeScreen() {
     <View className="flex-1 bg-background">
       <ScrollView
         className="flex-1"
-        contentContainerStyle={{ paddingBottom: 24 }}
+        contentContainerStyle={{ paddingTop: headerHeight, paddingBottom: 80 }}
+        onScroll={handleScroll}
+        onScrollEndDrag={handleScrollEnd}
+        onMomentumScrollEnd={handleScrollEnd}
+        scrollEventThrottle={16}
       >
         <Text className="text-xl font-bold text-primary p-4">
           {isAuthenticated

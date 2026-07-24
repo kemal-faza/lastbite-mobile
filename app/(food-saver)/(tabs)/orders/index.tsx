@@ -8,9 +8,15 @@ import { useRefreshOnFocus } from '@/hooks/useRefreshOnFocus';
 import { EmptyState } from '@/components/EmptyState';
 import { OrderStatusBadge } from '@/components/OrderStatusBadge';
 import { getImageVariants } from '@/lib/api/products';
+import { useScrollVisibility } from '@/contexts/ScrollVisibilityContext';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
+
 export default function OrdersScreen() {
+	const insets = useSafeAreaInsets();
+	const headerHeight = insets.top + 60;
 	const { isAuthenticated } = useAuthStore();
 	const { data, refetch } = useOrders(isAuthenticated);
+	const { handleScroll } = useScrollVisibility();
 	useRefreshOnFocus(refetch);
 
 	if (!isAuthenticated) {
@@ -40,7 +46,9 @@ export default function OrdersScreen() {
 				<FlatList
 					data={data?.orders}
 					keyExtractor={(item) => item.id}
-					contentContainerStyle={{ flexGrow: 1 }}
+					contentContainerStyle={{ flexGrow: 1, paddingTop: headerHeight, paddingBottom: 80 }}
+					onScroll={handleScroll}
+					scrollEventThrottle={16}
 					ListEmptyComponent={
 						<View className="flex-1 items-center justify-center">
 							<EmptyState

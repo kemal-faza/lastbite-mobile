@@ -19,6 +19,8 @@ import type { CartItem } from "@/lib/api/cart";
 import { EmptyState } from "@/components/EmptyState";
 import { getImageVariants } from "@/lib/api/products";
 import { groupByStore, calculateCartTotal } from "@/lib/cart";
+import { useScrollVisibility } from "@/contexts/ScrollVisibilityContext";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 // --- Cart item row with swipe-to-delete ---
 function CartItemRow({
   item,
@@ -123,8 +125,19 @@ function CartItemRow({
 }
 
 export default function CartScreen() {
+  const insets = useSafeAreaInsets();
+  const headerHeight = insets.top + 60;
   const { isAuthenticated } = useAuthStore();
   const { cart, updateItem, removeItem } = useCart(isAuthenticated);
+  const { handleScroll } = useScrollVisibility();
+
+  if (cart.isLoading) {
+    return (
+      <View className="flex-1 bg-background justify-center items-center">
+        <Text className="text-gray-500">Memuat keranjang...</Text>
+      </View>
+    );
+  }
 
   if (!isAuthenticated) {
     return (
@@ -163,7 +176,7 @@ export default function CartScreen() {
               description="Cari makanan surplus favoritmu dan tambahkan ke keranjang"
               action={
                 <PrimaryButton onPress={() => router.push("/search")}>
-                  Cari Makanan
+                  Mulai Belanja
                 </PrimaryButton>
               }
             />
@@ -182,7 +195,9 @@ export default function CartScreen() {
     <View className="flex-1 bg-background">
       <ScrollView
         className="flex-1 p-4"
-        contentContainerStyle={{ paddingBottom: 24 }}
+        contentContainerStyle={{ paddingTop: headerHeight, paddingBottom: 80 }}
+        onScroll={handleScroll}
+        scrollEventThrottle={16}
       >
         <Text className="text-xl font-bold text-primary mb-4">Keranjang</Text>
 

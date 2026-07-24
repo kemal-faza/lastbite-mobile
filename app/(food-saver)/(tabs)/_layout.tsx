@@ -1,9 +1,95 @@
 import { Tabs } from 'expo-router';
-import { View, Text } from 'react-native';
+import { View, Text, Pressable } from 'react-native';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import Animated, { useAnimatedStyle, interpolate, Extrapolation } from 'react-native-reanimated';
 import { useCart } from '@/hooks/useCart';
 import { useAuthStore } from '@/stores/authStore';
 import { colors } from '@/theme';
+import { useScrollVisibility } from '@/contexts/ScrollVisibilityContext';
+
+function TabBarWrapper({ state, descriptors, navigation }: any) {
+  const insets = useSafeAreaInsets();
+  const { tabBarTranslateY } = useScrollVisibility();
+  const totalTabBarHeight = 60 + insets.bottom;
+
+  const animatedStyle = useAnimatedStyle(() => ({
+    transform: [
+      {
+        translateY: tabBarTranslateY.value * (totalTabBarHeight / 100),
+      },
+    ],
+    opacity: interpolate(tabBarTranslateY.value, [0, 100], [1, 0], Extrapolation.CLAMP),
+  }));
+
+  return (
+    <Animated.View
+      style={[
+        {
+          position: 'absolute',
+          bottom: 0,
+          left: 0,
+          right: 0,
+          height: totalTabBarHeight,
+          backgroundColor: '#ffffff',
+          flexDirection: 'row',
+          borderTopWidth: 1,
+          borderTopColor: '#e5e7eb',
+          zIndex: 40,
+          overflow: 'visible',
+          paddingBottom: insets.bottom,
+        },
+        animatedStyle,
+      ]}
+    >
+      {state.routes.map((route: any, index: number) => {
+        const { options } = descriptors[route.key];
+        const label = options.title !== undefined ? options.title : route.name;
+        const isFocused = state.index === index;
+
+        const onPress = () => {
+          const event = navigation.emit({
+            type: 'tabPress',
+            target: route.key,
+            canPreventDefault: true,
+          });
+
+          if (!isFocused && !event.defaultPrevented) {
+            navigation.navigate(route.name);
+          }
+        };
+
+        return (
+          <Pressable
+            key={route.key}
+            onPress={onPress}
+            style={{ flex: 1, alignItems: 'center', justifyContent: 'center', overflow: 'visible' }}
+            accessibilityRole="button"
+            accessibilityState={isFocused ? { selected: true } : {}}
+            accessibilityLabel={options.tabBarAccessibilityLabel}
+          >
+            {options.tabBarIcon &&
+              options.tabBarIcon({
+                focused: isFocused,
+                color: isFocused ? colors.primary : '#666666',
+                size: 24,
+              })}
+            <Text
+              style={{
+                fontSize: 10,
+                color: isFocused ? colors.primary : '#666666',
+                marginTop: 2,
+                fontWeight: isFocused ? '600' : '400',
+              }}
+            >
+              {label}
+            </Text>
+          </Pressable>
+        );
+      })}
+    </Animated.View>
+  );
+}
 
 export default function TabsLayout() {
   const { isAuthenticated } = useAuthStore();
@@ -12,9 +98,8 @@ export default function TabsLayout() {
 
   return (
     <Tabs
+      tabBar={(props) => <TabBarWrapper {...props} />}
       screenOptions={{
-        tabBarActiveTintColor: colors.primary,
-        tabBarInactiveTintColor: '#666',
         headerShown: false,
       }}
     >
@@ -76,7 +161,6 @@ export default function TabsLayout() {
           ),
         }}
       />
-
     </Tabs>
   );
 }

@@ -8,11 +8,13 @@ import { ProductCard } from '@/components/ProductCard';
 import { EmptyState } from '@/components/EmptyState';
 import { Header } from '@/components/Header';
 import { useBackHandler } from '@/hooks/useBackHandler';
+import { useScrollVisibility } from '@/contexts/ScrollVisibilityContext';
 
 export default function WishlistScreen() {
   const { requireAuth, isAuthenticated } = useRequireAuth();
   const { products, isLoading, refetch, toggle } = useWishlist({ loadProducts: true });
   const { showToast } = useToast();
+  const { handleScroll } = useScrollVisibility();
 
   const handleBack = () => router.back();
   useBackHandler(handleBack);
@@ -58,6 +60,8 @@ export default function WishlistScreen() {
       ) : (
         <FlatList
           data={products}
+          onScroll={handleScroll}
+          scrollEventThrottle={16}
           keyExtractor={(item) => item.id}
           numColumns={2}
           columnWrapperStyle={{ gap: 10, marginBottom: 10 }}

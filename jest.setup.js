@@ -165,4 +165,14 @@ jest.mock('expo-device', () => ({
   isDevice: true,
 }));
 
-
+// Mock react-native-safe-area-context globally for Node test environment
+jest.mock('react-native-safe-area-context', () => {
+  const React = require('react');
+  const { View } = require('react-native');
+  return {
+    SafeAreaProvider: ({ children }) => children,
+    SafeAreaView: ({ children, style, className }) => React.createElement(View, { style, className }, children),
+    useSafeAreaInsets: () => ({ top: 20, right: 0, bottom: 20, left: 0 }),
+    useSafeAreaFrame: () => ({ x: 0, y: 0, width: 375, height: 812 }),
+  };
+});

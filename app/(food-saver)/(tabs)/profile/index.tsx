@@ -19,9 +19,14 @@ import { useImpact } from "@/hooks/useImpact";
 import { useToast } from "@/contexts/ToastContext";
 import { useMutation } from "@tanstack/react-query";
 import { updateProfile as updateProfileApi } from "@/lib/api/profile";
+import { useScrollVisibility } from "@/contexts/ScrollVisibilityContext";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 export default function ProfileScreen() {
+  const insets = useSafeAreaInsets();
+  const headerHeight = insets.top + 60;
   const { user, isAuthenticated, logout } = useAuthStore();
+  const { handleScroll } = useScrollVisibility();
   const [editingField, setEditingField] = useState<"name" | "phone" | null>(
     null,
   );
@@ -100,7 +105,9 @@ export default function ProfileScreen() {
     <View className="flex-1 bg-background">
       <ScrollView
         className="flex-1 p-4"
-        contentContainerStyle={{ paddingBottom: 40 }}
+        contentContainerStyle={{ paddingTop: headerHeight, paddingBottom: 80 }}
+        onScroll={handleScroll}
+        scrollEventThrottle={16}
       >
         {/* Avatar + name */}
         <View className="items-center mt-8 mb-6">
