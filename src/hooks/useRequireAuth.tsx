@@ -1,6 +1,7 @@
 import { useEffect, type ReactNode } from 'react';
 import { router, useSegments, useRootNavigationState } from 'expo-router';
 import { useAuthStore } from '@/stores/authStore';
+import { safeReturnUrl } from '@/lib/security/redirect';
 
 export function useRequireAuth() {
   const { isAuthenticated } = useAuthStore();
@@ -11,7 +12,7 @@ export function useRequireAuth() {
       action();
       return;
     }
-    const returnUrl = '/' + segments.join('/');
+    const returnUrl = safeReturnUrl('/' + segments.join('/'), '/(food-saver)');
     router.push({ pathname: '/login', params: { returnUrl } });
   };
 
@@ -31,7 +32,7 @@ export function RequireAuth({
 
   useEffect(() => {
     if (!navState?.key || isAuthenticated) return;
-    const returnUrl = '/' + segments.join('/');
+    const returnUrl = safeReturnUrl('/' + segments.join('/'), '/(food-saver)');
     router.replace({ pathname: '/login', params: { returnUrl } });
   }, [isAuthenticated, navState?.key, segments]);
 

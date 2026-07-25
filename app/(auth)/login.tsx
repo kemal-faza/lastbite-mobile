@@ -6,6 +6,7 @@ import { TextField } from "@/components/TextField";
 import { PrimaryButton } from "@/components/PrimaryButton";
 import { colors } from "@/theme";
 import { authService } from "@/lib/auth";
+import { safeReturnUrl } from "@/lib/security/redirect";
 
 export default function LoginScreen() {
   const { returnUrl } = useLocalSearchParams<{ returnUrl?: string }>();
@@ -19,8 +20,8 @@ export default function LoginScreen() {
       const res = await authService.login(email, password);
       const isMitra = res.user.role === "MITRA";
       const target = isMitra
-        ? (returnUrl && returnUrl.startsWith("/(mitra)") ? returnUrl : "/(mitra)")
-        : (returnUrl || "/(food-saver)");
+        ? safeReturnUrl(returnUrl, "/(mitra)")
+        : safeReturnUrl(returnUrl || undefined, "/(food-saver)");
       router.replace(target as any);
     } catch (e: any) {
       alert(e.message);
@@ -82,6 +83,8 @@ export default function LoginScreen() {
           <Text className="text-xs text-gray-400 text-center mb-2">
             Mode Development
           </Text>
+
+          {/* --- Dev login buttons use env vars (M-2) --- */}
           <PrimaryButton
             testID="dev-login-foodsaver"
             accessibilityLabel="Masuk Food Saver Dev"
@@ -90,10 +93,10 @@ export default function LoginScreen() {
               setLoading(true);
               try {
                 await authService.login(
-                  "process.env.EXPO_PUBLIC_DEV_FOODSAVER_EMAIL",
-                  "process.env.EXPO_PUBLIC_DEV_FOODSAVER_PASSWORD",
+                  process.env.EXPO_PUBLIC_DEV_FOODSAVER_EMAIL || "process.env.EXPO_PUBLIC_DEV_FOODSAVER_EMAIL",
+                  process.env.EXPO_PUBLIC_DEV_FOODSAVER_PASSWORD || "process.env.EXPO_PUBLIC_DEV_FOODSAVER_PASSWORD",
                 );
-                router.replace((returnUrl || "/(food-saver)") as any);
+                router.replace(safeReturnUrl(returnUrl, "/(food-saver)") as any);
               } catch (e: any) {
                 alert(e.message);
               } finally {
@@ -103,7 +106,9 @@ export default function LoginScreen() {
           >
             Masuk sebagai Food Saver (Dev)
           </PrimaryButton>
+
           <View className="h-2" />
+
           <PrimaryButton
             testID="dev-login-mitra"
             accessibilityLabel="Masuk Mitra Dev"
@@ -112,10 +117,10 @@ export default function LoginScreen() {
               setLoading(true);
               try {
                 await authService.login(
-                  "process.env.EXPO_PUBLIC_DEV_MITRA_EMAIL",
-                  "process.env.EXPO_PUBLIC_DEV_MITRA_PASSWORD",
+                  process.env.EXPO_PUBLIC_DEV_MITRA_EMAIL || "process.env.EXPO_PUBLIC_DEV_MITRA_EMAIL",
+                  process.env.EXPO_PUBLIC_DEV_MITRA_PASSWORD || "process.env.EXPO_PUBLIC_DEV_MITRA_PASSWORD",
                 );
-                const target = returnUrl && returnUrl.startsWith("/(mitra)") ? returnUrl : "/(mitra)";
+                const target = safeReturnUrl(returnUrl, "/(mitra)");
                 router.replace(target as any);
               } catch (e: any) {
                 alert(e.message);
