@@ -6,18 +6,35 @@ import { AuthScreenLayout } from '@/components/AuthScreenLayout';
 import { TextField } from '@/components/TextField';
 import { PrimaryButton } from '@/components/PrimaryButton';
 import { colors } from '@/theme';
+import { z } from 'zod';
+import { Controller, useForm } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { useOtpAttempts } from '@/hooks/useOtpAttempts';
+
+const otpSchema = z.object({
+  code: z.string()
+    .min(1, 'Kode OTP wajib diisi')
+    .regex(/^\d{4,6}$/, 'Kode OTP harus 4-6 digit angka'),
+});
+
+type OtpForm = z.infer<typeof otpSchema>;
 
 export default function VerifyOtpScreen() {
   const { email } = useLocalSearchParams<{ email: string }>();
-  const [code, setCode] = useState('');
   const [loading, setLoading] = useState(false);
+  const { attempts, cooldown, canAttempt, recordFailure, maxAttempts } = useOtpAttempts({ maxAttempts: 5 });
+  const { control, handleSubmit, formState: { errors } } = useForm<OtpForm>({
+    resolver: zodResolver(otpSchema),
+    defaultValues: { code: '' },
+  });
 
-  const handleVerify = async () => {
+  const handleVerify = async (data: OtpForm) => {
     setLoading(true);
     try {
-      await verifyOtp(email, code);
+      await verifyOtp(email, data.code);
       router.replace('/login');
     } catch (e: any) {
+      recordFailure();
       alert(e.message);
     } finally {
       setLoading(false);
@@ -36,14 +53,30 @@ export default function VerifyOtpScreen() {
           </Text>
         )}
       </View>
-      <TextField
-        label="Kode OTP"
-        value={code}
-        onChangeText={setCode}
-        keyboardType="number-pad"
+      <Controller
+        control={control}
+        name="code"
+        render={({ field: { onChange, value } }) => (
+          <TextField
+            label="Kode OTP"
+            value={value}
+            onChangeText={onChange}
+            keyboardType="number-pad"
+            error={errors.code?.message}
+          />
+        )}
       />
-      <PrimaryButton onPress={handleVerify} loading={loading}>
-        Verifikasi
+      <PrimaryButton
+        onPress={handleSubmit(handleVerify)}
+        loading={loading}
+        disabled={!canAttempt}
+      >
+        {!canAttempt
+          ? cooldown > 0
+            ? `Coba lagi dalam ${cooldown}s`
+            : `Batas percobaan (${attempts}/${maxAttempts})`
+          : 'Verifikasi'
+        }
       </PrimaryButton>
     </AuthScreenLayout>
   );
