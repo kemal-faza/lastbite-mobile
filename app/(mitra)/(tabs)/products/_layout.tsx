@@ -8,7 +8,7 @@ export default function ProductsLayout() {
         headerShown: true,
         headerStyle: { backgroundColor: colors.primary },
         headerTintColor: '#ffffff',
-        headerTitleStyle: { fontWeight: '600' },
+        headerTitleStyle: { fontSize: 18, fontWeight: '600' },
       }}
     >
       <Stack.Screen name="index" options={{ title: 'Daftar Produk' }} />
