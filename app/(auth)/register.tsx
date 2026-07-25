@@ -6,20 +6,35 @@ import { AuthScreenLayout } from '@/components/AuthScreenLayout';
 import { TextField } from '@/components/TextField';
 import { PrimaryButton } from '@/components/PrimaryButton';
 import { colors } from '@/theme';
+import { z } from 'zod';
+import { useForm, Controller } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
+
+const registerSchema = z.object({
+  name: z.string().min(2, 'Nama minimal 2 karakter'),
+  email: z.string().min(1, 'Email wajib diisi').email('Format email tidak valid'),
+  phone: z.string()
+    .min(1, 'Nomor telepon wajib diisi')
+    .regex(/^(\+62|62|0)8[1-9][0-9]{6,11}$/, 'Format telepon tidak valid'),
+  password: z.string().min(8, 'Password minimal 8 karakter'),
+});
+
+type RegisterForm = z.infer<typeof registerSchema>;
 
 export default function RegisterScreen() {
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
-  const [name, setName] = useState('');
-  const [phone, setPhone] = useState('');
   const [role, setRole] = useState<'FOOD_SAVER' | 'MITRA'>('FOOD_SAVER');
   const [loading, setLoading] = useState(false);
 
-  const handleRegister = async () => {
+  const { control, handleSubmit, formState: { errors } } = useForm<RegisterForm>({
+    resolver: zodResolver(registerSchema),
+    defaultValues: { name: '', email: '', phone: '', password: '' },
+  });
+
+  const onRegister = async (data: RegisterForm) => {
     setLoading(true);
     try {
-      await register({ email, password, name, phone, role });
-      router.push({ pathname: '/verify-otp', params: { email } });
+      await register({ email: data.email, password: data.password, name: data.name, phone: data.phone, role });
+      router.push({ pathname: '/verify-otp', params: { email: data.email } });
     } catch (e: any) {
       alert(e.message);
     } finally {
@@ -61,12 +76,59 @@ export default function RegisterScreen() {
         </Pressable>
       </View>
 
-      <TextField label="Nama" value={name} onChangeText={setName} />
-      <TextField label="Email" value={email} onChangeText={setEmail} keyboardType="email-address" />
-      <TextField label="Telepon" value={phone} onChangeText={setPhone} keyboardType="phone-pad" />
-      <TextField label="Password" value={password} onChangeText={setPassword} secureTextEntry />
+      <Controller
+        control={control}
+        name="name"
+        render={({ field: { onChange, value } }) => (
+          <TextField
+            label="Nama"
+            value={value}
+            onChangeText={onChange}
+            error={errors.name?.message}
+          />
+        )}
+      />
+      <Controller
+        control={control}
+        name="email"
+        render={({ field: { onChange, value } }) => (
+          <TextField
+            label="Email"
+            value={value}
+            onChangeText={onChange}
+            keyboardType="email-address"
+            error={errors.email?.message}
+          />
+        )}
+      />
+      <Controller
+        control={control}
+        name="phone"
+        render={({ field: { onChange, value } }) => (
+          <TextField
+            label="Telepon"
+            value={value}
+            onChangeText={onChange}
+            keyboardType="phone-pad"
+            error={errors.phone?.message}
+          />
+        )}
+      />
+      <Controller
+        control={control}
+        name="password"
+        render={({ field: { onChange, value } }) => (
+          <TextField
+            label="Password"
+            value={value}
+            onChangeText={onChange}
+            secureTextEntry
+            error={errors.password?.message}
+          />
+        )}
+      />
 
-      <PrimaryButton onPress={handleRegister} loading={loading}>
+      <PrimaryButton onPress={handleSubmit(onRegister)} loading={loading}>
         Daftar
       </PrimaryButton>
     </AuthScreenLayout>

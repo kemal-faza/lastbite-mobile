@@ -7,17 +7,30 @@ import { PrimaryButton } from "@/components/PrimaryButton";
 import { colors } from "@/theme";
 import { authService } from "@/lib/auth";
 import { safeReturnUrl } from "@/lib/security/redirect";
+import { z } from 'zod';
+import { useForm, Controller } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
+
+const loginSchema = z.object({
+  email: z.string().min(1, 'Email wajib diisi').email('Format email tidak valid'),
+  password: z.string().min(1, 'Password wajib diisi'),
+});
+
+type LoginForm = z.infer<typeof loginSchema>;
 
 export default function LoginScreen() {
   const { returnUrl } = useLocalSearchParams<{ returnUrl?: string }>();
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
 
-  const handleLogin = async () => {
+  const { control, handleSubmit, formState: { errors } } = useForm<LoginForm>({
+    resolver: zodResolver(loginSchema),
+    defaultValues: { email: '', password: '' },
+  });
+
+  const onLogin = async (data: LoginForm) => {
     setLoading(true);
     try {
-      const res = await authService.login(email, password);
+      const res = await authService.login(data.email, data.password);
       const isMitra = res.user.role === "MITRA";
       const target = isMitra
         ? safeReturnUrl(returnUrl, "/(mitra)")
@@ -45,20 +58,34 @@ export default function LoginScreen() {
         </Pressable>
       }
     >
-      <TextField
-        label="Email"
-        accessibilityLabel="email field"
-        value={email}
-        onChangeText={setEmail}
-        keyboardType="email-address"
+      <Controller
+        control={control}
+        name="email"
+        render={({ field: { onChange, value } }) => (
+          <TextField
+            label="Email"
+            accessibilityLabel="email field"
+            value={value}
+            onChangeText={onChange}
+            keyboardType="email-address"
+            error={errors.email?.message}
+          />
+        )}
       />
 
-      <TextField
-        label="Password"
-        accessibilityLabel="password label"
-        value={password}
-        onChangeText={setPassword}
-        secureTextEntry
+      <Controller
+        control={control}
+        name="password"
+        render={({ field: { onChange, value } }) => (
+          <TextField
+            label="Password"
+            accessibilityLabel="password label"
+            value={value}
+            onChangeText={onChange}
+            secureTextEntry
+            error={errors.password?.message}
+          />
+        )}
       />
 
       <Pressable
@@ -71,7 +98,7 @@ export default function LoginScreen() {
       </Pressable>
 
       <PrimaryButton
-        onPress={handleLogin}
+        onPress={handleSubmit(onLogin)}
         loading={loading}
         accessibilityLabel="Tombol Masuk"
       >
