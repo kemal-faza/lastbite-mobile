@@ -1,4 +1,5 @@
-import { apiFetch, API_BASE } from './client';
+import { apiFetch } from './client';
+import { safeResolveUrl } from '@/lib/security/url';
 
 export interface ImageVariants {
   thumb: string;
@@ -44,10 +45,7 @@ export interface Product {
 
 export function getImageVariants(variants: ImageVariants | null | undefined): ImageVariants | null {
   if (!variants) return null;
-  const resolve = (url: string): string => {
-    if (url.startsWith('http://') || url.startsWith('https://')) return url;
-    return `${API_BASE}${url}`;
-  };
+  const resolve = safeResolveUrl;
   return {
     thumb: resolve(variants.thumb),
     card: resolve(variants.card),
