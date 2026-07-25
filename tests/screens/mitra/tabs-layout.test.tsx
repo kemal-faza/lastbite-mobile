@@ -23,12 +23,13 @@ jest.mock('@/hooks/useNetworkStatus', () => ({
 }));
 
 describe('Mitra Tabs Layout', () => {
-  it('renders 5 tab screens with correct labels', async () => {
-    const { getByText } = await render(<TabsLayout />);
-    expect(getByText('Beranda')).toBeTruthy();
+  it('renders 5 tab screens with correct labels including Dashboard', async () => {
+    const { getByText, queryByText } = await render(<TabsLayout />);
+    expect(getByText('Dashboard')).toBeTruthy();
     expect(getByText('Pesanan')).toBeTruthy();
     expect(getByText('Produk')).toBeTruthy();
     expect(getByText('Analisis')).toBeTruthy();
     expect(getByText('Profil')).toBeTruthy();
+    expect(queryByText('register')).toBeFalsy();
   });
 });

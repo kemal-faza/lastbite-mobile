@@ -1,11 +1,16 @@
 import { View, Text, ScrollView, RefreshControl } from 'react-native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useMitraProfile, useMitraStats } from '@/hooks/useMitra';
 import { useRefreshOnFocus } from '@/hooks/useRefreshOnFocus';
 import DashboardStatsCard from '@/components/DashboardStatsCard';
 import { Button } from '@/components/ui/button';
 import { router } from 'expo-router';
+import { useScrollVisibility } from '@/contexts/ScrollVisibilityContext';
 
 export default function MitraDashboardScreen() {
+  const insets = useSafeAreaInsets();
+  const headerHeight = insets.top + 60;
+  const { handleScroll } = useScrollVisibility();
   const { data: profileData, isLoading: profileLoading } = useMitraProfile();
   const { data: stats, refetch, isRefetching } = useMitraStats();
 
@@ -42,6 +47,12 @@ export default function MitraDashboardScreen() {
   return (
     <ScrollView
       className="flex-1 bg-background"
+      contentContainerStyle={{
+        paddingTop: headerHeight,
+        paddingBottom: 90 + insets.bottom,
+      }}
+      onScroll={handleScroll}
+      scrollEventThrottle={16}
       refreshControl={
         <RefreshControl refreshing={isRefetching} onRefresh={refetch} />
       }

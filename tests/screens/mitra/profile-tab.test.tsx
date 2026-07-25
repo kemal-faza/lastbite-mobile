@@ -2,6 +2,10 @@ import { render, fireEvent, waitFor } from '@testing-library/react-native';
 import React from 'react';
 import { router } from 'expo-router';
 
+jest.mock('@rn-primitives/slot', () => ({
+  Slot: ({ children }: { children: React.ReactNode }) => <>{children}</>,
+}));
+
 jest.mock('@/stores/authStore', () => ({
   useAuthStore: jest.fn(),
 }));
@@ -12,8 +16,17 @@ jest.mock('@/lib/api/mitra', () => ({
   }),
 }));
 
+jest.mock('@/lib/api/profile', () => ({
+  updateProfile: jest.fn().mockResolvedValue({ id: '1', name: 'New Name' }),
+}));
+
+jest.mock('@/contexts/ToastContext', () => ({
+  useToast: () => ({ showToast: jest.fn() }),
+}));
+
 jest.mock('@tanstack/react-query', () => ({
   useQuery: jest.fn(),
+  useMutation: jest.fn(() => ({ mutateAsync: jest.fn() })),
 }));
 
 const mockLogout = jest.fn();
@@ -33,6 +46,7 @@ describe('MitraProfileScreen', () => {
       },
       isAuthenticated: true,
       logout: mockLogout,
+      updateUser: jest.fn(),
     });
 
     (jest.requireMock('@tanstack/react-query').useQuery as jest.Mock).mockReturnValue({
@@ -41,15 +55,23 @@ describe('MitraProfileScreen', () => {
     });
   });
 
-  it('shows Mitra store name, email, and role badge', async () => {
-    // Dynamic import to trigger module-not-found failure in RED phase
+  it('shows Mitra store name, email, role badge, and Info Akun options', async () => {
     const module = await import('../../../app/(mitra)/(tabs)/profile');
     const MitraProfileScreen = module.default;
-    const { getByText } = await render(React.createElement(MitraProfileScreen));
+    const { getByText, queryByText } = await render(React.createElement(MitraProfileScreen));
 
     expect(getByText('Dapur Bu Ani')).toBeTruthy();
     expect(getByText('process.env.EXPO_PUBLIC_DEV_MITRA_EMAIL')).toBeTruthy();
     expect(getByText('Mitra')).toBeTruthy();
+    expect(getByText('Info Akun')).toBeTruthy();
+    expect(getByText('Keamanan Akun')).toBeTruthy();
+    expect(getByText('Pengaturan')).toBeTruthy();
+    expect(getByText('Pusat Bantuan')).toBeTruthy();
+
+    // Verify buyer-specific sections are NOT rendered
+    expect(queryByText('Uang Dihemat')).toBeFalsy();
+    expect(queryByText('Riwayat Pesanan')).toBeFalsy();
+    expect(queryByText('Menu Favorit')).toBeFalsy();
   });
 
   it('calls logout and redirects to food-saver on Keluar press', async () => {
