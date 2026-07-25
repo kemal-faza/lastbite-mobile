@@ -17,8 +17,10 @@ export default function LoginScreen() {
     setLoading(true);
     try {
       const res = await authService.login(email, password);
-      const target =
-        returnUrl || (res.user.role === "MITRA" ? "/(mitra)" : "/(food-saver)");
+      const isMitra = res.user.role === "MITRA";
+      const target = isMitra
+        ? (returnUrl && returnUrl.startsWith("/(mitra)") ? returnUrl : "/(mitra)")
+        : (returnUrl || "/(food-saver)");
       router.replace(target as any);
     } catch (e: any) {
       alert(e.message);
@@ -113,7 +115,8 @@ export default function LoginScreen() {
                   "process.env.EXPO_PUBLIC_DEV_MITRA_EMAIL",
                   "process.env.EXPO_PUBLIC_DEV_MITRA_PASSWORD",
                 );
-                router.replace((returnUrl || "/(mitra)") as any);
+                const target = returnUrl && returnUrl.startsWith("/(mitra)") ? returnUrl : "/(mitra)";
+                router.replace(target as any);
               } catch (e: any) {
                 alert(e.message);
               } finally {

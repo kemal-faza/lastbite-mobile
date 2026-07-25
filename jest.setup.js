@@ -124,6 +124,15 @@ jest.mock('react-native-maps', () => {
 // Polyfill global.alert for components that use it directly (not Alert.alert)
 global.alert = jest.fn();
 
+const MockStack = ({ children }) => children;
+MockStack.Screen = () => null;
+
+const MockTabs = ({ children }) => children;
+MockTabs.Screen = () => null;
+
+const MockDrawer = ({ children }) => children;
+MockDrawer.Screen = () => null;
+
 // Mock expo-router segments + navigation (additive to any existing expo-router mock)
 jest.mock('expo-router', () => ({
   router: { push: jest.fn(), replace: jest.fn(), back: jest.fn() },
@@ -131,10 +140,10 @@ jest.mock('expo-router', () => ({
   useRootNavigationState: jest.fn(() => ({ key: 'test' })),
   useLocalSearchParams: jest.fn(() => ({})),
   useRouter: jest.fn(() => ({ push: jest.fn(), replace: jest.fn(), back: jest.fn() })),
-  Stack: { Screen: () => null },
-  Tabs: { Screen: () => null },
-  Drawer: { Screen: () => null },
-  Redirect: () => null,
+  Stack: MockStack,
+  Tabs: MockTabs,
+  Drawer: MockDrawer,
+  Redirect: jest.fn(({ href }) => null),
   Link: () => null,
 }));
 
@@ -161,9 +170,17 @@ jest.mock('expo-notifications', () => ({
   getExpoPushTokenAsync: jest.fn(() => Promise.resolve({ data: 'mock-expo-push-token' })),
 }));
 
+
 jest.mock('expo-device', () => ({
   isDevice: true,
 }));
+
+jest.mock('expo-status-bar', () => ({
+  StatusBar: () => null,
+  setStatusBarStyle: jest.fn(),
+  setStatusBarHidden: jest.fn(),
+}));
+
 
 // Mock react-native-safe-area-context globally for Node test environment
 jest.mock('react-native-safe-area-context', () => {

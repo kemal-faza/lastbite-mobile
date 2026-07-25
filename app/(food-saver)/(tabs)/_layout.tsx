@@ -19,7 +19,7 @@ function TabBarWrapper({ state, descriptors, navigation }: any) {
         translateY: tabBarTranslateY.value * (totalTabBarHeight / 100),
       },
     ],
-    opacity: interpolate(tabBarTranslateY.value, [0, 100], [1, 0], Extrapolation.CLAMP),
+    opacity: interpolate(tabBarTranslateY.value, [0, 100], [1, 0], Extrapolation?.CLAMP ?? 'clamp'),
   }));
 
   return (

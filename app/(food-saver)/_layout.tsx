@@ -1,11 +1,12 @@
 import { View } from "react-native";
-import { Stack, useSegments } from "expo-router";
+import { Stack, Redirect, useSegments } from "expo-router";
 import { StatusBar } from "expo-status-bar";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import Animated, { useAnimatedStyle, interpolate, Extrapolation } from "react-native-reanimated";
 import { OfflineBanner } from "@/components/OfflineBanner";
 import { TopBar } from "@/components/TopBar";
 import { useNetworkStatus } from "@/hooks/useNetworkStatus";
+import { useAuthStore } from "@/stores/authStore";
 import {
   ScrollVisibilityProvider,
   useScrollVisibility,
@@ -17,7 +18,7 @@ function AnimatedHeader() {
   const isConnected = useNetworkStatus();
   const insets = useSafeAreaInsets();
   const { headerTranslateY } = useScrollVisibility();
-  const segments = useSegments();
+  const segments = useSegments() as string[];
 
   const isHomeScreen =
     (segments.length === 2 && segments[0] === "(food-saver)" && segments[1] === "(tabs)") ||
@@ -29,7 +30,7 @@ function AnimatedHeader() {
         translateY: headerTranslateY.value,
       },
     ],
-    opacity: interpolate(headerTranslateY.value, [-60, 0], [0, 1], Extrapolation.CLAMP),
+    opacity: interpolate(headerTranslateY.value, [-60, 0], [0, 1], Extrapolation?.CLAMP ?? 'clamp'),
   }));
 
   return (
@@ -73,8 +74,13 @@ function AnimatedHeader() {
     </>
   );
 }
-
 function FoodSaverLayoutContent() {
+  const { user, isAuthenticated } = useAuthStore();
+
+  if (isAuthenticated && user?.role === "MITRA") {
+    return <Redirect href="/(mitra)" />;
+  }
+
   return (
     <View className="flex-1 bg-background">
       <AnimatedHeader />

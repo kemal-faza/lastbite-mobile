@@ -12,4 +12,6 @@ module.exports = {
   withSpring: (val) => val,
   withTiming: (val, _config) => val,
   withSequence: (...vals) => vals[vals.length - 1],
+  interpolate: (val, _input, output) => (Array.isArray(output) ? output[0] : 0),
+  Extrapolation: { CLAMP: 'clamp', IDENTITY: 'identity', EXTEND: 'extend' },
 };
