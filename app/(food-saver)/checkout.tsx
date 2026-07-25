@@ -14,6 +14,7 @@ import { colors } from "@/theme";
 import { useToast } from "@/contexts/ToastContext";
 import type { CartItem } from "@/lib/api/cart";
 import { filterForCheckout } from "@/lib/cart";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 const NOTES_MAX = 500;
 
@@ -27,6 +28,7 @@ export default function CheckoutScreen() {
   const [notes, setNotes] = useState("");
   const [loading, setLoading] = useState(false);
   const { showToast } = useToast();
+  const insets = useSafeAreaInsets();
   const handleBack = () => router.back();
   useBackHandler(handleBack);
 
@@ -66,7 +68,7 @@ export default function CheckoutScreen() {
       />
       <ScrollView
         className="flex-1 p-4"
-        contentContainerStyle={{ paddingBottom: 24 }}
+        contentContainerStyle={{ paddingBottom: 24 + insets.bottom }}
       >
         <Text className="text-xl font-bold text-primary mb-4">
           {storeName ? `Checkout - ${storeName}` : "Checkout"}

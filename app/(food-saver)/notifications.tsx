@@ -8,12 +8,14 @@ import { EmptyState } from "@/components/EmptyState";
 import { Header } from "@/components/Header";
 import { useBackHandler } from "@/hooks/useBackHandler";
 import { useScrollVisibility } from "@/contexts/ScrollVisibilityContext";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 export default function NotificationsScreen() {
   const { requireAuth, isAuthenticated } = useRequireAuth();
   const { notifications, unreadCount, isLoading, refresh } = useNotifications();
   const handleTap = useNotificationTap();
   const { handleScroll } = useScrollVisibility();
+  const insets = useSafeAreaInsets();
 
   const handleBack = () => router.back();
   useBackHandler(handleBack);
@@ -59,6 +61,7 @@ export default function NotificationsScreen() {
           keyExtractor={(item) => item.id}
           onScroll={handleScroll}
           scrollEventThrottle={16}
+          contentContainerStyle={{ paddingBottom: Math.max(insets.bottom, 16) }}
           renderItem={({ item }) => (
             <NotificationCard notification={item} onPress={handleTap} />
           )}

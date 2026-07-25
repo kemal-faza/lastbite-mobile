@@ -22,6 +22,7 @@ import { WishlistHeart } from '@/components/WishlistHeart';
 import { useWishlist } from '@/hooks/useWishlist';
 import { formatTime } from '@/lib/utils/formatSafeDate';
 import { useScrollVisibility } from '@/contexts/ScrollVisibilityContext';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 /** Calculate discount percentage, returns 0 if prices are equal or invalid. */
 function calcDiscountPct(original: number, discounted: number, explicit?: number): number {
@@ -42,6 +43,7 @@ export default function ProductDetailScreen() {
   const isProductWishlisted = isWishlisted(id!);
   const { requireAuth } = useRequireAuth();
   const { handleScroll } = useScrollVisibility();
+  const insets = useSafeAreaInsets();
   const handleBack = () => router.back();
   useBackHandler(handleBack);
 
@@ -84,7 +86,7 @@ export default function ProductDetailScreen() {
       <Header title="Detail Produk" onBack={handleBack} fallbackHref="/" />
       <ScrollView
         className="flex-1"
-        contentContainerStyle={{ paddingBottom: 16 }}
+        contentContainerStyle={{ paddingBottom: 16 + 60 + insets.bottom }}
         onScroll={handleScroll}
         scrollEventThrottle={16}
       >
@@ -214,7 +216,10 @@ export default function ProductDetailScreen() {
       </ScrollView>
 
       {/* Floating button container */}
-      <View className="bg-white border-t border-gray-200 px-4 py-3">
+      <View
+        className="bg-white border-t border-gray-200 px-4 pt-3"
+        style={{ paddingBottom: Math.max(insets.bottom, 12) }}
+      >
         <Button
           testID="add-to-cart-button"
           variant="default"

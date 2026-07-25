@@ -9,12 +9,14 @@ import { EmptyState } from '@/components/EmptyState';
 import { Header } from '@/components/Header';
 import { useBackHandler } from '@/hooks/useBackHandler';
 import { useScrollVisibility } from '@/contexts/ScrollVisibilityContext';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 export default function WishlistScreen() {
   const { requireAuth, isAuthenticated } = useRequireAuth();
   const { products, isLoading, refetch, toggle } = useWishlist({ loadProducts: true });
   const { showToast } = useToast();
   const { handleScroll } = useScrollVisibility();
+  const insets = useSafeAreaInsets();
 
   const handleBack = () => router.back();
   useBackHandler(handleBack);
@@ -65,7 +67,7 @@ export default function WishlistScreen() {
           keyExtractor={(item) => item.id}
           numColumns={2}
           columnWrapperStyle={{ gap: 10, marginBottom: 10 }}
-          contentContainerStyle={{ padding: 16 }}
+          contentContainerStyle={{ padding: 16, paddingBottom: Math.max(insets.bottom, 16) }}
           renderItem={({ item }) => (
             <ProductCard
               product={item}

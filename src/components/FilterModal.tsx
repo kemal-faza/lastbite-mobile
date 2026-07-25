@@ -10,6 +10,7 @@ import {
 	StyleSheet,
 	Dimensions,
 } from 'react-native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 export interface FilterState {
 	maxDistance: number;
@@ -71,6 +72,7 @@ export function FilterModal({
 	filters,
 	onApply,
 }: FilterModalProps) {
+	const insets = useSafeAreaInsets();
 	const [draft, setDraft] = useState<FilterState>(filters);
 	const [mounted, setMounted] = useState(visible);
 	const opacity = useRef(new Animated.Value(visible ? 1 : 0)).current;
@@ -265,7 +267,7 @@ export function FilterModal({
 						</ScrollView>
 
 						{/* Sticky footer with Terapkan button */}
-						<View className="pt-3 border-t border-gray-200">
+						<View className="pt-3 border-t border-gray-200" style={{ paddingBottom: Math.max(insets.bottom, 12) }}>
 							<TouchableOpacity
 								onPress={handleApply}
 								className="bg-primary py-3 rounded-xl">

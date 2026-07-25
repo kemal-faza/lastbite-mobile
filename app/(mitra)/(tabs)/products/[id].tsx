@@ -4,8 +4,10 @@ import { Image } from 'expo-image';
 import { useQuery } from '@tanstack/react-query';
 import { getProduct, getImageVariants } from '@/lib/api/products';
 import { Button } from '@/components/ui/button';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 export default function MitraProductDetailScreen() {
+  const insets = useSafeAreaInsets();
   const { id } = useLocalSearchParams<{ id: string }>();
 
   const { data, isLoading, isError } = useQuery({
@@ -73,7 +75,7 @@ export default function MitraProductDetailScreen() {
       </View>
 
       {/* Edit Button */}
-      <View className="p-4 border-t border-border">
+      <View className="p-4 border-t border-border" style={{ paddingBottom: Math.max(insets.bottom, 16) }}>
         <Button onPress={() => router.push(`/(mitra)/products/${product.id}/edit`)}>
           <Text className="text-white font-bold text-center">Edit Produk</Text>
         </Button>
