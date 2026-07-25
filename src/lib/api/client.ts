@@ -1,4 +1,4 @@
-import AsyncStorage from '@react-native-async-storage/async-storage';
+import { getAccessToken } from './tokenStorage';
 
 export const API_BASE = process.env.EXPO_PUBLIC_API_URL || 'http://localhost:4000';
 
@@ -37,7 +37,7 @@ export async function apiFetch<T>(
   }
 
   if (options.auth) {
-    const token = await AsyncStorage.getItem('accessToken');
+    const token = await getAccessToken();
     if (token) {
       headers.Authorization = `Bearer ${token}`;
     }

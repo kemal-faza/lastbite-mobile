@@ -1,9 +1,8 @@
 import { hasPurchaseHistory, confirmPickup } from '../orders';
 
-jest.mock('@react-native-async-storage/async-storage', () => ({
-  getItem: jest.fn(() => Promise.resolve('mock-token')),
-  setItem: jest.fn(() => Promise.resolve()),
-  multiRemove: jest.fn(() => Promise.resolve()),
+// Mock tokenStorage to provide an access token for apiFetch({ auth: true })
+jest.mock('../tokenStorage', () => ({
+  getAccessToken: jest.fn(() => Promise.resolve('mock-token')),
 }));
 
 describe('orders API', () => {

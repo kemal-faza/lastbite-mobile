@@ -1,4 +1,4 @@
-import AsyncStorage from '@react-native-async-storage/async-storage';
+import { getAccessToken, getCachedUser } from '@/lib/api/tokenStorage';
 import { useAuthStore } from '@/stores/authStore';
 import { login as loginApi } from '@/lib/api/auth';
 import { registerUnauthorizedHandler } from '@/lib/api/client';
@@ -35,11 +35,10 @@ export const authService = {
    */
   async bootstrap(): Promise<{ isAuthenticated: boolean }> {
     try {
-      const token = await AsyncStorage.getItem('accessToken');
-      const cachedUserStr = await AsyncStorage.getItem('user');
+      const token = await getAccessToken();
+      const cachedUser = await getCachedUser();
 
-      if (token && cachedUserStr) {
-        const cachedUser = JSON.parse(cachedUserStr);
+      if (token && cachedUser) {
         useAuthStore.getState().setUser(cachedUser);
         return { isAuthenticated: true };
       }
@@ -55,6 +54,6 @@ export const authService = {
    * Used by apiFetch to attach Bearer header.
    */
   async getToken(): Promise<string | null> {
-    return AsyncStorage.getItem('accessToken');
+    return getAccessToken();
   },
 };

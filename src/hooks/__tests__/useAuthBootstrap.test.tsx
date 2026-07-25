@@ -1,5 +1,5 @@
 import { renderHook, waitFor } from '@testing-library/react-native';
-import AsyncStorage from '@react-native-async-storage/async-storage';
+import * as tokenStorage from '@/lib/api/tokenStorage';
 import { useAuthBootstrap } from '../useAuthBootstrap';
 import { useAuthStore } from '@/stores/authStore';
 import { getProfile } from '@/lib/api/profile';
@@ -7,6 +7,13 @@ import { getProfile } from '@/lib/api/profile';
 // Mock getProfile
 jest.mock('@/lib/api/profile', () => ({
   getProfile: jest.fn(),
+}));
+
+// Mock tokenStorage (SecureStore-based)
+jest.mock('@/lib/api/tokenStorage', () => ({
+  getAccessToken: jest.fn(),
+  getCachedUser: jest.fn(),
+  setCachedUser: jest.fn(),
 }));
 
 describe('useAuthBootstrap', () => {
@@ -25,11 +32,8 @@ describe('useAuthBootstrap', () => {
   });
 
   it('stops bootstrapping immediately when no token exists', async () => {
-    (AsyncStorage.getItem as jest.Mock).mockImplementation((key) => {
-      if (key === 'accessToken') return Promise.resolve(null);
-      if (key === 'user') return Promise.resolve(null);
-      return Promise.resolve(null);
-    });
+    (tokenStorage.getAccessToken as jest.Mock).mockResolvedValue(null);
+    (tokenStorage.getCachedUser as jest.Mock).mockResolvedValue(null);
 
     const { result } = await renderHook(() => useAuthBootstrap());
 
@@ -44,11 +48,8 @@ describe('useAuthBootstrap', () => {
   });
 
   it('restores cached user optimistically and syncs fresh data in background', async () => {
-    (AsyncStorage.getItem as jest.Mock).mockImplementation((key) => {
-      if (key === 'accessToken') return Promise.resolve('mock-access-token');
-      if (key === 'user') return Promise.resolve(JSON.stringify(mockUser));
-      return Promise.resolve(null);
-    });
+    (tokenStorage.getAccessToken as jest.Mock).mockResolvedValue('mock-access-token');
+    (tokenStorage.getCachedUser as jest.Mock).mockResolvedValue(mockUser);
 
     const freshUser = { ...mockUser, name: 'Fresh Name' };
     let resolveProfile: any;
@@ -76,16 +77,13 @@ describe('useAuthBootstrap', () => {
       expect(useAuthStore.getState().user).toEqual(freshUser);
     });
 
-    // Verify fresh profile is cached
-    expect(AsyncStorage.setItem).toHaveBeenCalledWith('user', JSON.stringify(freshUser));
+    // Verify fresh profile is cached via SecureStore
+    expect(tokenStorage.setCachedUser).toHaveBeenCalledWith(freshUser);
   });
 
   it('keeps optimistic cached user if background sync fails', async () => {
-    (AsyncStorage.getItem as jest.Mock).mockImplementation((key) => {
-      if (key === 'accessToken') return Promise.resolve('mock-access-token');
-      if (key === 'user') return Promise.resolve(JSON.stringify(mockUser));
-      return Promise.resolve(null);
-    });
+    (tokenStorage.getAccessToken as jest.Mock).mockResolvedValue('mock-access-token');
+    (tokenStorage.getCachedUser as jest.Mock).mockResolvedValue(mockUser);
 
     (getProfile as jest.Mock).mockRejectedValue(new Error('Network error'));
 

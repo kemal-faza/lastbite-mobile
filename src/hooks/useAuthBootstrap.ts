@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import AsyncStorage from '@react-native-async-storage/async-storage';
+import { setCachedUser } from '@/lib/api/tokenStorage';
 import { authService } from '@/lib/auth';
 import { getProfile } from '@/lib/api/profile';
 import { useAuthStore } from '@/stores/authStore';
@@ -18,7 +18,7 @@ export function useAuthBootstrap() {
         getProfile({ silent401: true })
           .then((freshUser) => {
             useAuthStore.getState().setUser(freshUser);
-            AsyncStorage.setItem('user', JSON.stringify(freshUser));
+            setCachedUser(freshUser);
           })
           .catch(() => {});
       }

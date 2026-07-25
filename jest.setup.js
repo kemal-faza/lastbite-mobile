@@ -96,6 +96,18 @@ jest.mock('@react-native-async-storage/async-storage', () => ({
   multiRemove: jest.fn(() => Promise.resolve()),
 }));
 
+// Mock expo-secure-store — native module, needs stub for tests
+jest.mock('expo-secure-store', () => {
+  const store = {};
+  return {
+    setItemAsync: jest.fn((k, v) => { store[k] = v; return Promise.resolve(); }),
+    getItemAsync: jest.fn((k) => Promise.resolve(store[k] ?? null)),
+    deleteItemAsync: jest.fn((k) => { delete store[k]; return Promise.resolve(); }),
+    isAvailableAsync: jest.fn(() => Promise.resolve(true)),
+    __store: store,
+  };
+});
+
 // Mock expo-location
 jest.mock('expo-location', () => ({
   requestForegroundPermissionsAsync: jest.fn(),
