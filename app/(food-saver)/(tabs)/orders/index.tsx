@@ -6,6 +6,7 @@ import { useOrders } from '@/hooks/useOrders';
 import { useAuthStore } from '@/stores/authStore';
 import { useRefreshOnFocus } from '@/hooks/useRefreshOnFocus';
 import { EmptyState } from '@/components/EmptyState';
+import { Header } from '@/components/Header';
 import { OrderStatusBadge } from '@/components/OrderStatusBadge';
 import { getImageVariants } from '@/lib/api/products';
 import { useScrollVisibility } from '@/contexts/ScrollVisibilityContext';
@@ -39,16 +40,13 @@ export default function OrdersScreen() {
 
 	return (
 		<View className="flex-1 bg-background">
-			<View className="flex-1 p-4">
-				<Text className="text-xl font-bold text-primary mb-4">
-					Pesanan Saya
-				</Text>
-				<FlatList
-					data={data?.orders}
-					keyExtractor={(item) => item.id}
-					contentContainerStyle={{ flexGrow: 1, paddingTop: headerHeight, paddingBottom: 80 }}
-					onScroll={handleScroll}
-					scrollEventThrottle={16}
+			<Header title="Pesanan Saya" showBack={false} />
+			<FlatList
+				data={data?.orders}
+				keyExtractor={(item) => item.id}
+				contentContainerStyle={{ flexGrow: 1, padding: 16, paddingBottom: 80 }}
+				onScroll={handleScroll}
+				scrollEventThrottle={16}
 					ListEmptyComponent={
 						<View className="flex-1 items-center justify-center">
 							<EmptyState
@@ -104,7 +102,6 @@ export default function OrdersScreen() {
 						);
 					}}
 				/>
-			</View>
 		</View>
 	);
 }

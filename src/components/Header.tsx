@@ -7,9 +7,15 @@ interface HeaderProps {
   title: string;
   onBack?: () => void;
   fallbackHref?: string;
+  showBack?: boolean;
 }
 
-export function Header({ title, onBack, fallbackHref = '/' }: HeaderProps) {
+export function Header({
+  title,
+  onBack,
+  fallbackHref = '/',
+  showBack = true,
+}: HeaderProps) {
   const insets = useSafeAreaInsets();
 
   const handleBack = () => {
@@ -27,15 +33,17 @@ export function Header({ title, onBack, fallbackHref = '/' }: HeaderProps) {
       className="bg-primary flex-row items-center px-4"
       style={{ paddingTop: insets.top, height: 56 + insets.top }}
     >
-      <TouchableOpacity
-        onPress={handleBack}
-        hitSlop={8}
-        accessibilityLabel="Kembali"
-        accessibilityRole="button"
-        className="mr-3"
-      >
-        <MaterialCommunityIcons name="arrow-left" size={24} color="white" />
-      </TouchableOpacity>
+      {showBack && (
+        <TouchableOpacity
+          onPress={handleBack}
+          hitSlop={8}
+          accessibilityLabel="Kembali"
+          accessibilityRole="button"
+          className="mr-3"
+        >
+          <MaterialCommunityIcons name="arrow-left" size={24} color="white" />
+        </TouchableOpacity>
+      )}
       <Text className="text-white text-lg font-semibold flex-1">{title}</Text>
     </View>
   );

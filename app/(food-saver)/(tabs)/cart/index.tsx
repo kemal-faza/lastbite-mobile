@@ -17,6 +17,7 @@ import { useCart } from "@/hooks/useCart";
 import { useAuthStore } from "@/stores/authStore";
 import type { CartItem } from "@/lib/api/cart";
 import { EmptyState } from "@/components/EmptyState";
+import { Header } from "@/components/Header";
 import { getImageVariants } from "@/lib/api/products";
 import { groupByStore, calculateCartTotal } from "@/lib/cart";
 import { useScrollVisibility } from "@/contexts/ScrollVisibilityContext";
@@ -195,14 +196,13 @@ export default function CartScreen() {
 
   return (
     <View className="flex-1 bg-background">
+      <Header title="Keranjang" showBack={false} />
       <ScrollView
-        className="flex-1 p-4"
-        contentContainerStyle={{ paddingTop: headerHeight, paddingBottom: 80 }}
+        className="flex-1"
+        contentContainerStyle={{ padding: 16, paddingBottom: 80 }}
         onScroll={handleScroll}
         scrollEventThrottle={16}
       >
-        <Text className="text-xl font-bold text-primary mb-4">Keranjang</Text>
-
         {storeNames.map((storeName) => {
           const storeItems = storeGroups[storeName];
           const storeTotal = calculateCartTotal(storeItems);

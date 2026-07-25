@@ -3,6 +3,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useQuery } from '@tanstack/react-query';
 import { fetchRevenueSummary } from '@/lib/api/analytics';
 import DashboardStatsCard from '@/components/DashboardStatsCard';
+import { Header } from '@/components/Header';
 
 export default function AnalyticsScreen() {
   const insets = useSafeAreaInsets();
@@ -23,13 +24,7 @@ export default function AnalyticsScreen() {
 
   return (
     <View className="flex-1 bg-background">
-      {/* Header Bar */}
-      <View
-        className="bg-white border-b border-gray-100 px-4 py-3"
-        style={{ paddingTop: insets.top + 8 }}
-      >
-        <Text className="text-xl font-bold text-gray-900">Analisis Penjualan</Text>
-      </View>
+      <Header title="Analisis Penjualan" showBack={false} />
 
       <ScrollView
         className="flex-1"
