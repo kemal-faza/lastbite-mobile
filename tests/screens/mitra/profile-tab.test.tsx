@@ -39,7 +39,7 @@ describe('MitraProfileScreen', () => {
       user: {
         id: '1',
         name: 'Budi Santoso',
-        email: 'process.env.EXPO_PUBLIC_DEV_MITRA_EMAIL',
+        email: 'mitra@example.com',
         phone: '08123456789',
         role: 'MITRA',
         isVerified: true,
@@ -61,7 +61,7 @@ describe('MitraProfileScreen', () => {
     const { getByText, queryByText } = await render(React.createElement(MitraProfileScreen));
 
     expect(getByText('Dapur Bu Ani')).toBeTruthy();
-    expect(getByText('process.env.EXPO_PUBLIC_DEV_MITRA_EMAIL')).toBeTruthy();
+    expect(getByText('mitra@example.com')).toBeTruthy();
     expect(getByText('Mitra')).toBeTruthy();
     expect(getByText('Info Akun')).toBeTruthy();
     expect(getByText('Keamanan Akun')).toBeTruthy();

@@ -1,9 +1,14 @@
 # LastBite Maestro E2E Test Configuration
-# 
+#
 # Usage:
 #   maestro test flows/                          # Run all flows
 #   maestro test flows/03-cart/checkout.yaml      # Run single flow
 #   maestro test flows/ --format junit --output reports/
+#
+# NOTE: Dev credentials are no longer hardcoded here. Export them from your
+# local .env before running Maestro, e.g.:
+#   export $(grep -v '^#' .env | xargs)   # or set them in your shell
+# Maestro interpolates these from the environment at runtime.
 
 flows:
   - ../flows
@@ -14,7 +19,7 @@ executionOrder:
 appId: com.lastbite.mobile
 
 env:
-  FS_EMAIL: "process.env.EXPO_PUBLIC_DEV_FOODSAVER_EMAIL"
-  FS_PASSWORD: "process.env.EXPO_PUBLIC_DEV_FOODSAVER_PASSWORD"
-  MITRA_EMAIL: "process.env.EXPO_PUBLIC_DEV_MITRA_EMAIL"
-  MITRA_PASSWORD: "process.env.EXPO_PUBLIC_DEV_MITRA_PASSWORD"
+  FS_EMAIL: "${EXPO_PUBLIC_DEV_FOODSAVER_EMAIL}"
+  FS_PASSWORD: "${EXPO_PUBLIC_DEV_FOODSAVER_PASSWORD}"
+  MITRA_EMAIL: "${EXPO_PUBLIC_DEV_MITRA_EMAIL}"
+  MITRA_PASSWORD: "${EXPO_PUBLIC_DEV_MITRA_PASSWORD}"

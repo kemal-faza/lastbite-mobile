@@ -7,13 +7,16 @@ import { PrimaryButton } from "@/components/PrimaryButton";
 import { colors } from "@/theme";
 import { authService } from "@/lib/auth";
 import { safeReturnUrl } from "@/lib/security/redirect";
-import { z } from 'zod';
-import { useForm, Controller } from 'react-hook-form';
-import { zodResolver } from '@hookform/resolvers/zod';
+import { z } from "zod";
+import { useForm, Controller } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
 
 const loginSchema = z.object({
-  email: z.string().min(1, 'Email wajib diisi').email('Format email tidak valid'),
-  password: z.string().min(1, 'Password wajib diisi'),
+  email: z
+    .string()
+    .min(1, "Email wajib diisi")
+    .email("Format email tidak valid"),
+  password: z.string().min(1, "Password wajib diisi"),
 });
 
 type LoginForm = z.infer<typeof loginSchema>;
@@ -22,9 +25,13 @@ export default function LoginScreen() {
   const { returnUrl } = useLocalSearchParams<{ returnUrl?: string }>();
   const [loading, setLoading] = useState(false);
 
-  const { control, handleSubmit, formState: { errors } } = useForm<LoginForm>({
+  const {
+    control,
+    handleSubmit,
+    formState: { errors },
+  } = useForm<LoginForm>({
     resolver: zodResolver(loginSchema),
-    defaultValues: { email: '', password: '' },
+    defaultValues: { email: "", password: "" },
   });
 
   const onLogin = async (data: LoginForm) => {
@@ -119,11 +126,19 @@ export default function LoginScreen() {
             onPress={async () => {
               setLoading(true);
               try {
-                await authService.login(
-                  process.env.EXPO_PUBLIC_DEV_FOODSAVER_EMAIL || "process.env.EXPO_PUBLIC_DEV_FOODSAVER_EMAIL",
-                  process.env.EXPO_PUBLIC_DEV_FOODSAVER_PASSWORD || "process.env.EXPO_PUBLIC_DEV_FOODSAVER_PASSWORD",
+                const fsEmail = process.env.EXPO_PUBLIC_DEV_FOODSAVER_EMAIL;
+              const fsPassword =
+                process.env.EXPO_PUBLIC_DEV_FOODSAVER_PASSWORD;
+              if (!fsEmail || !fsPassword) {
+                alert(
+                  "Dev credentials missing. Set EXPO_PUBLIC_DEV_FOODSAVER_EMAIL / _PASSWORD in your .env",
                 );
-                router.replace(safeReturnUrl(returnUrl, "/(food-saver)") as any);
+                return;
+              }
+              await authService.login(fsEmail, fsPassword);
+                router.replace(
+                  safeReturnUrl(returnUrl, "/(food-saver)") as any,
+                );
               } catch (e: any) {
                 alert(e.message);
               } finally {
@@ -143,10 +158,16 @@ export default function LoginScreen() {
             onPress={async () => {
               setLoading(true);
               try {
-                await authService.login(
-                  process.env.EXPO_PUBLIC_DEV_MITRA_EMAIL || "process.env.EXPO_PUBLIC_DEV_MITRA_EMAIL",
-                  process.env.EXPO_PUBLIC_DEV_MITRA_PASSWORD || "process.env.EXPO_PUBLIC_DEV_MITRA_PASSWORD",
-                );
+                const mitraEmail = process.env.EXPO_PUBLIC_DEV_MITRA_EMAIL;
+                const mitraPassword =
+                  process.env.EXPO_PUBLIC_DEV_MITRA_PASSWORD;
+                if (!mitraEmail || !mitraPassword) {
+                  alert(
+                    "Dev credentials missing. Set EXPO_PUBLIC_DEV_MITRA_EMAIL / _PASSWORD in your .env",
+                  );
+                  return;
+                }
+                await authService.login(mitraEmail, mitraPassword);
                 const target = safeReturnUrl(returnUrl, "/(mitra)");
                 router.replace(target as any);
               } catch (e: any) {
